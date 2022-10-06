@@ -3,7 +3,7 @@ import {
   useDispatch,
   useSelector,
   TypedUseSelectorHook,
-  useStore,
+  useStore
 } from 'react-redux';
 import { AuthApi } from './App/AuthApi';
 
@@ -12,7 +12,7 @@ import AppReducer from './App/appSlice';
 export const store = configureStore({
   reducer: { AppReducer, [AuthApi.reducerPath]: AuthApi.reducer },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(AuthApi.middleware),
+    getDefaultMiddleware().concat(AuthApi.middleware)
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

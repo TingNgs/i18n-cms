@@ -9,7 +9,7 @@ export interface AppState {
 
 const initialState: AppState = {
   authState: 'initial',
-  githubAccessToken: undefined,
+  githubAccessToken: undefined
 };
 
 export const appSlice = createSlice({
@@ -18,7 +18,7 @@ export const appSlice = createSlice({
   reducers: {
     setIsLogin: (state, action: PayloadAction<AppState['authState']>) => {
       state.authState = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -35,7 +35,7 @@ export const appSlice = createSlice({
         state.githubAccessToken = payload.accessToken;
       }
     );
-  },
+  }
 });
 
 // Action creators are generated for each case reducer function

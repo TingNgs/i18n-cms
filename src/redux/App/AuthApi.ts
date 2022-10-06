@@ -22,7 +22,7 @@ export const AuthApi = createApi({
           const { accessToken } = credential;
 
           setDoc(doc(db, 'users', result.user.uid), {
-            github_access_token: accessToken,
+            github_access_token: accessToken
           }).catch((err) => {
             console.error(err);
           });
@@ -32,7 +32,7 @@ export const AuthApi = createApi({
           return { error: e };
         }
       },
-      invalidatesTags: ['Auth'],
+      invalidatesTags: ['Auth']
     }),
     getGithubAccessToken: builder.mutation<
       { accessToken: string },
@@ -48,9 +48,9 @@ export const AuthApi = createApi({
           return { error: e };
         }
       },
-      invalidatesTags: ['Auth'],
-    }),
-  }),
+      invalidatesTags: ['Auth']
+    })
+  })
 });
 
 export const { useLoginMutation, useGetGithubAccessTokenMutation } = AuthApi;

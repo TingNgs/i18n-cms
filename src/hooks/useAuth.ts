@@ -15,13 +15,18 @@ const useAuth = () => {
   const { getState } = useAppStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (!user) {
+          throw new Error();
+        }
         const { authState } = getState().AppReducer;
         if (authState === 'initial') {
-          getGithubAccessToken({ userId: user.uid });
+          await getGithubAccessToken({
+            userId: user.uid
+          }).unwrap();
         }
-      } else {
+      } catch {
         dispatch(setIsLogin('signOff'));
       }
     });
