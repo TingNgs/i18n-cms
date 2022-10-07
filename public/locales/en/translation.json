@@ -1,5 +1,8 @@
 {
   "Logout": "Logout",
   "Login With Github": "Login With Github",
-  "Existing repository": "Existing repository"
+  "Existing repository": "Existing repository",
+  "Create new i18n repository": "Create new i18n repository",
+  "Import existing i18n repository": "Import existing i18n repository",
+  "Create": "Create"
 }

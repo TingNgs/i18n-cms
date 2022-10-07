@@ -3,7 +3,10 @@ import { Flex, Button, Spinner } from '@chakra-ui/react';
 
 import useAuth from '../../hooks/useAuth';
 import { isAuthSelector } from '../../redux/App/appSelector';
-import { useLoginMutation, useLogoutMutation } from '../../redux/App/AuthApi';
+import {
+  useLoginMutation,
+  useLogoutMutation
+} from '../../redux/services/authApi';
 import { useAppSelector } from '../../redux/store';
 
 const AppLayout = ({ children }: PropsWithChildren) => {

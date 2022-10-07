@@ -1,8 +1,20 @@
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Flex } from '@chakra-ui/react';
+import AddRepoButton from '../AddRepoButton';
 
 const Dashboard = () => {
   const { t } = useTranslation();
-  return <div>{t('Existing repository')}</div>;
+
+  return (
+    <Flex>
+      {t('Existing repository')}
+
+      <Flex>
+        <AddRepoButton />
+      </Flex>
+    </Flex>
+  );
 };
 
-export default Dashboard;
+export default memo(Dashboard);

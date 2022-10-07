@@ -1,15 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { AuthApi } from './AuthApi';
+import { AuthApi } from '../services/authApi';
 
 export interface AppState {
   authState: 'initial' | 'signOff' | 'signIn';
   githubAccessToken?: string;
+  firebaseUid?: string;
 }
 
 const initialState: AppState = {
   authState: 'initial',
-  githubAccessToken: undefined
+  githubAccessToken: undefined,
+  firebaseUid: undefined
 };
 
 export const appSlice = createSlice({
@@ -26,6 +28,7 @@ export const appSlice = createSlice({
       (state, { payload }) => {
         state.authState = 'signIn';
         state.githubAccessToken = payload.accessToken;
+        state.firebaseUid = payload.uid;
       }
     );
     builder.addMatcher(
@@ -33,6 +36,7 @@ export const appSlice = createSlice({
       (state, { payload }) => {
         state.authState = 'signIn';
         state.githubAccessToken = payload.accessToken;
+        state.firebaseUid = payload.uid;
       }
     );
     builder.addMatcher(AuthApi.endpoints.logout.matchFulfilled, (state) => {

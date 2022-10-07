@@ -5,7 +5,7 @@ import { useAppDispatch, useAppStore } from '../redux/store';
 import firebase from '../firebase';
 
 import { setAuthState } from '../redux/App/appSlice';
-import { useGetGithubAccessTokenMutation } from '../redux/App/AuthApi';
+import { useGetGithubAccessTokenMutation } from '../redux/services/authApi';
 
 const auth = getAuth(firebase);
 

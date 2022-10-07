@@ -11,14 +11,13 @@ import firebase, { db } from '../../firebase';
 
 const auth = getAuth(firebase);
 const provider = new GithubAuthProvider();
-provider.addScope('repo');
 
 export const AuthApi = createApi({
   reducerPath: 'authApi',
   tagTypes: ['Auth'],
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    login: builder.mutation<{ accessToken: string }, undefined>({
+    login: builder.mutation<{ accessToken: string; uid: string }, undefined>({
       queryFn: async () => {
         try {
           const result = await signInWithPopup(auth, provider);
@@ -32,7 +31,7 @@ export const AuthApi = createApi({
             console.error(err);
           });
 
-          return { data: { accessToken } };
+          return { data: { accessToken, uid: result.user.uid } };
         } catch (e) {
           return { error: e };
         }
@@ -50,7 +49,7 @@ export const AuthApi = createApi({
       invalidatesTags: ['Auth']
     }),
     getGithubAccessToken: builder.mutation<
-      { accessToken: string },
+      { accessToken: string; uid: string },
       { userId: string }
     >({
       queryFn: async ({ userId }) => {
@@ -58,7 +57,12 @@ export const AuthApi = createApi({
           const docRef = doc(db, 'users', userId);
           const docSnap = await getDoc(docRef);
 
-          return { data: { accessToken: docSnap.data()?.github_access_token } };
+          return {
+            data: {
+              accessToken: docSnap.data()?.github_access_token,
+              uid: userId
+            }
+          };
         } catch (e) {
           return { error: e };
         }
