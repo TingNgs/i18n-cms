@@ -16,7 +16,7 @@ export const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setIsLogin: (state, action: PayloadAction<AppState['authState']>) => {
+    setAuthState: (state, action: PayloadAction<AppState['authState']>) => {
       state.authState = action.payload;
     }
   },
@@ -35,10 +35,14 @@ export const appSlice = createSlice({
         state.githubAccessToken = payload.accessToken;
       }
     );
+    builder.addMatcher(AuthApi.endpoints.logout.matchFulfilled, (state) => {
+      state.authState = 'signOff';
+      state.githubAccessToken = undefined;
+    });
   }
 });
 
 // Action creators are generated for each case reducer function
-export const { setIsLogin } = appSlice.actions;
+export const { setAuthState } = appSlice.actions;
 
 export default appSlice.reducer;

@@ -4,7 +4,7 @@ import { useAppDispatch, useAppStore } from '../redux/store';
 
 import firebase from '../firebase';
 
-import { setIsLogin } from '../redux/App/appSlice';
+import { setAuthState } from '../redux/App/appSlice';
 import { useGetGithubAccessTokenMutation } from '../redux/App/AuthApi';
 
 const auth = getAuth(firebase);
@@ -27,7 +27,7 @@ const useAuth = () => {
           }).unwrap();
         }
       } catch {
-        dispatch(setIsLogin('signOff'));
+        dispatch(setAuthState('signOff'));
       }
     });
     return () => {

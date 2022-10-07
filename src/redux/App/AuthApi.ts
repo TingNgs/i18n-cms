@@ -1,6 +1,11 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
-import { getAuth, signInWithPopup, GithubAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithPopup,
+  GithubAuthProvider,
+  signOut
+} from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import firebase, { db } from '../../firebase';
 
@@ -34,6 +39,16 @@ export const AuthApi = createApi({
       },
       invalidatesTags: ['Auth']
     }),
+    logout: builder.mutation<Promise<void>, undefined>({
+      queryFn: async () => {
+        try {
+          return { data: signOut(auth) };
+        } catch (e) {
+          return { error: e };
+        }
+      },
+      invalidatesTags: ['Auth']
+    }),
     getGithubAccessToken: builder.mutation<
       { accessToken: string },
       { userId: string }
@@ -53,4 +68,8 @@ export const AuthApi = createApi({
   })
 });
 
-export const { useLoginMutation, useGetGithubAccessTokenMutation } = AuthApi;
+export const {
+  useLoginMutation,
+  useLogoutMutation,
+  useGetGithubAccessTokenMutation
+} = AuthApi;
