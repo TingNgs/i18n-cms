@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import AppLayout from './component/AppLayout';
-import About from './component/About';
-import Dashboard from './component/Dashboard';
-import Repo from './component/Repo';
+
+import About from './page/About';
+import Dashboard from './page/Dashboard';
+import Repo from './page/Repo';
+
 import { useAppSelector } from './redux/store';
 import { isAuthSelector } from './redux/selector';
 

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex, Stack, Text } from '@chakra-ui/react';
-import AddRepoButton from '../AddRepoButton';
+import AddRepoButton from '../../component/AddRepoButton';
 import { useGetExistingRepoQuery } from '../../redux/services/firestoreApi';
 
 const Dashboard = () => {
