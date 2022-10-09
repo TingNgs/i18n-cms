@@ -2,14 +2,25 @@
   "Logout": "Logout",
   "Login With Github": "Login With Github",
   "Existing repository": "Existing repository",
+
   "Create new i18n repository": "Create new i18n repository",
-  "Import existing i18n repository": "Import existing i18n repository",
   "Create": "Create",
-  "Import": "Import",
   "Repository name": "Repository name",
   "Owner": "Owner",
+  "Base path": "Base path",
   "File structure": "File structure",
   "File type": "File type",
   "Languages": "Languages",
-  "Namespaces": "Namespaces"
+  "Namespaces": "Namespaces",
+  "Creating repository": "Creating repository",
+  "Setting up repository": "Setting up repository",
+  "Create new repo fail": "Create new repository fail",
+  "Setup new repo fai": "Setup new repository fail, please delete repository and create again",
+
+  "Import existing i18n repository": "Import existing i18n repository",
+  "Github repository url": "Github repository url",
+  "Import": "Import",
+  "Invalid github url": "Invalid github url",
+  "Without push permission in this repo": "Without push permission in this repo",
+  "Config file error": "Config file error"
 }

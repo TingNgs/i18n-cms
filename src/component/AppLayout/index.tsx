@@ -1,8 +1,9 @@
 import { PropsWithChildren, useCallback } from 'react';
 import { Flex, Button, Spinner } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 import useAuth from '../../hooks/useAuth';
-import { isAuthSelector } from '../../redux/App/appSelector';
+import { isAuthSelector } from '../../redux/selector';
 import {
   useLoginMutation,
   useLogoutMutation
@@ -10,6 +11,7 @@ import {
 import { useAppSelector } from '../../redux/store';
 
 const AppLayout = ({ children }: PropsWithChildren) => {
+  const navigate = useNavigate();
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation();
 
@@ -18,12 +20,14 @@ const AppLayout = ({ children }: PropsWithChildren) => {
   const isAuth = useAppSelector(isAuthSelector);
   const authState = useAppSelector((state) => state.AppReducer.authState);
 
-  const onLoginClicked = useCallback(() => {
-    login(undefined);
+  const onLoginClicked = useCallback(async () => {
+    await login(undefined).unwrap();
+    navigate('/dashboard');
   }, [login]);
 
   const onLogoutClicked = useCallback(() => {
     logout(undefined);
+    navigate('/');
   }, [logout]);
 
   if (isLoginLoading || isLogoutLoading || authState === 'initial') {

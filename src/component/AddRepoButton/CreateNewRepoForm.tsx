@@ -10,6 +10,7 @@ import {
   RadioGroup,
   useToast
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import {
@@ -26,10 +27,17 @@ import TagInput from '../TagInput';
 import { dataToFiles } from '../../utils/fileHelper';
 import OwnerSelect, { Owner } from '../OwnerSelect';
 import LoadingModal from '../LoadingModel';
+import {
+  setEditingRepo,
+  setEditingRepoConfig
+} from '../../redux/editingRepoSlice';
+import { useAppDispatch } from '../../redux/store';
 
 const CreateNewRepoForm = () => {
+  const navigate = useNavigate();
   const toast = useToast();
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const [isLoading, setLoading] = useState(false);
 
   const [createGithubRepo, { isLoading: isCreateRepoLoading }] =
@@ -50,10 +58,11 @@ const CreateNewRepoForm = () => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
+      const { name, visibility, languages, namespaces, ...repoConfig } = values;
       setLoading(true);
       const repo = await createGithubRepo({
-        name: values.name,
-        visibility: values.visibility,
+        name,
+        visibility,
         owner
       })
         .unwrap()
@@ -68,12 +77,22 @@ const CreateNewRepoForm = () => {
         branch: repo.default_branch,
         change: {
           message: 'Initial locales',
-          files: dataToFiles(values)
+          files: dataToFiles({
+            languages,
+            namespaces,
+            repoConfig
+          })
         }
       }).catch((e) => {
         toast({ title: t('Setup new repo fail'), status: 'error' });
         throw e;
       });
+
+      await dispatch(setEditingRepoConfig(repoConfig));
+      await dispatch(
+        setEditingRepo({ owner: repo.owner.login, repo: repo.name })
+      );
+      navigate('/repo');
     } finally {
       setLoading(false);
     }
@@ -82,10 +101,10 @@ const CreateNewRepoForm = () => {
   const [owner, basePath] = watch(['owner', 'basePath']);
 
   const getLoadingTitle = useCallback(() => {
-    if (isCreateRepoLoading) return t('Createing repository');
-    if (isCommitLoading) return t('Setuping repository');
+    if (isCreateRepoLoading) return t('Creating repository');
+    if (isCommitLoading) return t('Setting up repository');
     return undefined;
-  }, []);
+  }, [isCreateRepoLoading, isCommitLoading]);
 
   return (
     <>

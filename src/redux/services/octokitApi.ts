@@ -56,7 +56,7 @@ export const OctokitApi = createApi({
         return { data: result?.data };
       }
     }),
-    getGithubRepoByName: builder.query<
+    getGithubRepo: builder.query<
       GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.repos.get>,
       { repo: string; owner: string }
     >({
@@ -110,6 +110,22 @@ export const OctokitApi = createApi({
         const result = await octokit.rest.repos.listForAuthenticatedUser();
         return { data: result?.data };
       }
+    }),
+    getGithubContent: builder.query<
+      GetResponseDataTypeFromEndpointMethod<
+        typeof octokit.rest.repos.getContent
+      >,
+      { repo: string; owner: string; path: string }
+    >({
+      queryFn: async ({ repo, owner, path }) => {
+        setupOctokitClient();
+        const result = await octokit.rest.repos.getContent({
+          repo,
+          owner,
+          path
+        });
+        return { data: result?.data };
+      }
     })
   })
 });
@@ -119,5 +135,7 @@ export const {
   useCreateGithubRepoMutation,
   useCommitGithubFilesMutation,
   useGetUserQuery,
-  useGetOrganizationQuery
+  useGetOrganizationQuery,
+  useLazyGetGithubRepoQuery,
+  useLazyGetGithubContentQuery
 } = OctokitApi;

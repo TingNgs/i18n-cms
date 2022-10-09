@@ -1,4 +1,8 @@
-import { LOCALES_FILE_STRUCTURE, LOCALES_FILE_TYPE } from '../constants';
+import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
+import { Octokit } from 'octokit';
+import { CONFIG_PATH } from '../constants';
+import { RepoConfig } from '../redux/editingRepoSlice';
+const octokit = new Octokit();
 
 const dataToJson = (data: { [key: string]: string }) => {
   return JSON.stringify(data, null, 2);
@@ -14,21 +18,18 @@ export const dataToFiles = ({
   languages,
   namespaces,
   data,
-  fileStructure,
-  fileType,
-  basePath
+  repoConfig
 }: {
   languages: string[];
   namespaces: string[];
   data?: {
     [namespace: string]: { [language: string]: { [key: string]: string } };
   };
-  fileStructure: typeof LOCALES_FILE_STRUCTURE[number];
-  fileType: typeof LOCALES_FILE_TYPE[number];
-  basePath: string;
+  repoConfig: RepoConfig;
 }) => {
+  const { fileStructure, fileType, basePath } = repoConfig;
   const files: { [path: string]: string } = {
-    '.i18n-cms/config.json': dataToJson({ fileStructure, fileType, basePath })
+    [CONFIG_PATH]: dataToJson({ fileStructure, fileType, basePath })
   };
 
   namespaces.forEach((namespace) => {
@@ -38,7 +39,7 @@ export const dataToFiles = ({
         .replace('{ns}', namespace)
         .concat(`.${fileType}`);
 
-      const fullPath = `${basePath}/${filePath}`;
+      const fullPath = `${basePath ? `${basePath}/` : ''}${filePath}`;
       const translation = data?.[namespace]?.[language] || { hi: 'hi' };
       files[fullPath] =
         fileType === 'json'
@@ -47,4 +48,30 @@ export const dataToFiles = ({
     });
   });
   return files;
+};
+
+export const decodeGithubFileContent = (
+  file: GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.rest.repos.getContent
+  >
+) => {
+  if (typeof file === 'object' && 'type' in file && file.type === 'file') {
+    return Buffer.from(file.content, 'base64').toString();
+  }
+  throw new Error('not file');
+};
+
+export const decodeConfigFile = (
+  file: GetResponseDataTypeFromEndpointMethod<
+    typeof octokit.rest.repos.getContent
+  >
+) => {
+  try {
+    const decodedString = decodeGithubFileContent(file);
+    const config = JSON.parse(decodedString);
+
+    return config;
+  } catch {
+    return false;
+  }
 };

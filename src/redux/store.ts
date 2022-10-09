@@ -8,11 +8,13 @@ import {
 import { AuthApi } from './services/authApi';
 import { OctokitApi } from './services/octokitApi';
 
-import AppReducer from './App/appSlice';
+import AppReducer from './appSlice';
+import EditingRepoReducer from './editingRepoSlice';
 
 export const store = configureStore({
   reducer: {
     AppReducer,
+    EditingRepoReducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
     [OctokitApi.reducerPath]: OctokitApi.reducer
   },

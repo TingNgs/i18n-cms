@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { AuthApi } from '../services/authApi';
+import { AuthApi } from './services/authApi';
 
 export interface AppState {
   authState: 'initial' | 'signOff' | 'signIn';

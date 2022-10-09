@@ -13,7 +13,8 @@ module.exports = function override(config) {
     ...config.resolve,
     fallback: {
       ...config.resolve.fallback,
-      buffer: require.resolve('buffer')
+      buffer: require.resolve('buffer'),
+      url: require.resolve('url')
     }
   };
   return config;
