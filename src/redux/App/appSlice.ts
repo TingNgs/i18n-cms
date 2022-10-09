@@ -10,7 +10,6 @@ export interface AppState {
 
 const initialState: AppState = {
   authState: 'initial',
-  githubAccessToken: undefined,
   firebaseUid: undefined
 };
 
@@ -27,21 +26,11 @@ export const appSlice = createSlice({
       AuthApi.endpoints.login.matchFulfilled,
       (state, { payload }) => {
         state.authState = 'signIn';
-        state.githubAccessToken = payload.accessToken;
-        state.firebaseUid = payload.uid;
-      }
-    );
-    builder.addMatcher(
-      AuthApi.endpoints.getGithubAccessToken.matchFulfilled,
-      (state, { payload }) => {
-        state.authState = 'signIn';
-        state.githubAccessToken = payload.accessToken;
         state.firebaseUid = payload.uid;
       }
     );
     builder.addMatcher(AuthApi.endpoints.logout.matchFulfilled, (state) => {
       state.authState = 'signOff';
-      state.githubAccessToken = undefined;
     });
   }
 });

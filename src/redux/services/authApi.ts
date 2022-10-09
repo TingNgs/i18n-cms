@@ -4,34 +4,37 @@ import {
   getAuth,
   signInWithPopup,
   GithubAuthProvider,
-  signOut
+  signOut,
+  browserSessionPersistence,
+  setPersistence
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import firebase, { db } from '../../firebase';
+import firebase from '../../utils/firebase';
+import {
+  removeSessionStorage,
+  setSessionStorage
+} from '../../utils/sessionStorage';
 
 const auth = getAuth(firebase);
 const provider = new GithubAuthProvider();
+provider.addScope('repo');
+provider.addScope('read:user');
 
 export const AuthApi = createApi({
   reducerPath: 'authApi',
   tagTypes: ['Auth'],
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    login: builder.mutation<{ accessToken: string; uid: string }, undefined>({
+    login: builder.mutation<{ uid: string }, undefined>({
       queryFn: async () => {
         try {
+          await setPersistence(auth, browserSessionPersistence);
           const result = await signInWithPopup(auth, provider);
           const credential = GithubAuthProvider.credentialFromResult(result);
           if (!credential?.accessToken) throw new Error('no credential');
           const { accessToken } = credential;
+          setSessionStorage('github_access_token', accessToken);
 
-          setDoc(doc(db, 'users', result.user.uid), {
-            github_access_token: accessToken
-          }).catch((err) => {
-            console.error(err);
-          });
-
-          return { data: { accessToken, uid: result.user.uid } };
+          return { data: { uid: result.user.uid } };
         } catch (e) {
           return { error: e };
         }
@@ -41,28 +44,8 @@ export const AuthApi = createApi({
     logout: builder.mutation<Promise<void>, undefined>({
       queryFn: async () => {
         try {
+          removeSessionStorage('github_access_token');
           return { data: signOut(auth) };
-        } catch (e) {
-          return { error: e };
-        }
-      },
-      invalidatesTags: ['Auth']
-    }),
-    getGithubAccessToken: builder.mutation<
-      { accessToken: string; uid: string },
-      { userId: string }
-    >({
-      queryFn: async ({ userId }) => {
-        try {
-          const docRef = doc(db, 'users', userId);
-          const docSnap = await getDoc(docRef);
-
-          return {
-            data: {
-              accessToken: docSnap.data()?.github_access_token,
-              uid: userId
-            }
-          };
         } catch (e) {
           return { error: e };
         }
@@ -72,8 +55,4 @@ export const AuthApi = createApi({
   })
 });
 
-export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useGetGithubAccessTokenMutation
-} = AuthApi;
+export const { useLoginMutation, useLogoutMutation } = AuthApi;

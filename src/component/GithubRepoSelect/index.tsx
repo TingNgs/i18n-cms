@@ -5,14 +5,19 @@ import {
   AutoCompleteItem,
   AutoCompleteList
 } from '@choc-ui/chakra-autocomplete';
-import { Repo, useGetGithubRepoQuery } from '../../redux/services/octokitApi';
+import {
+  RepoListForAuthenticatedUser,
+  useGetGithubRepoListQuery
+} from '../../redux/services/octokitApi';
 
 interface IProps {
-  setSelectedRepo: Dispatch<SetStateAction<undefined | Repo>>;
+  setSelectedRepo: Dispatch<
+    SetStateAction<undefined | RepoListForAuthenticatedUser>
+  >;
 }
 
 const GithubRepoSelect = ({ setSelectedRepo }: IProps) => {
-  const { data } = useGetGithubRepoQuery({});
+  const { data } = useGetGithubRepoListQuery({});
 
   return (
     <AutoComplete

@@ -6,6 +6,15 @@ const theme = extendTheme(
       Spinner: {
         baseStyle: { color: 'blue.500' },
         defaultProps: { size: 'xl', thickness: '4px' }
+      },
+      Radio: {
+        parts: ['label'],
+        baseStyle: {
+          label: {
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word'
+          }
+        }
       }
     }
   },

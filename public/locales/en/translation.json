@@ -4,5 +4,12 @@
   "Existing repository": "Existing repository",
   "Create new i18n repository": "Create new i18n repository",
   "Import existing i18n repository": "Import existing i18n repository",
-  "Create": "Create"
+  "Create": "Create",
+  "Import": "Import",
+  "Repository name": "Repository name",
+  "Owner": "Owner",
+  "File structure": "File structure",
+  "File type": "File type",
+  "Languages": "Languages",
+  "Namespaces": "Namespaces"
 }
