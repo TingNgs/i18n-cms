@@ -26,29 +26,21 @@ export const AuthApi = createApi({
   endpoints: (builder) => ({
     login: builder.mutation<{ uid: string }, undefined>({
       queryFn: async () => {
-        try {
-          await setPersistence(auth, browserSessionPersistence);
-          const result = await signInWithPopup(auth, provider);
-          const credential = GithubAuthProvider.credentialFromResult(result);
-          if (!credential?.accessToken) throw new Error('no credential');
-          const { accessToken } = credential;
-          setSessionStorage('github_access_token', accessToken);
+        await setPersistence(auth, browserSessionPersistence);
+        const result = await signInWithPopup(auth, provider);
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        if (!credential?.accessToken) throw new Error('no credential');
+        const { accessToken } = credential;
+        setSessionStorage('github_access_token', accessToken);
 
-          return { data: { uid: result.user.uid } };
-        } catch (e) {
-          return { error: e };
-        }
+        return { data: { uid: result.user.uid } };
       },
       invalidatesTags: ['Auth']
     }),
     logout: builder.mutation<Promise<void>, undefined>({
       queryFn: async () => {
-        try {
-          removeSessionStorage('github_access_token');
-          return { data: signOut(auth) };
-        } catch (e) {
-          return { error: e };
-        }
+        removeSessionStorage('github_access_token');
+        return { data: signOut(auth) };
       },
       invalidatesTags: ['Auth']
     })

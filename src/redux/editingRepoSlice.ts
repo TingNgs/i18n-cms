@@ -12,6 +12,7 @@ export interface RepoConfig {
 export interface Repo {
   owner: string;
   repo: string;
+  fullName: string;
 }
 
 export interface EdiotingRepoState {

@@ -7,6 +7,7 @@ import {
 } from 'react-redux';
 import { AuthApi } from './services/authApi';
 import { OctokitApi } from './services/octokitApi';
+import { FirestoreApi } from './services/firestoreApi';
 
 import AppReducer from './appSlice';
 import EditingRepoReducer from './editingRepoSlice';
@@ -16,10 +17,15 @@ export const store = configureStore({
     AppReducer,
     EditingRepoReducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
-    [OctokitApi.reducerPath]: OctokitApi.reducer
+    [OctokitApi.reducerPath]: OctokitApi.reducer,
+    [FirestoreApi.reducerPath]: FirestoreApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([AuthApi.middleware, OctokitApi.middleware])
+    getDefaultMiddleware().concat([
+      AuthApi.middleware,
+      OctokitApi.middleware,
+      FirestoreApi.middleware
+    ])
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

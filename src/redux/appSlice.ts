@@ -4,21 +4,26 @@ import { AuthApi } from './services/authApi';
 
 export interface AppState {
   authState: 'initial' | 'signOff' | 'signIn';
-  githubAccessToken?: string;
   firebaseUid?: string;
 }
 
 const initialState: AppState = {
-  authState: 'initial',
-  firebaseUid: undefined
+  authState: 'initial'
 };
 
 export const appSlice = createSlice({
   name: 'app',
   initialState,
   reducers: {
-    setAuthState: (state, action: PayloadAction<AppState['authState']>) => {
-      state.authState = action.payload;
+    setAuthState: (
+      state,
+      action: PayloadAction<{
+        authState: AppState['authState'];
+        firebaseUid?: string;
+      }>
+    ) => {
+      state.authState = action.payload.authState;
+      state.firebaseUid = action.payload.firebaseUid;
     }
   },
   extraReducers: (builder) => {

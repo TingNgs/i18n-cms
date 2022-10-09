@@ -68,7 +68,7 @@ const AddRepoButton = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>Open Modal</Button>
+      <Button onClick={onOpen}>Add Repo</Button>
       <Modal
         isOpen={isOpen}
         onClose={() => {

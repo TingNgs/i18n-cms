@@ -17,6 +17,7 @@ import {
   setEditingRepo
 } from '../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../redux/store';
+import { useAddExistingRepoMutation } from '../../redux/services/firestoreApi';
 
 const CreateNewRepoForm = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const CreateNewRepoForm = () => {
   const dispatch = useAppDispatch();
   const [getGithubRepo] = useLazyGetGithubRepoQuery();
   const [getGithubContent] = useLazyGetGithubContentQuery();
+  const [addExistingRepo] = useAddExistingRepoMutation();
 
   const [isLoading, setLoading] = useState(false);
 
@@ -58,10 +60,14 @@ const CreateNewRepoForm = () => {
         setError('githubUrl', { message: t('Config file error') });
         throw new Error('Config file error');
       }
-
+      await addExistingRepo({ repo: name, owner, fullName: repo.full_name });
       await dispatch(setEditingRepoConfig(config));
       await dispatch(
-        setEditingRepo({ owner: repo.owner.login, repo: repo.name })
+        setEditingRepo({
+          owner: repo.owner.login,
+          repo: repo.name,
+          fullName: repo.full_name
+        })
       );
       navigate('/repo');
     } finally {

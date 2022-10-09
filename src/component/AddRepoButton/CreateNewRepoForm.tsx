@@ -32,6 +32,7 @@ import {
   setEditingRepoConfig
 } from '../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../redux/store';
+import { useAddExistingRepoMutation } from '../../redux/services/firestoreApi';
 
 const CreateNewRepoForm = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const CreateNewRepoForm = () => {
     useCreateGithubRepoMutation();
   const [commitGithubFiles, { isLoading: isCommitLoading }] =
     useCommitGithubFilesMutation();
+  const [addExistingRepo] = useAddExistingRepoMutation();
 
   const { handleSubmit, register, control, watch } = useForm<{
     owner: Owner;
@@ -87,10 +89,18 @@ const CreateNewRepoForm = () => {
         toast({ title: t('Setup new repo fail'), status: 'error' });
         throw e;
       });
-
+      await addExistingRepo({
+        repo: repo.name,
+        owner: repo.owner.login,
+        fullName: repo.full_name
+      });
       await dispatch(setEditingRepoConfig(repoConfig));
       await dispatch(
-        setEditingRepo({ owner: repo.owner.login, repo: repo.name })
+        setEditingRepo({
+          owner: repo.owner.login,
+          repo: repo.name,
+          fullName: repo.full_name
+        })
       );
       navigate('/repo');
     } finally {
