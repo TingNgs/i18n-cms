@@ -5,27 +5,18 @@ import { useForm } from 'react-hook-form';
 import gh from 'parse-github-url';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  useLazyGetGithubRepoQuery,
-  useLazyGetGithubContentQuery
-} from '../../redux/services/octokitApi';
-import { CONFIG_PATH } from '../../constants';
-import { decodeConfigFile } from '../../utils/fileHelper';
-import LoadingModal from '../LoadingModel';
-import {
-  setEditingRepoConfig,
-  setEditingRepo
-} from '../../redux/editingRepoSlice';
+import LoadingModal from '../LoadingModal';
+import { setEditingRepo } from '../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../redux/store';
-import { useAddExistingRepoMutation } from '../../redux/services/firestoreApi';
+import { useUpdateExistingRepoMutation } from '../../redux/services/firestoreApi';
+import useCheckRepoPermissions from '../../hooks/useCheckRepoPermissions';
 
 const CreateNewRepoForm = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const [getGithubRepo] = useLazyGetGithubRepoQuery();
-  const [getGithubContent] = useLazyGetGithubContentQuery();
-  const [addExistingRepo] = useAddExistingRepoMutation();
+  const checkRepoPermissions = useCheckRepoPermissions();
+  const [updateExistingRepo] = useUpdateExistingRepoMutation();
 
   const [isLoading, setLoading] = useState(false);
 
@@ -36,40 +27,29 @@ const CreateNewRepoForm = () => {
   const { errors } = formState;
 
   const onSubmit = handleSubmit(async (values) => {
+    const { owner, name } = gh(values.githubUrl) || {};
+    if (!owner || !name) {
+      setError('githubUrl', { message: t('Invalid github url') });
+      return;
+    }
+
     try {
       setLoading(true);
-      const { owner, name } = gh(values.githubUrl) || {};
-      if (!owner || !name) {
-        setError('githubUrl', { message: t('Invalid github url') });
-        return;
-      }
-      const repo = await getGithubRepo({ repo: name, owner }).unwrap();
-      if (!repo.permissions?.push) {
-        setError('githubUrl', {
-          message: t('Without push permission in this repo')
-        });
-      }
 
-      const configFile = await getGithubContent({
-        repo: name,
-        owner,
-        path: CONFIG_PATH
-      }).unwrap();
-      const config = decodeConfigFile(configFile);
-      if (!config) {
-        setError('githubUrl', { message: t('Config file error') });
-        throw new Error('Config file error');
+      const result = await checkRepoPermissions({
+        repoName: name,
+        owner
+      });
+      if (result.error) {
+        setError('githubUrl', { message: result.error });
+      } else if (result.data) {
+        const { repo } = result.data;
+        await updateExistingRepo({ ...repo, recentBranches: [] });
+        await dispatch(
+          setEditingRepo({ ...result.data.repo, recentBranches: [] })
+        );
+        navigate('/repo');
       }
-      await addExistingRepo({ repo: name, owner, fullName: repo.full_name });
-      await dispatch(setEditingRepoConfig(config));
-      await dispatch(
-        setEditingRepo({
-          owner: repo.owner.login,
-          repo: repo.name,
-          fullName: repo.full_name
-        })
-      );
-      navigate('/repo');
     } finally {
       setLoading(false);
     }

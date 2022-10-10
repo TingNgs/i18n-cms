@@ -2,6 +2,8 @@
   "Logout": "Logout",
   "Login With Github": "Login With Github",
   "Existing repository": "Existing repository",
+  "Please import repo again": "Please import repo again",
+  "Something went wrong": "Something went wrong",
 
   "Create new i18n repository": "Create new i18n repository",
   "Create": "Create",
@@ -22,5 +24,21 @@
   "Import": "Import",
   "Invalid github url": "Invalid github url",
   "Without push permission in this repo": "Without push permission in this repo",
-  "Config file error": "Config file error"
+  "Config file error": "Config file error",
+
+  "Choose branch": "Choose branch",
+  "Recent branches": "Recent branches",
+  "Base on": "Base on",
+  "Use existing branch": "Use existing branch",
+  "Create new branch": "Create new branch",
+  "New branch name": "New branch name",
+  "Existing branch name": "Existing branch name",
+  "Branch not found": "Branch not found",
+  "Config file not found in this branch": "Config file not found in this branch",
+  "Branch already exists": "Branch already exists",
+  "Fetching branch": "Fetching branch",
+  "Fetching config": "Fetching config",
+  "Creating branch": "Creating branch",
+  "Updating config": "Updating config",
+  "Submit": "Submit"
 }

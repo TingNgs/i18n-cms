@@ -1,24 +1,28 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flex, Stack, Text } from '@chakra-ui/react';
+import { Skeleton, Stack, Text } from '@chakra-ui/react';
 import AddRepoButton from '../../component/AddRepoButton';
 import { useGetExistingRepoQuery } from '../../redux/services/firestoreApi';
+import RepoCard from './RepoCard';
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const { data } = useGetExistingRepoQuery(undefined);
-  console.log(data);
-  return (
-    <Stack>
-      <Text fontSize="2xl">{t('Existing repository')}</Text>
 
-      <Stack>
-        {data?.map((repo) => (
-          <Flex key={repo.fullName}>
-            <Text>{repo.fullName}</Text>
-          </Flex>
-        ))}
+  return (
+    <Stack alignItems="center">
+      <Stack width="300px">
         <AddRepoButton />
+        <Text fontSize="2xl">{t('Existing repository')}</Text>
+        {data ? (
+          data.map((repo) => <RepoCard key={repo.fullName} repo={repo} />)
+        ) : (
+          <>
+            <Skeleton h="40px" />
+            <Skeleton h="40px" />
+            <Skeleton h="40px" />
+          </>
+        )}
       </Stack>
     </Stack>
   );

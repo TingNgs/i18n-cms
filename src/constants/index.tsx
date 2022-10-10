@@ -6,3 +6,4 @@ export const LOCALES_FILE_TYPE = ['json', 'js', 'ts'] as const;
 export const REPOSITORY_VISIBILITY = ['public', 'private'] as const;
 
 export const CONFIG_PATH = '.i18n-cms/config.json' as const;
+export const RECENT_BRANCHES_SIZE = 5;

@@ -64,7 +64,8 @@ export const OctokitApi = createApi({
         setupOctokitClient();
         const result = await octokit.rest.repos.get({ repo, owner });
         return { data: result?.data };
-      }
+      },
+      keepUnusedDataFor: 0.0001
     }),
     commitGithubFiles: builder.mutation<
       Awaited<ReturnType<typeof commitMultipleFiles>>,
@@ -115,14 +116,61 @@ export const OctokitApi = createApi({
       GetResponseDataTypeFromEndpointMethod<
         typeof octokit.rest.repos.getContent
       >,
-      { repo: string; owner: string; path: string }
+      { repo: string; owner: string; path: string; ref?: string }
     >({
-      queryFn: async ({ repo, owner, path }) => {
+      queryFn: async ({ repo, owner, path, ref }) => {
         setupOctokitClient();
         const result = await octokit.rest.repos.getContent({
           repo,
           owner,
-          path
+          path,
+          ref
+        });
+        return { data: result?.data };
+      }
+    }),
+    getGithubTree: builder.query<
+      GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.git.getTree>,
+      { repo: string; owner: string; treeSha: string }
+    >({
+      queryFn: async ({ repo, owner, treeSha }) => {
+        setupOctokitClient();
+        const result = await octokit.rest.git.getTree({
+          repo,
+          owner,
+          tree_sha: treeSha,
+          recursive: '1'
+        });
+        return { data: result?.data };
+      }
+    }),
+    getGithubBranch: builder.query<
+      GetResponseDataTypeFromEndpointMethod<
+        typeof octokit.rest.repos.getBranch
+      >,
+      { repo: string; owner: string; branch: string }
+    >({
+      queryFn: async ({ repo, owner, branch }) => {
+        setupOctokitClient();
+        const result = await octokit.rest.repos.getBranch({
+          repo,
+          owner,
+          branch
+        });
+        return { data: result?.data };
+      }
+    }),
+    createGithubRef: builder.mutation<
+      GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.git.createRef>,
+      { repo: string; owner: string; ref: string; sha: string }
+    >({
+      queryFn: async ({ repo, owner, ref, sha }) => {
+        setupOctokitClient();
+        const result = await octokit.rest.git.createRef({
+          repo,
+          owner,
+          ref,
+          sha
         });
         return { data: result?.data };
       }
@@ -137,5 +185,8 @@ export const {
   useGetUserQuery,
   useGetOrganizationQuery,
   useLazyGetGithubRepoQuery,
-  useLazyGetGithubContentQuery
+  useLazyGetGithubContentQuery,
+  useLazyGetGithubTreeQuery,
+  useLazyGetGithubBranchQuery,
+  useCreateGithubRefMutation
 } = OctokitApi;

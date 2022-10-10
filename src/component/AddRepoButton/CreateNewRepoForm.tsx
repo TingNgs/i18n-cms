@@ -26,13 +26,13 @@ import {
 import TagInput from '../TagInput';
 import { dataToFiles } from '../../utils/fileHelper';
 import OwnerSelect, { Owner } from '../OwnerSelect';
-import LoadingModal from '../LoadingModel';
+import LoadingModal from '../LoadingModal';
 import {
   setEditingRepo,
   setEditingRepoConfig
 } from '../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../redux/store';
-import { useAddExistingRepoMutation } from '../../redux/services/firestoreApi';
+import { useUpdateExistingRepoMutation } from '../../redux/services/firestoreApi';
 
 const CreateNewRepoForm = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const CreateNewRepoForm = () => {
     useCreateGithubRepoMutation();
   const [commitGithubFiles, { isLoading: isCommitLoading }] =
     useCommitGithubFilesMutation();
-  const [addExistingRepo] = useAddExistingRepoMutation();
+  const [updateExistingRepo] = useUpdateExistingRepoMutation();
 
   const { handleSubmit, register, control, watch } = useForm<{
     owner: Owner;
@@ -89,17 +89,19 @@ const CreateNewRepoForm = () => {
         toast({ title: t('Setup new repo fail'), status: 'error' });
         throw e;
       });
-      await addExistingRepo({
+      await updateExistingRepo({
         repo: repo.name,
         owner: repo.owner.login,
-        fullName: repo.full_name
+        fullName: repo.full_name,
+        recentBranches: []
       });
       await dispatch(setEditingRepoConfig(repoConfig));
       await dispatch(
         setEditingRepo({
           owner: repo.owner.login,
           repo: repo.name,
-          fullName: repo.full_name
+          fullName: repo.full_name,
+          recentBranches: []
         })
       );
       navigate('/repo');

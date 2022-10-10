@@ -13,11 +13,13 @@ export interface Repo {
   owner: string;
   repo: string;
   fullName: string;
+  recentBranches?: string[];
 }
 
 export interface EdiotingRepoState {
   editingRepo?: Repo;
   editingRepoConfig?: RepoConfig;
+  branch?: string;
 }
 
 const initialState: EdiotingRepoState = {};
@@ -32,12 +34,19 @@ export const editingRepoSlice = createSlice({
     setEditingRepoConfig: (state, action: PayloadAction<RepoConfig>) => {
       state.editingRepoConfig = action.payload;
     },
+    setBranch: (state, action: PayloadAction<string>) => {
+      state.branch = action.payload;
+    },
     closeEditingRepo: () => initialState
   }
 });
 
 // Action creators are generated for each case reducer function
-export const { setEditingRepoConfig, setEditingRepo, closeEditingRepo } =
-  editingRepoSlice.actions;
+export const {
+  setEditingRepoConfig,
+  setEditingRepo,
+  setBranch,
+  closeEditingRepo
+} = editingRepoSlice.actions;
 
 export default editingRepoSlice.reducer;
