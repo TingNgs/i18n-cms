@@ -14,6 +14,24 @@ const dataToJsOrTs = (data: { [key: string]: string }, language: string) => {
   )}; \n\nexport default ${language};`;
 };
 
+export const getLocalPath = ({
+  language,
+  namespace,
+  repoConfig: { fileStructure, fileType, basePath }
+}: {
+  language: string;
+  namespace: string;
+  repoConfig: RepoConfig;
+}) => {
+  const filePath = fileStructure
+    .replace('{lng}', language)
+    .replace('{ns}', namespace)
+    .concat(`.${fileType}`);
+
+  const fullPath = `${basePath ? `${basePath}/` : ''}${filePath}`;
+  return fullPath;
+};
+
 export const dataToFiles = ({
   languages,
   namespaces,
@@ -34,14 +52,8 @@ export const dataToFiles = ({
 
   namespaces.forEach((namespace) => {
     languages.forEach((language) => {
-      const filePath = fileStructure
-        .replace('{lng}', language)
-        .replace('{ns}', namespace)
-        .concat(`.${fileType}`);
-
-      const fullPath = `${basePath ? `${basePath}/` : ''}${filePath}`;
       const translation = data?.[namespace]?.[language] || { hi: 'hi' };
-      files[fullPath] =
+      files[getLocalPath({ language, namespace, repoConfig })] =
         fileType === 'json'
           ? dataToJson(translation)
           : dataToJsOrTs(translation, language);

@@ -24,11 +24,28 @@ export interface EdiotingRepoState {
   languages: string[];
 
   selectedNamespace?: string;
+  selectedLanguages: string[];
+
+  originalLocalesData: {
+    [namespace: string]: { [lng: string]: { [key: string]: string } };
+  };
+
+  modifiedLocalesData: {
+    [namespace: string]: { [lng: string]: { [key: string]: string } };
+  };
+
+  localeKeys: {
+    [namespace: string]: string[];
+  };
 }
 
 const initialState: EdiotingRepoState = {
   namespaces: [],
-  languages: []
+  languages: [],
+  selectedLanguages: [],
+  originalLocalesData: {},
+  modifiedLocalesData: {},
+  localeKeys: {}
 };
 
 export const editingRepoSlice = createSlice({
@@ -53,6 +70,42 @@ export const editingRepoSlice = createSlice({
     setNamespaces: (state, action: PayloadAction<string[]>) => {
       state.namespaces = action.payload;
     },
+    setSelectedLanguages: (state, action: PayloadAction<string[]>) => {
+      state.selectedLanguages = action.payload;
+    },
+    setLocalesDataByNamespace: (
+      state,
+      action: PayloadAction<{
+        namespace: string;
+        data: { [language: string]: { [key: string]: string } };
+      }>
+    ) => {
+      const { namespace, data } = action.payload;
+      state.modifiedLocalesData[namespace] = data;
+      state.originalLocalesData[namespace] = data;
+      let keySet = new Set<string>();
+      state.languages.forEach((language) => {
+        keySet = new Set([
+          ...Array.from(keySet),
+          ...Object.keys(data[language])
+        ]);
+      });
+      state.localeKeys[namespace] = Array.from(keySet);
+    },
+    handleLocaleOnChange: (
+      state,
+      action: PayloadAction<{
+        language: string;
+        localeKey: string;
+        value: string;
+      }>
+    ) => {
+      const { language, localeKey, value } = action.payload;
+      if (state.selectedNamespace)
+        state.modifiedLocalesData[state.selectedNamespace][language][
+          localeKey
+        ] = value;
+    },
     closeEditingRepo: () => initialState
   }
 });
@@ -65,6 +118,9 @@ export const {
   setSelectedNamespaces,
   setLanguages,
   setNamespaces,
+  setSelectedLanguages,
+  setLocalesDataByNamespace,
+  handleLocaleOnChange,
   closeEditingRepo
 } = editingRepoSlice.actions;
 

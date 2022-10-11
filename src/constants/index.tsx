@@ -7,3 +7,5 @@ export const REPOSITORY_VISIBILITY = ['public', 'private'] as const;
 
 export const CONFIG_PATH = '.i18n-cms/config.json' as const;
 export const RECENT_BRANCHES_SIZE = 5;
+
+export const CELL_HEIGHT = 60;
