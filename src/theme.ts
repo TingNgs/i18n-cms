@@ -2,6 +2,13 @@ import { extendTheme, withDefaultColorScheme } from '@chakra-ui/react';
 
 const theme = extendTheme(
   {
+    styles: {
+      global: {
+        'html, body, #root': {
+          height: '100%'
+        }
+      }
+    },
     components: {
       Spinner: {
         baseStyle: { color: 'blue.500' },

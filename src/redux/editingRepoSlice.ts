@@ -20,9 +20,16 @@ export interface EdiotingRepoState {
   editingRepo?: Repo;
   editingRepoConfig?: RepoConfig;
   branch?: string;
+  namespaces: string[];
+  languages: string[];
+
+  selectedNamespace?: string;
 }
 
-const initialState: EdiotingRepoState = {};
+const initialState: EdiotingRepoState = {
+  namespaces: [],
+  languages: []
+};
 
 export const editingRepoSlice = createSlice({
   name: 'editingRepo',
@@ -37,6 +44,15 @@ export const editingRepoSlice = createSlice({
     setBranch: (state, action: PayloadAction<string>) => {
       state.branch = action.payload;
     },
+    setSelectedNamespaces: (state, action: PayloadAction<string>) => {
+      state.selectedNamespace = action.payload;
+    },
+    setLanguages: (state, action: PayloadAction<string[]>) => {
+      state.languages = action.payload;
+    },
+    setNamespaces: (state, action: PayloadAction<string[]>) => {
+      state.namespaces = action.payload;
+    },
     closeEditingRepo: () => initialState
   }
 });
@@ -46,6 +62,9 @@ export const {
   setEditingRepoConfig,
   setEditingRepo,
   setBranch,
+  setSelectedNamespaces,
+  setLanguages,
+  setNamespaces,
   closeEditingRepo
 } = editingRepoSlice.actions;
 

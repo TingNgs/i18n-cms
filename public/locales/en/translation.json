@@ -26,6 +26,8 @@
   "Without push permission in this repo": "Without push permission in this repo",
   "Config file error": "Config file error",
 
+  "Fetching repo": "Fetching repo",
+
   "Choose branch": "Choose branch",
   "Recent branches": "Recent branches",
   "Base on": "Base on",
@@ -40,5 +42,6 @@
   "Fetching config": "Fetching config",
   "Creating branch": "Creating branch",
   "Updating config": "Updating config",
+  "Fetching namespaces and languages": "Fetching namespaces and languages",
   "Submit": "Submit"
 }

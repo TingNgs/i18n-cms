@@ -62,7 +62,7 @@ const RepoCard = ({ repo }: IProps) => {
       borderWidth={1}
       p="4">
       <Text color="blue.500">{repo.fullName}</Text>
-      {isLoading && <LoadingModal />}
+      {isLoading && <LoadingModal title={t('Fetching repo')} />}
     </Flex>
   );
 };

@@ -1,15 +1,13 @@
 import { memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Stack, Text } from '@chakra-ui/react';
 
 import { useAppSelector } from '../../redux/store';
 
 import BranchFormModal from './BranchFormModal';
+import Sidebar from './Namespaces';
 
 const Repo = () => {
-  const { t } = useTranslation();
-
   const navigate = useNavigate();
 
   const { editingRepo, branch } = useAppSelector(
@@ -25,8 +23,27 @@ const Repo = () => {
   }
 
   return (
-    <Flex>
-      {t('Repo')}
+    <Flex overflow="hidden">
+      <Sidebar />
+
+      <Stack flexGrow={1} overflow="scroll">
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+        <Text>1</Text>
+      </Stack>
 
       {!branch && <BranchFormModal repo={editingRepo} />}
     </Flex>

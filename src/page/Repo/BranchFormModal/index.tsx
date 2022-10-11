@@ -22,12 +22,15 @@ import { useTranslation } from 'react-i18next';
 import LoadingModal from '../../../component/LoadingModal';
 
 import { CONFIG_PATH, RECENT_BRANCHES_SIZE } from '../../../constants';
+import useGetLanguagesAndNamespaces from '../../../hooks/useGetLanguagesAndNamespaces';
 import {
   closeEditingRepo,
   Repo,
   setBranch,
   setEditingRepo,
-  setEditingRepoConfig
+  setEditingRepoConfig,
+  setLanguages,
+  setNamespaces
 } from '../../../redux/editingRepoSlice';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import {
@@ -65,12 +68,16 @@ const BranchFormModal = ({ repo }: IProps) => {
     useCreateGithubRefMutation();
   const [updateExistingRepo, { isLoading: isUpdateRepoLoading }] =
     useUpdateExistingRepoMutation();
+  const [getLanguagesAndNamespaces, { isLoading: isFetchingLngAndNsLoading }] =
+    useGetLanguagesAndNamespaces();
 
   const getLoadingTitle = () => {
     if (isFetchBranchLoading) return t('Fetching branch');
     if (isFetchConfigLoading) return t('Fetching config');
     if (isCreateRefLoading) return t('Creating branch');
     if (isUpdateRepoLoading) return t('Updating config');
+    if (isFetchingLngAndNsLoading)
+      return t('Fetching namespaces and languages');
     return undefined;
   };
 
@@ -129,6 +136,15 @@ const BranchFormModal = ({ repo }: IProps) => {
         }).unwrap();
         dispatch(setEditingRepo(updatedRepo));
       }
+
+      const { namespaces, languages } = await getLanguagesAndNamespaces({
+        repo,
+        repoConfig: repoConfig,
+        branch: branchName
+      });
+
+      dispatch(setNamespaces(namespaces));
+      dispatch(setLanguages(languages));
       dispatch(setEditingRepoConfig(repoConfig));
       dispatch(setBranch(branchName));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
