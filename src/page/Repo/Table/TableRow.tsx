@@ -1,8 +1,8 @@
-import { Text } from '@chakra-ui/react';
 import { CSSProperties, memo } from 'react';
 import { useAppSelector } from '../../../redux/store';
+import KeyCell from './KeyCell';
 import TableCell from './TableCell';
-import { Cell, Row } from './View';
+import { Row } from './View';
 
 const TableRow = ({
   index,
@@ -26,9 +26,7 @@ const TableRow = ({
   if (index === 0) return null;
   return (
     <Row style={style}>
-      <Cell position="sticky" left="0" zIndex={1}>
-        <Text fontWeight="bold">{key}</Text>
-      </Cell>
+      <KeyCell localeKey={key} index={index - 1} />
       {languages.map((language) => (
         <TableCell key={language} language={language} localeKey={key} />
       ))}

@@ -7,10 +7,13 @@ import { useAppSelector } from '../../redux/store';
 import BranchFormModal from './BranchFormModal';
 import Sidebar from './Namespaces';
 import Table from './Table';
-import useSaveEditing from '../../component/SaveEditingModal/useSaveEditing';
+import useSaveEditing, {
+  isSaveEnableSelector
+} from '../../component/SaveEditingModal/useSaveEditing';
 
 const Repo = () => {
   const navigate = useNavigate();
+  const isSaveEnable = useAppSelector(isSaveEnableSelector);
 
   const { editingRepo, branch } = useAppSelector((state) => ({
     editingRepo: state.EditingRepoReducer.editingRepo,
@@ -24,8 +27,7 @@ const Repo = () => {
   if (!editingRepo) {
     return null;
   }
-
-  const saveEditing = useSaveEditing();
+  const { saveEditing } = useSaveEditing();
 
   return (
     <Flex overflow="hidden" flex={1}>
@@ -33,7 +35,8 @@ const Repo = () => {
       <Flex flex={1} flexDir="column">
         <HStack>
           <Button
-            onClick={() => saveEditing({ commitMessage: 'Update locales' })}>
+            disabled={!isSaveEnable}
+            onClick={() => saveEditing({ commitMessage: 'Update locale' })}>
             Save
           </Button>
         </HStack>

@@ -113,6 +113,20 @@ export const editingRepoSlice = createSlice({
           localeKey
         ] = value;
     },
+    handleLocaleKeyOnChange: (
+      state,
+      action: PayloadAction<{ localeKey: string; value: string; index: number }>
+    ) => {
+      const { localeKey, value, index } = action.payload;
+      if (!state.selectedNamespace) return;
+      const namespace = state.selectedNamespace;
+      state.localeKeys[namespace][index] = value;
+      for (const language of state.languages) {
+        state.modifiedLocalesData[namespace][language][value] =
+          state.modifiedLocalesData[namespace][language][localeKey];
+        delete state.modifiedLocalesData[namespace][language][localeKey];
+      }
+    },
     closeEditingRepo: () => initialState
   }
 });
@@ -128,6 +142,7 @@ export const {
   setSelectedLanguages,
   setLocalesDataByNamespace,
   handleLocaleOnChange,
+  handleLocaleKeyOnChange,
   closeEditingRepo
 } = editingRepoSlice.actions;
 
