@@ -52,7 +52,9 @@ export const dataToFiles = ({
 
   namespaces.forEach((namespace) => {
     languages.forEach((language) => {
-      const translation = data?.[namespace]?.[language] || { hi: 'hi' };
+      const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
+      if (!translation) return;
+
       files[getLocalPath({ language, namespace, repoConfig })] =
         fileType === 'json'
           ? dataToJson(translation)

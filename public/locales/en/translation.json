@@ -43,5 +43,7 @@
   "Creating branch": "Creating branch",
   "Updating config": "Updating config",
   "Fetching namespaces and languages": "Fetching namespaces and languages",
-  "Submit": "Submit"
+  "Submit": "Submit",
+
+  "Saved successfully": "Saved successfully, you can checkout your commit <a href='{{link}}' target='_blank' rel='noopener noreferrer'>here</a>"
 }

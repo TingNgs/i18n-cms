@@ -42,7 +42,7 @@ const TableCell = ({
 
   return (
     <Cell>
-      <Editable defaultValue={value} w="100%" onSubmit={onSubmit}>
+      <Editable defaultValue={value} w="100%" onChange={onSubmit}>
         <EditablePreview w="100%" overflow="hidden" noOfLines={2} />
         <EditableInput />
       </Editable>

@@ -8,7 +8,8 @@ import {
   HStack,
   Radio,
   RadioGroup,
-  useToast
+  useToast,
+  Select
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -56,6 +57,7 @@ const CreateNewRepoForm = () => {
     visibility: typeof REPOSITORY_VISIBILITY[number];
     languages: string[];
     namespaces: string[];
+    defaultNs: string;
   }>();
 
   const onSubmit = handleSubmit(async (values) => {
@@ -110,7 +112,11 @@ const CreateNewRepoForm = () => {
     }
   });
 
-  const [owner, basePath] = watch(['owner', 'basePath']);
+  const [owner, basePath, namespaces] = watch([
+    'owner',
+    'basePath',
+    'namespaces'
+  ]);
 
   const getLoadingTitle = useCallback(() => {
     if (isCreateRepoLoading) return t('Creating repository');
@@ -202,6 +208,14 @@ const CreateNewRepoForm = () => {
               <TagInput value={value} onChange={onChange} />
             )}
           />
+
+          <Select {...register('defaultNs')}>
+            {namespaces?.map((namespace) => (
+              <option value={namespace} key={namespace}>
+                {namespace}
+              </option>
+            ))}
+          </Select>
 
           <Button type="submit" isLoading={!owner}>
             {t('Create')}

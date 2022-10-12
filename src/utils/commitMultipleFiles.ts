@@ -172,9 +172,6 @@ export default async function (octokit: Octokit, opts: Options) {
     }
   }
 
-  // Create blobs
-  const commits = [];
-
   const message = change.message;
   if (!message) {
     throw new Error(`change[].message is a required parameter`);
@@ -280,7 +277,6 @@ export default async function (octokit: Octokit, opts: Options) {
 
   // Update the base tree if we have another commit to make
   baseTree = commit.sha;
-  commits.push(commit);
 
   // Create a ref that points to that tree
   let action: 'createRef' | 'updateRef' = 'createRef';
@@ -302,5 +298,5 @@ export default async function (octokit: Octokit, opts: Options) {
 
   // Return the new branch name so that we can use it later
   // e.g. to create a pull request
-  return { commits };
+  return { commit };
 }

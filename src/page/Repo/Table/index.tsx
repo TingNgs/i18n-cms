@@ -70,6 +70,7 @@ const LocaleTable = () => {
       <AutoSizer>
         {({ height, width }) => (
           <List
+            key={namespace}
             height={height}
             itemCount={listSize + 1}
             itemSize={CELL_HEIGHT}
