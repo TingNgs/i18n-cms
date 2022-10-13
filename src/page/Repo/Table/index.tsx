@@ -56,14 +56,13 @@ const LocaleTable = () => {
         namespace: namespace
       });
       if (!data) return;
-
       dispatch(setLocalesDataByNamespace({ namespace, data }));
     };
 
     if (namespace && !modifiedLocalesData[namespace]) {
       fetchNamespaceData();
     }
-  }, [namespace]);
+  }, [namespace, modifiedLocalesData]);
 
   return (
     <Flex flexGrow={1} overflow="scroll">

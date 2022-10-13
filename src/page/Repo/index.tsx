@@ -1,18 +1,19 @@
-import { memo, useEffect } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Flex, HStack } from '@chakra-ui/react';
 
-import { useAppSelector } from '../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 
 import BranchFormModal from './BranchFormModal';
 import Sidebar from './Namespaces';
 import Table from './Table';
-import useSaveEditing, {
-  isSaveEnableSelector
-} from '../../component/SaveEditingModal/useSaveEditing';
+import { isSaveEnableSelector } from './SaveEditingModal/useSaveEditing';
+import SaveEditingModal from './SaveEditingModal';
+import { setSaveModalOpen } from '../../redux/editingRepoSlice';
 
 const Repo = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const isSaveEnable = useAppSelector(isSaveEnableSelector);
 
   const { editingRepo, branch } = useAppSelector((state) => ({
@@ -24,25 +25,27 @@ const Repo = () => {
     if (!editingRepo) navigate('/dashboard');
   }, [editingRepo]);
 
+  const openSaveModal = useCallback(() => {
+    dispatch(setSaveModalOpen(true));
+  }, []);
+
   if (!editingRepo) {
     return null;
   }
-  const { saveEditing } = useSaveEditing();
 
   return (
     <Flex overflow="hidden" flex={1}>
       <Sidebar />
       <Flex flex={1} flexDir="column">
         <HStack>
-          <Button
-            disabled={!isSaveEnable}
-            onClick={() => saveEditing({ commitMessage: 'Update locale' })}>
+          <Button disabled={!isSaveEnable} onClick={openSaveModal}>
             Save
           </Button>
         </HStack>
 
         <Table />
       </Flex>
+      <SaveEditingModal />
 
       {!branch && <BranchFormModal repo={editingRepo} />}
     </Flex>

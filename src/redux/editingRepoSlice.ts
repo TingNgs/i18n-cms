@@ -38,6 +38,8 @@ export interface EdiotingRepoState {
   localeKeys: {
     [namespace: string]: string[];
   };
+
+  isSaveModalOpen: boolean;
 }
 
 const initialState: EdiotingRepoState = {
@@ -46,7 +48,8 @@ const initialState: EdiotingRepoState = {
   selectedLanguages: [],
   originalLocalesData: {},
   modifiedLocalesData: {},
-  localeKeys: {}
+  localeKeys: {},
+  isSaveModalOpen: false
 };
 
 export const editingRepoSlice = createSlice({
@@ -127,6 +130,28 @@ export const editingRepoSlice = createSlice({
         delete state.modifiedLocalesData[namespace][language][localeKey];
       }
     },
+    saveLocaleSuccess: (
+      state,
+      action: PayloadAction<{
+        [namespace: string]: { [lng: string]: { [key: string]: string } };
+      }>
+    ) => {
+      const data = action.payload;
+      state.isSaveModalOpen = false;
+      for (const namespace in data) {
+        for (const language in data[namespace]) {
+          state.originalLocalesData[namespace][language] = {
+            ...data[namespace][language]
+          };
+          state.modifiedLocalesData[namespace][language] = {
+            ...data[namespace][language]
+          };
+        }
+      }
+    },
+    setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
+      state.isSaveModalOpen = action.payload;
+    },
     closeEditingRepo: () => initialState
   }
 });
@@ -143,6 +168,8 @@ export const {
   setLocalesDataByNamespace,
   handleLocaleOnChange,
   handleLocaleKeyOnChange,
+  saveLocaleSuccess,
+  setSaveModalOpen,
   closeEditingRepo
 } = editingRepoSlice.actions;
 

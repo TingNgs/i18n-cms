@@ -108,6 +108,10 @@ const BranchFormModal = ({ repo }: IProps) => {
         branch: action === 'create' ? baseOn : existingBranchName
       }).unwrap();
 
+      if (action === 'existing' && branch.protection.enabled) {
+        throw new Error('Protected branch');
+      }
+
       const repoContent = await getGithubContent({
         repo: repo.repo,
         owner: repo.owner,
@@ -151,7 +155,25 @@ const BranchFormModal = ({ repo }: IProps) => {
       dispatch(setBranch(branchName));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
-      if (e?.message === 'Branch not found') {
+      if (e?.message === 'Protected branch') {
+        if (isRecentBranch) {
+          toast({
+            title: t('Protected branch not supported'),
+            status: 'error'
+          });
+          const updatedRepo = await updateExistingRepo({
+            ...repo,
+            recentBranches: repo.recentBranches?.filter(
+              (branchName) => branchName !== existingBranchName
+            )
+          }).unwrap();
+          dispatch(setEditingRepo(updatedRepo));
+        } else {
+          setError('existingBranchName', {
+            message: t('Protected branch not supported')
+          });
+        }
+      } else if (e?.message === 'Branch not found') {
         if (isRecentBranch) {
           const updatedRepo = await updateExistingRepo({
             ...repo,
