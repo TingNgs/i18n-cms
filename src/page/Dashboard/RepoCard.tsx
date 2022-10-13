@@ -15,9 +15,10 @@ import LoadingModal from '../../component/LoadingModal';
 
 interface IProps {
   repo: Repo;
+  refetch: () => void;
 }
 
-const RepoCard = ({ repo }: IProps) => {
+const RepoCard = ({ repo, refetch }: IProps) => {
   const { t } = useTranslation('dashboard');
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const RepoCard = ({ repo }: IProps) => {
       });
       if (result.error) {
         await removeExistingRepo(repo);
-        toast({ title: result.error, status: 'error' });
+        refetch();
         toast({ title: t('Please import repo again'), status: 'error' });
       } else if (result.data) {
         const { repo: validRepo } = result.data;

@@ -7,7 +7,7 @@ import RepoCard from './RepoCard';
 
 const Dashboard = () => {
   const { t } = useTranslation('dashboard');
-  const { data } = useGetExistingRepoQuery(undefined);
+  const { data, refetch } = useGetExistingRepoQuery(undefined);
 
   return (
     <Stack alignItems="center">
@@ -15,7 +15,9 @@ const Dashboard = () => {
         <AddRepoButton />
         <Text fontSize="2xl">{t('Existing repository')}</Text>
         {data ? (
-          data.map((repo) => <RepoCard key={repo.fullName} repo={repo} />)
+          data.map((repo) => (
+            <RepoCard key={repo.fullName} refetch={refetch} repo={repo} />
+          ))
         ) : (
           <>
             <Skeleton h="40px" />
