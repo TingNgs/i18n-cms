@@ -146,7 +146,8 @@ const BranchFormModal = ({ repo }: IProps) => {
       const { namespaces, languages } = await getLanguagesAndNamespaces({
         repo,
         repoConfig: repoConfig,
-        branch: branchName
+        branch: branchName,
+        rootSha: branch.commit.commit.tree.sha
       });
 
       dispatch(setNamespaces(namespaces));
