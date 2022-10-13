@@ -46,7 +46,8 @@ const useSaveEditing = () => {
   const { getState } = useAppStore();
   const toast = useToast();
   const dispatch = useAppDispatch();
-  const [t] = useTranslation();
+  const { t } = useTranslation();
+  const { t: repoT } = useTranslation('repo');
   const [commitGithubFiles] = useCommitGithubFilesMutation();
   const [isLoading, setLoading] = useState(false);
 
@@ -111,7 +112,7 @@ const useSaveEditing = () => {
           title: (
             <Text
               dangerouslySetInnerHTML={{
-                __html: t('Saved successfully', {
+                __html: repoT('Saved successfully', {
                   link: commit.html_url
                 })
               }}

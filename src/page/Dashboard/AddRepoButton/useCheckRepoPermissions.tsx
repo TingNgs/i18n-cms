@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Repo } from '../redux/editingRepoSlice';
-import { useLazyGetGithubRepoQuery } from '../redux/services/octokitApi';
+import { Repo } from '../../../redux/editingRepoSlice';
+import { useLazyGetGithubRepoQuery } from '../../../redux/services/octokitApi';
 
 const useCheckRepoPermissions = () => {
   const { t } = useTranslation();
+  const { t: dashboardT } = useTranslation('dashboard');
 
   const [getGithubRepo] = useLazyGetGithubRepoQuery();
 
@@ -26,7 +27,7 @@ const useCheckRepoPermissions = () => {
           owner: owner
         }).unwrap();
         if (!githubRepo.permissions?.push) {
-          return { error: t('Without push permission in this repo') };
+          return { error: dashboardT('Without push permission in this repo') };
         }
 
         return {

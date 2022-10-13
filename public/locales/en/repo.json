@@ -1,0 +1,24 @@
+{
+  "Choose branch": "Choose branch",
+  "Recent branches": "Recent branches",
+  "Base on": "Base on",
+  "Use existing branch": "Use existing branch",
+  "Create new branch": "Create new branch",
+  "New branch name": "New branch name",
+
+  "Existing branch name": "Existing branch name",
+  "Branch not found": "Branch not found",
+  "Config file not found in this branch": "Config file not found in this branch",
+  "Branch already exists": "Branch already exists",
+  "Protected branch not supported": "Protected branch not supported",
+
+  "Fetching branch": "Fetching branch",
+  "Fetching config": "Fetching config",
+  "Creating branch": "Creating branch",
+  "Updating config": "Updating config",
+  "Fetching namespaces and languages": "Fetching namespaces and languages",
+
+  "Commit message": "Commit message",
+
+  "Saved successfully": "Saved successfully, you can checkout your commit <a href='{{link}}' target='_blank' rel='noopener noreferrer'>here</a>"
+}

@@ -1,8 +1,11 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState, useAppSelector } from '../redux/store';
+import { RootState, useAppSelector } from '../../../redux/store';
 
-import { useLazyGetGithubContentQuery } from '../redux/services/octokitApi';
-import { decodeGithubFileContent, getLocalPath } from '../utils/fileHelper';
+import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
+import {
+  decodeGithubFileContent,
+  getLocalPath
+} from '../../../utils/fileHelper';
 
 const propsSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.editingRepo?.repo,

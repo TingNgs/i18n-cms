@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import LoadingModal from '../../../component/LoadingModal';
 
 import { CONFIG_PATH, RECENT_BRANCHES_SIZE } from '../../../constants';
-import useGetLanguagesAndNamespaces from '../../../hooks/useGetLanguagesAndNamespaces';
+import useGetLanguagesAndNamespaces from '../hooks/useGetLanguagesAndNamespaces';
 import {
   closeEditingRepo,
   Repo,
@@ -56,7 +56,8 @@ interface FormValues {
 
 const BranchFormModal = ({ repo }: IProps) => {
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
+  const { t } = useTranslation('repo');
+  const { t: commonT } = useTranslation();
   const toast = useToast();
 
   const [isLoading, setLoading] = useState(false);
@@ -200,7 +201,7 @@ const BranchFormModal = ({ repo }: IProps) => {
           message: t('Branch already exists')
         });
       } else {
-        toast({ title: t('Something went wrong'), status: 'error' });
+        toast({ title: commonT('Something went wrong'), status: 'error' });
       }
     } finally {
       setLoading(false);
@@ -311,7 +312,7 @@ const BranchFormModal = ({ repo }: IProps) => {
                     </>
                   )}
                   <Button isLoading={isLoading} type="submit">
-                    {t('Submit')}
+                    {commonT('Submit')}
                   </Button>
                 </Stack>
               </form>

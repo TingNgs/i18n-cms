@@ -18,27 +18,28 @@ import {
   LOCALES_FILE_STRUCTURE,
   LOCALES_FILE_TYPE,
   REPOSITORY_VISIBILITY
-} from '../../constants';
+} from '../../../constants';
 import {
   useCreateGithubRepoMutation,
   useCommitGithubFilesMutation
-} from '../../redux/services/octokitApi';
+} from '../../../redux/services/octokitApi';
 
-import TagInput from '../TagInput';
-import { dataToFiles } from '../../utils/fileHelper';
-import OwnerSelect, { Owner } from '../OwnerSelect';
-import LoadingModal from '../LoadingModal';
+import TagInput from '../../../component/TagInput';
+import { dataToFiles } from '../../../utils/fileHelper';
+import OwnerSelect, { Owner } from '../../../component/OwnerSelect';
+import LoadingModal from '../../../component/LoadingModal';
 import {
   setEditingRepo,
   setEditingRepoConfig
-} from '../../redux/editingRepoSlice';
-import { useAppDispatch } from '../../redux/store';
-import { useUpdateExistingRepoMutation } from '../../redux/services/firestoreApi';
+} from '../../../redux/editingRepoSlice';
+import { useAppDispatch } from '../../../redux/store';
+import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 
 const CreateNewRepoForm = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { t } = useTranslation();
+  const { t: dashboardT } = useTranslation('dashboard');
+  const { t: commonT } = useTranslation('common');
   const dispatch = useAppDispatch();
   const [isLoading, setLoading] = useState(false);
 
@@ -71,7 +72,7 @@ const CreateNewRepoForm = () => {
       })
         .unwrap()
         .catch((e) => {
-          toast({ title: t('Create new repo fail'), status: 'error' });
+          toast({ title: dashboardT('Create new repo fail'), status: 'error' });
           throw e;
         });
 
@@ -88,7 +89,7 @@ const CreateNewRepoForm = () => {
           })
         }
       }).catch((e) => {
-        toast({ title: t('Setup new repo fail'), status: 'error' });
+        toast({ title: dashboardT('Setup new repo fail'), status: 'error' });
         throw e;
       });
       await updateExistingRepo({
@@ -119,8 +120,8 @@ const CreateNewRepoForm = () => {
   ]);
 
   const getLoadingTitle = useCallback(() => {
-    if (isCreateRepoLoading) return t('Creating repository');
-    if (isCommitLoading) return t('Setting up repository');
+    if (isCreateRepoLoading) return dashboardT('Creating repository');
+    if (isCommitLoading) return dashboardT('Setting up repository');
     return undefined;
   }, [isCreateRepoLoading, isCommitLoading]);
 
@@ -128,9 +129,9 @@ const CreateNewRepoForm = () => {
     <>
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
-          <Text fontSize="2xl">{t('Create new i18n repository')}</Text>
+          <Text fontSize="2xl">{dashboardT('Create new i18n repository')}</Text>
 
-          <FormLabel>{t('Owner')}</FormLabel>
+          <FormLabel>{commonT('Owner')}</FormLabel>
           <Controller
             name="owner"
             control={control}
@@ -140,7 +141,7 @@ const CreateNewRepoForm = () => {
             )}
           />
 
-          <FormLabel>{t('Repository name')}</FormLabel>
+          <FormLabel>{commonT('Repository name')}</FormLabel>
           <Input
             {...register('name')}
             placeholder="xxxxx-locales"
@@ -158,10 +159,10 @@ const CreateNewRepoForm = () => {
             </HStack>
           </RadioGroup>
 
-          <FormLabel>{t('Base path')}</FormLabel>
+          <FormLabel>{commonT('Base path')}</FormLabel>
           <Input {...register('basePath')} placeholder="/" name="basePath" />
 
-          <FormLabel>{t('File structure')}</FormLabel>
+          <FormLabel>{commonT('File structure')}</FormLabel>
           <RadioGroup defaultValue={LOCALES_FILE_STRUCTURE[0]}>
             <Stack flexWrap="wrap">
               {LOCALES_FILE_STRUCTURE.map((value) => (
@@ -176,7 +177,7 @@ const CreateNewRepoForm = () => {
             </Stack>
           </RadioGroup>
 
-          <FormLabel>{t('File type')}</FormLabel>
+          <FormLabel>{commonT('File type')}</FormLabel>
           <RadioGroup defaultValue={LOCALES_FILE_TYPE[0]}>
             <HStack spacing={4}>
               {LOCALES_FILE_TYPE.map((value) => (
@@ -187,7 +188,7 @@ const CreateNewRepoForm = () => {
             </HStack>
           </RadioGroup>
 
-          <FormLabel>{t('Languages')}</FormLabel>
+          <FormLabel>{commonT('Languages')}</FormLabel>
           <Controller
             name="languages"
             control={control}
@@ -198,7 +199,7 @@ const CreateNewRepoForm = () => {
             )}
           />
 
-          <FormLabel>{t('Namespaces')}</FormLabel>
+          <FormLabel>{commonT('Namespaces')}</FormLabel>
           <Controller
             name="namespaces"
             control={control}
@@ -218,7 +219,7 @@ const CreateNewRepoForm = () => {
           </Select>
 
           <Button type="submit" isLoading={!owner}>
-            {t('Create')}
+            {commonT('Create')}
           </Button>
         </Stack>
       </form>

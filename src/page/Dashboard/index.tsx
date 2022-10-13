@@ -1,12 +1,12 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Skeleton, Stack, Text } from '@chakra-ui/react';
-import AddRepoButton from '../../component/AddRepoButton';
+import AddRepoButton from './AddRepoButton';
 import { useGetExistingRepoQuery } from '../../redux/services/firestoreApi';
 import RepoCard from './RepoCard';
 
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('dashboard');
   const { data } = useGetExistingRepoQuery(undefined);
 
   return (

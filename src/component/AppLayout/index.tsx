@@ -1,4 +1,5 @@
 import { PropsWithChildren, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Flex, Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +14,7 @@ import LoadingModal from '../LoadingModal';
 
 const AppLayout = ({ children }: PropsWithChildren) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
   const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation();
 
@@ -39,9 +41,9 @@ const AppLayout = ({ children }: PropsWithChildren) => {
     <Flex direction="column" h="100%">
       <Flex align="flex-end" justifyContent="flex-end" padding="4">
         {isAuth ? (
-          <Button onClick={onLogoutClicked}>Logout</Button>
+          <Button onClick={onLogoutClicked}>{t('Logout')}</Button>
         ) : (
-          <Button onClick={onLoginClicked}>Login with Github</Button>
+          <Button onClick={onLoginClicked}>{t('Login with Github')}</Button>
         )}
       </Flex>
 

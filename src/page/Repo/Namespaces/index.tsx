@@ -1,8 +1,10 @@
 import { Stack, Text } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../../redux/store';
 import Namespace from './Namespace';
 
 const Namespaces = () => {
+  const { t } = useTranslation();
   const namespaces = useAppSelector(
     (state) => state.EditingRepoReducer.namespaces
   );
@@ -11,7 +13,7 @@ const Namespaces = () => {
   );
   return (
     <Stack overflow="scroll" w={150}>
-      <Text p={2}>Namespaces</Text>
+      <Text p={2}>{t('Namespaces')}</Text>
       <Stack spacing={0}>
         {namespaces.map((namespace) => (
           <Namespace

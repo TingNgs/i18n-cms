@@ -1,10 +1,10 @@
 import path from 'path-browserify';
 import { useState } from 'react';
-import { Repo, RepoConfig } from '../redux/editingRepoSlice';
+import { Repo, RepoConfig } from '../../../redux/editingRepoSlice';
 import {
   useLazyGetGithubContentQuery,
   useLazyGetGithubTreeQuery
-} from '../redux/services/octokitApi';
+} from '../../../redux/services/octokitApi';
 
 const useGetLanguagesAndNamespaces = () => {
   const [isLoading, setLoading] = useState(false);

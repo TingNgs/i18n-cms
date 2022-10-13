@@ -1,10 +1,10 @@
 import { memo, useEffect, HTMLProps, forwardRef } from 'react';
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Spinner, Text } from '@chakra-ui/react';
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import useGetEditingRepoLocalByNs from '../../../hooks/useGetEditingRepoLocalByNs';
+import useGetEditingRepoLocalByNs from '../hooks/useGetEditingRepoLocalByNs';
 import { setLocalesDataByNamespace } from '../../../redux/editingRepoSlice';
 
 import TableRow from './TableRow';
@@ -63,22 +63,29 @@ const LocaleTable = () => {
       fetchNamespaceData();
     }
   }, [namespace, modifiedLocalesData]);
+  if (!namespace) return null;
 
   return (
     <Flex flexGrow={1} overflow="scroll">
-      <AutoSizer>
-        {({ height, width }) => (
-          <List
-            key={namespace}
-            height={height}
-            itemCount={listSize + 1}
-            itemSize={CELL_HEIGHT}
-            width={width}
-            innerElementType={Inner}>
-            {TableRow}
-          </List>
-        )}
-      </AutoSizer>
+      {listSize > 0 ? (
+        <AutoSizer>
+          {({ height, width }) => (
+            <List
+              key={namespace}
+              height={height}
+              itemCount={listSize + 1}
+              itemSize={CELL_HEIGHT}
+              width={width}
+              innerElementType={Inner}>
+              {TableRow}
+            </List>
+          )}
+        </AutoSizer>
+      ) : (
+        <Flex flex="1" alignItems="center" justifyContent="center">
+          <Spinner />
+        </Flex>
+      )}
     </Flex>
   );
 };

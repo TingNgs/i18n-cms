@@ -12,6 +12,7 @@ import {
   Flex
 } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import CreateNewRepoForm from './CreateNewRepoForm';
 import ImportGithubRepoForm from './ImportGithubRepoForm';
@@ -24,6 +25,7 @@ const FORM_BUTTON_LIST = [
 const AddRepoButton = () => {
   const [form, setForm] = useState<'new' | 'import' | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { t } = useTranslation('dashboard');
 
   const renderForm = useCallback(() => {
     switch (form) {
@@ -68,7 +70,7 @@ const AddRepoButton = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>Add Repo</Button>
+      <Button onClick={onOpen}>{t('Add repository')}</Button>
       <Modal
         isOpen={isOpen}
         onClose={() => {

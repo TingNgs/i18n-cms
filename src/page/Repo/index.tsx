@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BranchFormModal from './BranchFormModal';
 import Sidebar from './Namespaces';
 import Table from './Table';
-import { isSaveEnableSelector } from './SaveEditingModal/useSaveEditing';
+import { isSaveEnableSelector } from './hooks/useSaveEditing';
 import SaveEditingModal from './SaveEditingModal';
 import { setSaveModalOpen } from '../../redux/editingRepoSlice';
 

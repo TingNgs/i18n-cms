@@ -5,7 +5,7 @@ import { isEqual } from 'lodash-es';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import useCheckRepoPermissions from '../../hooks/useCheckRepoPermissions';
+import useCheckRepoPermissions from './AddRepoButton/useCheckRepoPermissions';
 import { Repo, setEditingRepo } from '../../redux/editingRepoSlice';
 import {
   useUpdateExistingRepoMutation,
@@ -18,7 +18,7 @@ interface IProps {
 }
 
 const RepoCard = ({ repo }: IProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('dashboard');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();

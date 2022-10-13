@@ -8,7 +8,8 @@ import {
   FormLabel,
   Stack,
   Input,
-  Button
+  Button,
+  useToast
 } from '@chakra-ui/react';
 import { noop } from 'lodash-es';
 import { useCallback } from 'react';
@@ -16,11 +17,13 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { setSaveModalOpen } from '../../../redux/editingRepoSlice';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import useSaveEditing from './useSaveEditing';
+import useSaveEditing from '../hooks/useSaveEditing';
 
 const SaveEditingModal = () => {
   const { t } = useTranslation();
+  const { t: repoT } = useTranslation('repo');
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const { saveEditing, isLoading } = useSaveEditing();
   const { register, handleSubmit } = useForm<{ commitMessage: string }>();
 
@@ -32,10 +35,13 @@ const SaveEditingModal = () => {
   }, []);
 
   const onSubmit = handleSubmit(async (values) => {
-    console.log(values);
-    await saveEditing({
-      commitMessage: values.commitMessage || 'Update locale'
-    });
+    try {
+      await saveEditing({
+        commitMessage: values.commitMessage || 'Update locale'
+      });
+    } catch {
+      toast({ title: t('Something went wrong'), status: 'error' });
+    }
   });
 
   return (
@@ -47,7 +53,7 @@ const SaveEditingModal = () => {
         <ModalBody display="flex" flexDir={{ base: 'column', md: 'row' }}>
           <form onSubmit={onSubmit} style={{ width: '100%' }}>
             <Stack>
-              <FormLabel>{t('Commit message')}</FormLabel>
+              <FormLabel>{repoT('Commit message')}</FormLabel>
               <Input
                 {...register('commitMessage')}
                 placeholder="Update locale"

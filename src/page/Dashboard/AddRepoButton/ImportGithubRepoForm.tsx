@@ -5,15 +5,15 @@ import { useForm } from 'react-hook-form';
 import gh from 'parse-github-url';
 import { useNavigate } from 'react-router-dom';
 
-import LoadingModal from '../LoadingModal';
-import { setEditingRepo } from '../../redux/editingRepoSlice';
-import { useAppDispatch } from '../../redux/store';
-import { useUpdateExistingRepoMutation } from '../../redux/services/firestoreApi';
-import useCheckRepoPermissions from '../../hooks/useCheckRepoPermissions';
+import LoadingModal from '../../../component/LoadingModal';
+import { setEditingRepo } from '../../../redux/editingRepoSlice';
+import { useAppDispatch } from '../../../redux/store';
+import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
+import useCheckRepoPermissions from './useCheckRepoPermissions';
 
 const CreateNewRepoForm = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation('dashboard');
   const dispatch = useAppDispatch();
   const checkRepoPermissions = useCheckRepoPermissions();
   const [updateExistingRepo] = useUpdateExistingRepoMutation();

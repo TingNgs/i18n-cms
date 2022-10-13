@@ -1,0 +1,18 @@
+{
+  "Add repository": "Add repository",
+  "Existing repository": "Existing repository",
+  "Fetching repo": "Fetching repo",
+  "Please import repo again": "Please import repo again",
+
+  "Create new i18n repository": "Create new i18n repository",
+  "Creating repository": "Creating repository",
+  "Setting up repository": "Setting up repository",
+  "Create new repo fail": "Create new repository fail",
+  "Setup new repo fail": "Setup new repository fail, please delete repository and create again",
+
+  "Import existing i18n repository": "Import existing i18n repository",
+  "Github repository url": "Github repository url",
+  "Import": "Import",
+  "Invalid github url": "Invalid github url",
+  "Without push permission in this repo": "Without push permission in this repo"
+}
