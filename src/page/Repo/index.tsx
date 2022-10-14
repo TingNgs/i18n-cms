@@ -7,14 +7,14 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import BranchFormModal from './BranchFormModal';
 import Sidebar from './Namespaces';
 import Table from './Table';
-import { isSaveEnableSelector } from './hooks/useSaveEditing';
+import { isDataChangedSelector } from './hooks/useSaveEditing';
 import SaveEditingModal from './SaveEditingModal';
 import { setSaveModalOpen } from '../../redux/editingRepoSlice';
 
 const Repo = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isSaveEnable = useAppSelector(isSaveEnableSelector);
+  const isDataChanged = useAppSelector(isDataChangedSelector);
 
   const { editingRepo, branch } = useAppSelector((state) => ({
     editingRepo: state.EditingRepoReducer.editingRepo,
@@ -38,7 +38,7 @@ const Repo = () => {
       <Sidebar />
       <Flex flex={1} flexDir="column">
         <HStack>
-          <Button disabled={!isSaveEnable} onClick={openSaveModal}>
+          <Button disabled={!isDataChanged} onClick={openSaveModal}>
             Save
           </Button>
         </HStack>

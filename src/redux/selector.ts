@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
+import { groupBy, pickBy } from 'lodash-es';
 import { RootState } from './store';
 
 export const isAuthSelector = createSelector(
@@ -6,11 +7,13 @@ export const isAuthSelector = createSelector(
   (authState) => authState === 'signIn'
 );
 
-export const localeKeysSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.localeKeys,
-  (state: RootState, namespace?: string) => namespace,
-  (localeKeys, namespace) => {
-    if (!localeKeys || !namespace) return [];
-    return localeKeys[namespace];
+export const duplicatedKeySelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
+  (state: RootState, namespace?: string) =>
+    namespace || state.EditingRepoReducer.selectedNamespace,
+  (modifiedLocalesData, namespace) => {
+    if (!namespace) return {};
+    const keys = modifiedLocalesData[namespace]?.map(({ key }) => key);
+    return pickBy(groupBy(keys), (value) => value.length > 1);
   }
 );

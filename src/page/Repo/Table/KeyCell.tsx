@@ -1,28 +1,40 @@
 import { memo, useCallback } from 'react';
-import { Editable, EditableInput, EditablePreview } from '@chakra-ui/react';
+import {
+  Editable,
+  EditableInput,
+  EditablePreview,
+  Flex,
+  Tooltip
+} from '@chakra-ui/react';
+import { WarningIcon } from '@chakra-ui/icons';
+import { useTranslation } from 'react-i18next';
 
-import { Cell } from './View';
+import { CELL_PROPS } from './constants';
 import { useAppDispatch } from '../../../redux/store';
 import { handleLocaleKeyOnChange } from '../../../redux/editingRepoSlice';
 
 const TableCell = ({
   index,
-  localeKey
+  localeKey,
+  isDuplicated
 }: {
   index: number;
   localeKey: string;
+  isDuplicated: boolean;
 }) => {
+  const { t } = useTranslation('repo');
   const dispatch = useAppDispatch();
 
   const onSubmit = useCallback(
     (value: string) => {
-      dispatch(handleLocaleKeyOnChange({ value, localeKey, index }));
+      if (value === localeKey) return;
+      dispatch(handleLocaleKeyOnChange({ value, index }));
     },
     [localeKey, index]
   );
 
   return (
-    <Cell position="sticky" left="0" zIndex={1}>
+    <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1} gap={1}>
       <Editable defaultValue={localeKey} w="100%" onChange={onSubmit}>
         <EditablePreview
           w="100%"
@@ -32,7 +44,13 @@ const TableCell = ({
         />
         <EditableInput />
       </Editable>
-    </Cell>
+
+      {isDuplicated && (
+        <Tooltip hasArrow label={t('Duplicated key')} background="red.500">
+          <WarningIcon w="4" h="4" color="red.500" />
+        </Tooltip>
+      )}
+    </Flex>
   );
 };
 

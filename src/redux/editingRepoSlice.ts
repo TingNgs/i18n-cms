@@ -1,3 +1,4 @@
+import { uniqueId } from 'lodash-es';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
@@ -17,6 +18,12 @@ export interface Repo {
   recentBranches?: string[];
 }
 
+export interface ModifiedLocalesData {
+  id: string;
+  key: string;
+  value: { [lng: string]: string };
+}
+
 export interface EdiotingRepoState {
   editingRepo?: Repo;
   editingRepoConfig?: RepoConfig;
@@ -32,11 +39,7 @@ export interface EdiotingRepoState {
   };
 
   modifiedLocalesData: {
-    [namespace: string]: { [lng: string]: { [key: string]: string } };
-  };
-
-  localeKeys: {
-    [namespace: string]: string[];
+    [namespace: string]: ModifiedLocalesData[];
   };
 
   isSaveModalOpen: boolean;
@@ -48,7 +51,6 @@ const initialState: EdiotingRepoState = {
   selectedLanguages: [],
   originalLocalesData: {},
   modifiedLocalesData: {},
-  localeKeys: {},
   isSaveModalOpen: false
 };
 
@@ -85,50 +87,61 @@ export const editingRepoSlice = createSlice({
       }>
     ) => {
       const { namespace, data } = action.payload;
-      state.modifiedLocalesData[namespace] = data;
       state.originalLocalesData[namespace] = data;
-
       const defaultNs = state.editingRepoConfig?.defaultNs;
 
       let keySet = new Set<string>(
         defaultNs ? Object.keys(data[defaultNs]) : []
       );
-
       state.languages.forEach((language) => {
         keySet = new Set([
           ...Array.from(keySet),
           ...Object.keys(data[language])
         ]);
       });
-      state.localeKeys[namespace] = Array.from(keySet);
+
+      state.modifiedLocalesData[namespace] = Array.from(keySet).map((key) => ({
+        id: uniqueId(namespace),
+        key,
+        value: state.languages.reduce<{ [lng: string]: string }>((acc, cur) => {
+          acc[cur] = data[cur][key];
+          return acc;
+        }, {})
+      }));
+    },
+    setNamespaceLocales: (
+      state,
+      action: PayloadAction<{
+        data: ModifiedLocalesData[];
+        namespace: string;
+      }>
+    ) => {
+      const { namespace, data } = action.payload;
+      state.modifiedLocalesData[namespace] = data;
     },
     handleLocaleOnChange: (
       state,
       action: PayloadAction<{
         language: string;
-        localeKey: string;
+        index: number;
         value: string;
       }>
     ) => {
-      const { language, localeKey, value } = action.payload;
+      const { language, index, value } = action.payload;
       if (state.selectedNamespace)
-        state.modifiedLocalesData[state.selectedNamespace][language][
-          localeKey
+        state.modifiedLocalesData[state.selectedNamespace][index]['value'][
+          language
         ] = value;
     },
     handleLocaleKeyOnChange: (
       state,
-      action: PayloadAction<{ localeKey: string; value: string; index: number }>
+      action: PayloadAction<{ value: string; index: number }>
     ) => {
-      const { localeKey, value, index } = action.payload;
+      const { value, index } = action.payload;
       if (!state.selectedNamespace) return;
       const namespace = state.selectedNamespace;
-      state.localeKeys[namespace][index] = value;
-      for (const language of state.languages) {
-        state.modifiedLocalesData[namespace][language][value] =
-          state.modifiedLocalesData[namespace][language][localeKey];
-        delete state.modifiedLocalesData[namespace][language][localeKey];
-      }
+
+      state.modifiedLocalesData[namespace][index]['key'] = value;
     },
     saveLocaleSuccess: (
       state,
@@ -141,9 +154,6 @@ export const editingRepoSlice = createSlice({
       for (const namespace in data) {
         for (const language in data[namespace]) {
           state.originalLocalesData[namespace][language] = {
-            ...data[namespace][language]
-          };
-          state.modifiedLocalesData[namespace][language] = {
             ...data[namespace][language]
           };
         }
@@ -170,6 +180,7 @@ export const {
   handleLocaleKeyOnChange,
   saveLocaleSuccess,
   setSaveModalOpen,
+  setNamespaceLocales,
   closeEditingRepo
 } = editingRepoSlice.actions;
 

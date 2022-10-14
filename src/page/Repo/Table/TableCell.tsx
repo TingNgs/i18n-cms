@@ -1,9 +1,14 @@
 import { memo, useCallback } from 'react';
-import { Editable, EditableInput, EditablePreview } from '@chakra-ui/react';
+import {
+  Editable,
+  EditableInput,
+  EditablePreview,
+  Flex
+} from '@chakra-ui/react';
 import { createSelector } from '@reduxjs/toolkit';
 import { get } from 'lodash-es';
 
-import { Cell } from './View';
+import { CELL_PROPS } from './constants';
 import {
   RootState,
   useAppDispatch,
@@ -15,38 +20,38 @@ const localeSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.selectedNamespace,
   (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
   (state: RootState, language: string) => language,
-  (state: RootState, language: string, localeKey: string) => localeKey,
-  (selectedNamespace, modifiedLocalesData, language, localeKey) =>
+  (state: RootState, language: string, index: number) => index,
+  (selectedNamespace, modifiedLocalesData, language, index) =>
     selectedNamespace &&
-    get(modifiedLocalesData, [selectedNamespace, language, localeKey], '')
+    get(modifiedLocalesData, [selectedNamespace, index, 'value', language], '')
 );
 
 const TableCell = ({
   language,
-  localeKey
+  index
 }: {
   language: string;
-  localeKey: string;
+  index: number;
 }) => {
   const dispatch = useAppDispatch();
   const value = useAppSelector((state) =>
-    localeSelector(state, language, localeKey)
+    localeSelector(state, language, index)
   );
 
   const onSubmit = useCallback(
     (value: string) => {
-      dispatch(handleLocaleOnChange({ value, language, localeKey }));
+      dispatch(handleLocaleOnChange({ value, language, index }));
     },
-    [language, localeKey]
+    [language, index]
   );
 
   return (
-    <Cell>
+    <Flex {...CELL_PROPS}>
       <Editable defaultValue={value} w="100%" onChange={onSubmit}>
         <EditablePreview w="100%" overflow="hidden" noOfLines={2} />
         <EditableInput />
       </Editable>
-    </Cell>
+    </Flex>
   );
 };
 
