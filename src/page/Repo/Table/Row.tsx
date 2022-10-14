@@ -5,24 +5,21 @@ import { Draggable } from 'react-beautiful-dnd';
 import { RootState, useAppSelector } from '../../../redux/store';
 import TableRow from './TableRow';
 
-const keySelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
+const idSelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.localeIds,
   (state: RootState) => state.EditingRepoReducer.selectedNamespace,
   (state: RootState, index: number) => index,
-  (modifiedLocalesData, selectedNamespace, index) =>
+  (localeIds, selectedNamespace, index) =>
     index >= 0 &&
     selectedNamespace &&
-    index < modifiedLocalesData[selectedNamespace].length
-      ? {
-          id: modifiedLocalesData[selectedNamespace][index]['id'],
-          key: modifiedLocalesData[selectedNamespace][index]['key']
-        }
-      : { id: '', key: '' }
+    index < localeIds[selectedNamespace].length
+      ? localeIds[selectedNamespace][index]
+      : null
 );
 
 const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
-  const { id, key } = useAppSelector((state) => keySelector(state, index - 1));
-  if (index === 0) return null;
+  const id = useAppSelector((state) => idSelector(state, index - 1));
+  if (index === 0 || !id) return null;
   const realIndex = index - 1;
   return (
     <Draggable key={id} draggableId={id} index={realIndex}>
@@ -30,9 +27,8 @@ const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
         <TableRow
           provided={provided}
           isDragging={snapshot.isDragging}
-          index={realIndex}
           style={style}
-          localeKey={key}
+          localeId={id}
         />
       )}
     </Draggable>

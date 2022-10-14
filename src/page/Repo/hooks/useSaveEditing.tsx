@@ -9,7 +9,7 @@ import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
 
 export const isDataChangedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer,
-  ({ originalLocalesData, modifiedLocalesData, languages }) => {
+  ({ originalLocalesData, modifiedLocalesData, languages, localeIds }) => {
     const modifiedNamespaces = Object.keys(modifiedLocalesData);
     const data: {
       [namespace: string]: { [language: string]: { [key: string]: string } };
@@ -18,7 +18,8 @@ export const isDataChangedSelector = createSelector(
       data[namespace] = {};
       for (const language of languages) {
         data[namespace][language] = {};
-        for (const localeData of modifiedLocalesData[namespace]) {
+        for (const localeId of localeIds[namespace]) {
+          const localeData = modifiedLocalesData[namespace][localeId];
           const locale = localeData['value'][language];
           if (locale) data[namespace][language][localeData['key']] = locale;
         }
@@ -58,6 +59,7 @@ const useSaveEditing = () => {
         const {
           languages,
           branch,
+          localeIds,
           editingRepo,
           editingRepoConfig,
           originalLocalesData,
@@ -74,7 +76,8 @@ const useSaveEditing = () => {
           data[namespace] = {};
           for (const language of languages) {
             data[namespace][language] = {};
-            for (const localeData of modifiedLocalesData[namespace]) {
+            for (const localeId of localeIds[namespace]) {
+              const localeData = modifiedLocalesData[namespace][localeId];
               const locale = localeData['value'][language];
               if (locale) data[namespace][language][localeData['key']] = locale;
             }

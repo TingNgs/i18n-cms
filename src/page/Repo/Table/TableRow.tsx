@@ -10,22 +10,26 @@ import TableCell from './TableCell';
 import { CELL_PROPS, ROW_PROPS } from './constants';
 
 const TableRow = ({
-  index,
   style,
   provided,
   isDragging,
-  localeKey
+  localeId
 }: {
-  index: number;
   style: CSSProperties;
   provided: DraggableProvided;
   isDragging: boolean;
-  localeKey: string;
+  localeId: string;
 }) => {
   const languages = useAppSelector(
     (state) => state.EditingRepoReducer.selectedLanguages
   );
   const duplicatedKeys = useAppSelector(duplicatedKeySelector);
+  const localeKey = useAppSelector(
+    (state) =>
+      state.EditingRepoReducer.modifiedLocalesData[
+        state.EditingRepoReducer.selectedNamespace || ''
+      ][localeId]['key']
+  );
   const [isRowHover, setRowHover] = useBoolean();
 
   return (
@@ -41,26 +45,23 @@ const TableRow = ({
         ...provided.draggableProps.style,
         minWidth: 'fit-content'
       }}>
-      {!!localeKey && (
-        <>
-          <Flex
-            {...provided.dragHandleProps}
-            {...CELL_PROPS}
-            flex="none"
-            flexShrink={0}
-            minWidth="0">
-            <DragHandleIcon w="3" h="3" />
-          </Flex>
-          <KeyCell
-            localeKey={localeKey}
-            index={index}
-            isDuplicated={!!duplicatedKeys[localeKey]}
-          />
-          {languages.map((language) => (
-            <TableCell key={language} language={language} index={index} />
-          ))}
-        </>
-      )}
+      <Flex
+        {...provided.dragHandleProps}
+        {...CELL_PROPS}
+        flex="none"
+        flexShrink={0}
+        minWidth="0">
+        <DragHandleIcon w="3" h="3" />
+      </Flex>
+      <KeyCell
+        localeId={localeId}
+        isDuplicated={!!duplicatedKeys[localeKey]}
+        localeKey={localeKey}
+      />
+      {languages.map((language) => (
+        <TableCell key={language} language={language} localeId={localeId} />
+      ))}
+
       {isRowHover && (
         <IconButton
           isRound

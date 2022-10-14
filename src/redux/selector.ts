@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { groupBy, pickBy } from 'lodash-es';
+import { groupBy, pickBy, mapValues } from 'lodash-es';
 import { RootState } from './store';
 
 export const isAuthSelector = createSelector(
@@ -12,8 +12,13 @@ export const duplicatedKeySelector = createSelector(
   (state: RootState, namespace?: string) =>
     namespace || state.EditingRepoReducer.selectedNamespace,
   (modifiedLocalesData, namespace) => {
-    if (!namespace) return {};
-    const keys = modifiedLocalesData[namespace]?.map(({ key }) => key);
-    return pickBy(groupBy(keys), (value) => value.length > 1);
+    if (!namespace || !modifiedLocalesData[namespace]) return {};
+    const keys = Object.entries(modifiedLocalesData[namespace]).map(
+      ([, data]) => data.key
+    );
+    return mapValues(
+      pickBy(groupBy(keys), (value) => value.length > 1),
+      () => true
+    );
   }
 );

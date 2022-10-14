@@ -18,31 +18,36 @@ import { handleLocaleOnChange } from '../../../redux/editingRepoSlice';
 
 const localeSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.selectedNamespace,
+  (state: RootState) => state.EditingRepoReducer.localeIds,
   (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
   (state: RootState, language: string) => language,
-  (state: RootState, language: string, index: number) => index,
-  (selectedNamespace, modifiedLocalesData, language, index) =>
+  (state: RootState, language: string, localeId: string) => localeId,
+  (selectedNamespace, localeIds, modifiedLocalesData, language, localeId) =>
     selectedNamespace &&
-    get(modifiedLocalesData, [selectedNamespace, index, 'value', language], '')
+    get(
+      modifiedLocalesData,
+      [selectedNamespace, localeId, 'value', language],
+      ''
+    )
 );
 
 const TableCell = ({
   language,
-  index
+  localeId
 }: {
   language: string;
-  index: number;
+  localeId: string;
 }) => {
   const dispatch = useAppDispatch();
   const value = useAppSelector((state) =>
-    localeSelector(state, language, index)
+    localeSelector(state, language, localeId)
   );
 
   const onSubmit = useCallback(
     (value: string) => {
-      dispatch(handleLocaleOnChange({ value, language, index }));
+      dispatch(handleLocaleOnChange({ value, language, localeId }));
     },
-    [language, index]
+    [language, localeId]
   );
 
   return (

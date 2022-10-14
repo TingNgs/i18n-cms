@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import useGetEditingRepoLocalByNs from '../hooks/useGetEditingRepoLocalByNs';
 import {
   setLocalesDataByNamespace,
-  setNamespaceLocales
+  reorderNamespaceIds
 } from '../../../redux/editingRepoSlice';
 
 import Row from './Row';
@@ -57,18 +57,13 @@ const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
 );
 
 const LocaleTable = () => {
-  const modifiedLocalesData = useAppSelector(
-    (state) => state.EditingRepoReducer.modifiedLocalesData
+  const localeIds = useAppSelector(
+    (state) => state.EditingRepoReducer.localeIds
   );
   const namespace = useAppSelector(
     (state) => state.EditingRepoReducer.selectedNamespace
   );
-  const listSize = useAppSelector(
-    (state) =>
-      (namespace &&
-        state.EditingRepoReducer.modifiedLocalesData[namespace]?.length) ||
-      0
-  );
+  const listSize = (namespace && localeIds[namespace]?.length) || 0;
 
   const dispatch = useAppDispatch();
   const getEditingRepoLocalByNs = useGetEditingRepoLocalByNs();
@@ -83,10 +78,10 @@ const LocaleTable = () => {
       dispatch(setLocalesDataByNamespace({ namespace, data }));
     };
 
-    if (namespace && !modifiedLocalesData[namespace]) {
+    if (namespace && !localeIds[namespace]) {
       fetchNamespaceData();
     }
-  }, [namespace, modifiedLocalesData]);
+  }, [namespace, localeIds]);
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -99,14 +94,14 @@ const LocaleTable = () => {
       }
 
       const data = reorder(
-        modifiedLocalesData[namespace],
+        localeIds[namespace],
         result.source.index,
         result.destination.index
       );
 
-      dispatch(setNamespaceLocales({ data, namespace }));
+      dispatch(reorderNamespaceIds({ data, namespace }));
     },
-    [namespace, modifiedLocalesData]
+    [namespace, localeIds]
   );
 
   if (!namespace) return null;
@@ -125,10 +120,7 @@ const LocaleTable = () => {
                     provided={provided}
                     isDragging={snapshot.isDragging}
                     style={{ margin: 0 }}
-                    index={rubric.source.index}
-                    localeKey={
-                      modifiedLocalesData[namespace][rubric.source.index].key
-                    }
+                    localeId={localeIds[namespace][rubric.source.index]}
                   />
                 )}>
                 {(provided) => (

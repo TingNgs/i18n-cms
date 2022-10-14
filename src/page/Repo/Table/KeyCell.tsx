@@ -14,11 +14,11 @@ import { useAppDispatch } from '../../../redux/store';
 import { handleLocaleKeyOnChange } from '../../../redux/editingRepoSlice';
 
 const TableCell = ({
-  index,
+  localeId,
   localeKey,
   isDuplicated
 }: {
-  index: number;
+  localeId: string;
   localeKey: string;
   isDuplicated: boolean;
 }) => {
@@ -28,9 +28,9 @@ const TableCell = ({
   const onSubmit = useCallback(
     (value: string) => {
       if (value === localeKey) return;
-      dispatch(handleLocaleKeyOnChange({ value, index }));
+      dispatch(handleLocaleKeyOnChange({ value, localeId }));
     },
-    [localeKey, index]
+    [localeKey, localeId]
   );
 
   return (

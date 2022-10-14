@@ -19,7 +19,6 @@ export interface Repo {
 }
 
 export interface ModifiedLocalesData {
-  id: string;
   key: string;
   value: { [lng: string]: string };
 }
@@ -39,7 +38,10 @@ export interface EdiotingRepoState {
   };
 
   modifiedLocalesData: {
-    [namespace: string]: ModifiedLocalesData[];
+    [namespace: string]: { [id: string]: ModifiedLocalesData };
+  };
+  localeIds: {
+    [namespace: string]: string[];
   };
 
   isSaveModalOpen: boolean;
@@ -51,6 +53,7 @@ const initialState: EdiotingRepoState = {
   selectedLanguages: [],
   originalLocalesData: {},
   modifiedLocalesData: {},
+  localeIds: {},
   isSaveModalOpen: false
 };
 
@@ -88,6 +91,7 @@ export const editingRepoSlice = createSlice({
     ) => {
       const { namespace, data } = action.payload;
       state.originalLocalesData[namespace] = data;
+      state.modifiedLocalesData[namespace] = {};
       const defaultNs = state.editingRepoConfig?.defaultNs;
 
       let keySet = new Set<string>(
@@ -100,48 +104,54 @@ export const editingRepoSlice = createSlice({
         ]);
       });
 
-      state.modifiedLocalesData[namespace] = Array.from(keySet).map((key) => ({
-        id: uniqueId(namespace),
-        key,
-        value: state.languages.reduce<{ [lng: string]: string }>((acc, cur) => {
-          acc[cur] = data[cur][key];
-          return acc;
-        }, {})
-      }));
+      state.localeIds[namespace] = Array.from(keySet).map((key) => {
+        const id = uniqueId(namespace);
+        state.modifiedLocalesData[namespace][id] = {
+          key,
+          value: state.languages.reduce<{ [lng: string]: string }>(
+            (acc, cur) => {
+              acc[cur] = data[cur][key];
+              return acc;
+            },
+            {}
+          )
+        };
+        return id;
+      });
     },
-    setNamespaceLocales: (
+    reorderNamespaceIds: (
       state,
       action: PayloadAction<{
-        data: ModifiedLocalesData[];
+        data: string[];
         namespace: string;
       }>
     ) => {
       const { namespace, data } = action.payload;
-      state.modifiedLocalesData[namespace] = data;
+      state.localeIds[namespace] = data;
     },
     handleLocaleOnChange: (
       state,
       action: PayloadAction<{
         language: string;
-        index: number;
+        localeId: string;
         value: string;
       }>
     ) => {
-      const { language, index, value } = action.payload;
+      const { language, localeId, value } = action.payload;
       if (state.selectedNamespace)
-        state.modifiedLocalesData[state.selectedNamespace][index]['value'][
+        state.modifiedLocalesData[state.selectedNamespace][localeId]['value'][
           language
         ] = value;
     },
     handleLocaleKeyOnChange: (
       state,
-      action: PayloadAction<{ value: string; index: number }>
+      action: PayloadAction<{ value: string; localeId: string }>
     ) => {
-      const { value, index } = action.payload;
+      const { value, localeId } = action.payload;
       if (!state.selectedNamespace) return;
       const namespace = state.selectedNamespace;
 
-      state.modifiedLocalesData[namespace][index]['key'] = value;
+      state.modifiedLocalesData[namespace][localeId]['key'] = value;
     },
     saveLocaleSuccess: (
       state,
@@ -180,7 +190,7 @@ export const {
   handleLocaleKeyOnChange,
   saveLocaleSuccess,
   setSaveModalOpen,
-  setNamespaceLocales,
+  reorderNamespaceIds,
   closeEditingRepo
 } = editingRepoSlice.actions;
 
