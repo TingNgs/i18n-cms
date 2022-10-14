@@ -18,9 +18,10 @@ const idSelector = createSelector(
 );
 
 const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
-  const id = useAppSelector((state) => idSelector(state, index - 1));
-  if (index === 0 || !id) return null;
   const realIndex = index - 1;
+  const id = useAppSelector((state) => idSelector(state, realIndex));
+  if (index === 0 || !id) return null;
+
   return (
     <Draggable key={id} draggableId={id} index={realIndex}>
       {(provided, snapshot) => (
@@ -29,6 +30,7 @@ const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
           isDragging={snapshot.isDragging}
           style={style}
           localeId={id}
+          index={realIndex}
         />
       )}
     </Draggable>

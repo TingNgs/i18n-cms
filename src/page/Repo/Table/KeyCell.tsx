@@ -3,13 +3,11 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
-  Flex,
   Tooltip
 } from '@chakra-ui/react';
 import { WarningIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
 
-import { CELL_PROPS } from './constants';
 import { useAppDispatch } from '../../../redux/store';
 import { handleLocaleKeyOnChange } from '../../../redux/editingRepoSlice';
 
@@ -34,7 +32,7 @@ const TableCell = ({
   );
 
   return (
-    <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1} gap={1}>
+    <>
       <Editable defaultValue={localeKey} w="100%" onChange={onSubmit}>
         <EditablePreview
           w="100%"
@@ -50,7 +48,7 @@ const TableCell = ({
           <WarningIcon w="4" h="4" color="red.500" />
         </Tooltip>
       )}
-    </Flex>
+    </>
   );
 };
 

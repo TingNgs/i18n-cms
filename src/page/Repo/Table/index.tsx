@@ -1,6 +1,6 @@
 import { memo, useEffect, HTMLProps, forwardRef, useCallback } from 'react';
-import { Flex, Spinner, Text } from '@chakra-ui/react';
-import { DragHandleIcon } from '@chakra-ui/icons';
+import { Flex, Spinner } from '@chakra-ui/react';
+
 import { FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {
@@ -18,15 +18,14 @@ import {
 
 import Row from './Row';
 import TableRow from './TableRow';
-import { ROW_PROPS, CELL_PROPS, LIST_PADDING_BOTTOM } from './constants';
+import TableHead from './TableHead';
+
+import { LIST_PADDING_BOTTOM } from './constants';
 import { CELL_HEIGHT } from '../../../constants';
 import reorder from '../../../utils/reorder';
 
 const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
   function Inner({ children, style, ...rest }, ref) {
-    const languages = useAppSelector(
-      (state) => state.EditingRepoReducer.selectedLanguages
-    );
     return (
       <div
         {...rest}
@@ -37,19 +36,7 @@ const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
           }px`
         }}
         ref={ref}>
-        <Flex {...ROW_PROPS} position="sticky" top="0" zIndex={2}>
-          <Flex {...CELL_PROPS} flex="none" flexShrink={0} minWidth="0">
-            <DragHandleIcon w="3" h="3" visibility="hidden" />
-          </Flex>
-          <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1}>
-            <Text fontWeight="bold">Key</Text>
-          </Flex>
-          {languages.map((language) => (
-            <Flex {...CELL_PROPS} fontWeight="bold" key={language} flex={1}>
-              <Text>{language}</Text>
-            </Flex>
-          ))}
-        </Flex>
+        <TableHead />
         {children}
       </div>
     );
@@ -121,6 +108,7 @@ const LocaleTable = () => {
                     isDragging={snapshot.isDragging}
                     style={{ margin: 0 }}
                     localeId={localeIds[namespace][rubric.source.index]}
+                    index={rubric.source.index}
                   />
                 )}>
                 {(provided) => (

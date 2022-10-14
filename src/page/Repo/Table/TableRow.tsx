@@ -1,25 +1,30 @@
-import { CSSProperties, memo } from 'react';
+import { CSSProperties, memo, useCallback } from 'react';
 import { type DraggableProvided } from 'react-beautiful-dnd';
 import { useBoolean, IconButton, Flex } from '@chakra-ui/react';
 import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
 
-import { useAppSelector } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { duplicatedKeySelector } from '../../../redux/selector';
 import KeyCell from './KeyCell';
 import TableCell from './TableCell';
 import { CELL_PROPS, ROW_PROPS } from './constants';
+import { addLocaleAfterIndex } from '../../../redux/editingRepoSlice';
+import EditButton from './EditButton';
 
 const TableRow = ({
   style,
   provided,
   isDragging,
-  localeId
+  localeId,
+  index
 }: {
   style: CSSProperties;
   provided: DraggableProvided;
   isDragging: boolean;
   localeId: string;
+  index: number;
 }) => {
+  const dispatch = useAppDispatch();
   const languages = useAppSelector(
     (state) => state.EditingRepoReducer.selectedLanguages
   );
@@ -31,6 +36,10 @@ const TableRow = ({
       ][localeId]['key']
   );
   const [isRowHover, setRowHover] = useBoolean();
+
+  const onAddButtonClicked = useCallback(() => {
+    dispatch(addLocaleAfterIndex({ index }));
+  }, [index]);
 
   return (
     <Flex
@@ -45,31 +54,31 @@ const TableRow = ({
         ...provided.draggableProps.style,
         minWidth: 'fit-content'
       }}>
-      <Flex
-        {...provided.dragHandleProps}
-        {...CELL_PROPS}
-        flex="none"
-        flexShrink={0}
-        minWidth="0">
-        <DragHandleIcon w="3" h="3" />
+      <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1} gap={1}>
+        <Flex {...provided.dragHandleProps} marginRight="2">
+          <DragHandleIcon w="3" h="3" />
+        </Flex>
+
+        <KeyCell
+          localeId={localeId}
+          isDuplicated={!!duplicatedKeys[localeKey]}
+          localeKey={localeKey}
+        />
       </Flex>
-      <KeyCell
-        localeId={localeId}
-        isDuplicated={!!duplicatedKeys[localeKey]}
-        localeKey={localeKey}
-      />
+
       {languages.map((language) => (
         <TableCell key={language} language={language} localeId={localeId} />
       ))}
-
+      <EditButton localeId={localeId} localeKey={localeKey} index={index} />
       {isRowHover && (
         <IconButton
+          onClick={onAddButtonClicked}
           isRound
           colorScheme={'green'}
           size="xs"
           aria-label="add"
           position="absolute"
-          zIndex={1}
+          zIndex={2}
           left="0"
           bottom={0}
           transform="translateY(50%)"

@@ -137,11 +137,11 @@ export const editingRepoSlice = createSlice({
         value: string;
       }>
     ) => {
+      if (!state.selectedNamespace) return state;
       const { language, localeId, value } = action.payload;
-      if (state.selectedNamespace)
-        state.modifiedLocalesData[state.selectedNamespace][localeId]['value'][
-          language
-        ] = value;
+      state.modifiedLocalesData[state.selectedNamespace][localeId]['value'][
+        language
+      ] = value;
     },
     handleLocaleKeyOnChange: (
       state,
@@ -169,6 +169,18 @@ export const editingRepoSlice = createSlice({
         }
       }
     },
+    addLocaleAfterIndex: (state, action: PayloadAction<{ index: number }>) => {
+      const namespace = state.selectedNamespace;
+      if (!namespace) return state;
+      const id = uniqueId(namespace);
+      state.localeIds[namespace].splice(action.payload.index + 1, 0, id);
+      state.modifiedLocalesData[namespace][id] = { key: id, value: {} };
+    },
+    removeLocaleOnIndex: (state, action: PayloadAction<{ index: number }>) => {
+      const namespace = state.selectedNamespace;
+      if (!namespace) return state;
+      state.localeIds[namespace].splice(action.payload.index, 1);
+    },
     setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isSaveModalOpen = action.payload;
     },
@@ -191,6 +203,8 @@ export const {
   saveLocaleSuccess,
   setSaveModalOpen,
   reorderNamespaceIds,
+  addLocaleAfterIndex,
+  removeLocaleOnIndex,
   closeEditingRepo
 } = editingRepoSlice.actions;
 
