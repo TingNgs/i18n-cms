@@ -19,5 +19,5 @@
   "rules": {
     "react/react-in-jsx-scope": "off"
   },
-  "ignorePatterns": ["config-overrides.js"]
+  "ignorePatterns": ["config-overrides.js", "build/*"]
 }

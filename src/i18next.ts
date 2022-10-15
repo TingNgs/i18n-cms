@@ -9,6 +9,7 @@ i18next
     fallbackLng: ['en'],
     debug: true,
     defaultNS: 'common',
+    ns: 'common',
     supportedLngs: ['en', 'zh'],
     interpolation: {
       escapeValue: false
