@@ -1,4 +1,4 @@
-import { CELL_HEIGHT } from '../../../constants';
+import { CELL_HEIGHT } from '../../constants';
 
 export const CELL_PROPS = {
   flex: 1,
@@ -19,3 +19,4 @@ export const ROW_PROPS = {
 };
 
 export const LIST_PADDING_BOTTOM = 24;
+export const SIDEBAR_WIDTH = 240;

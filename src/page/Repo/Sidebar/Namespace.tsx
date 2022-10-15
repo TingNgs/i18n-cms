@@ -27,7 +27,7 @@ const Namespaces = ({
   return (
     <Flex
       onClick={onClick}
-      p={2}
+      p={'8px 16px'}
       backgroundColor={isSelected ? 'blue.500' : undefined}
       cursor="pointer"
       alignItems={'center'}>

@@ -18,7 +18,7 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { removeLocaleOnIndex } from '../../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../../redux/store';
-import { CELL_PROPS } from './constants';
+import { CELL_PROPS } from '../constants';
 
 const EditButton = ({
   localeId,

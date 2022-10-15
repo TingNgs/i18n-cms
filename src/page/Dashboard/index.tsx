@@ -10,7 +10,7 @@ const Dashboard = () => {
   const { data, refetch } = useGetExistingRepoQuery(undefined);
 
   return (
-    <Stack alignItems="center">
+    <Stack alignItems="center" width="100%">
       <Stack width="300px">
         <AddRepoButton />
         <Text fontSize="2xl">{t('Existing repository')}</Text>

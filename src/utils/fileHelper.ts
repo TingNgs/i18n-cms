@@ -45,9 +45,14 @@ export const dataToFiles = ({
   };
   repoConfig: RepoConfig;
 }) => {
-  const { fileStructure, fileType, basePath } = repoConfig;
+  const { fileStructure, fileType, basePath, defaultLanguage } = repoConfig;
   const files: { [path: string]: string } = {
-    [CONFIG_PATH]: dataToJson({ fileStructure, fileType, basePath })
+    [CONFIG_PATH]: dataToJson({
+      fileStructure,
+      fileType,
+      basePath,
+      defaultLanguage
+    })
   };
 
   namespaces.forEach((namespace) => {

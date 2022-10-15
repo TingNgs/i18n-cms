@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { duplicatedKeySelector } from '../../../redux/selector';
 import KeyCell from './KeyCell';
 import TableCell from './TableCell';
-import { CELL_PROPS, ROW_PROPS } from './constants';
+import { CELL_PROPS, ROW_PROPS } from '../constants';
 import { addLocaleAfterIndex } from '../../../redux/editingRepoSlice';
 import EditButton from './EditButton';
 

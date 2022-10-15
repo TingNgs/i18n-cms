@@ -4,7 +4,7 @@ import { DragHandleIcon } from '@chakra-ui/icons';
 
 import { useAppSelector } from '../../../redux/store';
 
-import { ROW_PROPS, CELL_PROPS } from './constants';
+import { ROW_PROPS, CELL_PROPS } from '../constants';
 import EditButton from './EditButton';
 
 const TableHead = () => {

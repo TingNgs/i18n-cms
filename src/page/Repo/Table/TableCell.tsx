@@ -8,7 +8,7 @@ import {
 import { createSelector } from '@reduxjs/toolkit';
 import { get } from 'lodash-es';
 
-import { CELL_PROPS } from './constants';
+import { CELL_PROPS } from '../constants';
 import {
   RootState,
   useAppDispatch,

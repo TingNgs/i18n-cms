@@ -8,7 +8,7 @@ export interface RepoConfig {
   fileStructure: typeof LOCALES_FILE_STRUCTURE[number];
   fileType: typeof LOCALES_FILE_TYPE[number];
   basePath: string;
-  defaultNs: string;
+  defaultLanguage: string;
 }
 
 export interface Repo {
@@ -92,10 +92,10 @@ export const editingRepoSlice = createSlice({
       const { namespace, data } = action.payload;
       state.originalLocalesData[namespace] = data;
       state.modifiedLocalesData[namespace] = {};
-      const defaultNs = state.editingRepoConfig?.defaultNs;
+      const defaultLanguage = state.editingRepoConfig?.defaultLanguage;
 
       let keySet = new Set<string>(
-        defaultNs ? Object.keys(data[defaultNs]) : []
+        defaultLanguage ? Object.keys(data[defaultLanguage]) : []
       );
       state.languages.forEach((language) => {
         keySet = new Set([

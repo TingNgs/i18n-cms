@@ -58,7 +58,7 @@ const CreateNewRepoForm = () => {
     visibility: typeof REPOSITORY_VISIBILITY[number];
     languages: string[];
     namespaces: string[];
-    defaultNs: string;
+    defaultLanguage: string;
   }>();
 
   const onSubmit = handleSubmit(async (values) => {
@@ -113,10 +113,10 @@ const CreateNewRepoForm = () => {
     }
   });
 
-  const [owner, basePath, namespaces] = watch([
+  const [owner, basePath, languages] = watch([
     'owner',
     'basePath',
-    'namespaces'
+    'languages'
   ]);
 
   const getLoadingTitle = useCallback(() => {
@@ -210,10 +210,11 @@ const CreateNewRepoForm = () => {
             )}
           />
 
-          <Select {...register('defaultNs')}>
-            {namespaces?.map((namespace) => (
-              <option value={namespace} key={namespace}>
-                {namespace}
+          <FormLabel>{commonT('Default language')}</FormLabel>
+          <Select {...register('defaultLanguage')}>
+            {languages?.map((language) => (
+              <option value={language} key={language}>
+                {language}
               </option>
             ))}
           </Select>

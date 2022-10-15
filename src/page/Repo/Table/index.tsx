@@ -20,7 +20,7 @@ import Row from './Row';
 import TableRow from './TableRow';
 import TableHead from './TableHead';
 
-import { LIST_PADDING_BOTTOM } from './constants';
+import { LIST_PADDING_BOTTOM } from '../constants';
 import { CELL_HEIGHT } from '../../../constants';
 import reorder from '../../../utils/reorder';
 
