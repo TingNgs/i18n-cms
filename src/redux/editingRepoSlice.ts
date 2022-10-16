@@ -69,27 +69,31 @@ export const editingRepoSlice = createSlice({
     setEditingRepo: (state, action: PayloadAction<Repo>) => {
       state.editingRepo = action.payload;
     },
-    setEditingRepoConfig: (state, action: PayloadAction<RepoConfig>) => {
-      state.editingRepoConfig = action.payload;
-    },
-    setBranch: (state, action: PayloadAction<string>) => {
-      state.branch = action.payload;
+    setInitialRepoData: (
+      state,
+      action: PayloadAction<{
+        namespaces: string[];
+        languages: string[];
+        repoConfig: RepoConfig;
+        branch: string;
+      }>
+    ) => {
+      const { namespaces, languages, repoConfig, branch } = action.payload;
+      state.editingRepoConfig = repoConfig;
+      state.branch = branch;
+      state.languages = languages;
+      state.originalLanguages = languages;
+      state.namespaces = namespaces;
+      state.originalNamespaces = namespaces;
+      languages.forEach((language) => {
+        state.selectedLanguagesMap[language] = true;
+      });
     },
     setSelectedNamespaces: (state, action: PayloadAction<string>) => {
       state.selectedNamespace = action.payload;
     },
     setLanguages: (state, action: PayloadAction<string[]>) => {
       state.languages = action.payload;
-      state.originalLanguages = action.payload;
-    },
-    setNamespaces: (state, action: PayloadAction<string[]>) => {
-      state.namespaces = action.payload;
-      state.originalNamespaces = action.payload;
-    },
-    setSelectedLanguagesMap: (state, action: PayloadAction<string[]>) => {
-      action.payload.forEach((language) => {
-        state.selectedLanguagesMap[language] = true;
-      });
     },
     setLanguageSelected: (
       state,
@@ -254,13 +258,10 @@ export const editingRepoSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  setEditingRepoConfig,
+  setInitialRepoData,
   setEditingRepo,
-  setBranch,
   setSelectedNamespaces,
   setLanguages,
-  setNamespaces,
-  setSelectedLanguagesMap,
   setLanguageSelected,
   setLocalesDataByNamespace,
   handleLocaleOnChange,

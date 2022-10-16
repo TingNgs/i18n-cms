@@ -26,12 +26,8 @@ import useGetLanguagesAndNamespaces from '../hooks/useGetLanguagesAndNamespaces'
 import {
   closeEditingRepo,
   Repo,
-  setBranch,
   setEditingRepo,
-  setEditingRepoConfig,
-  setLanguages,
-  setNamespaces,
-  setSelectedLanguagesMap
+  setInitialRepoData
 } from '../../../redux/editingRepoSlice';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import {
@@ -149,12 +145,15 @@ const BranchFormModal = ({ repo }: IProps) => {
         branch: branchName,
         rootSha: branch.commit.commit.tree.sha
       });
+      dispatch(
+        setInitialRepoData({
+          namespaces,
+          languages,
+          repoConfig,
+          branch: branchName
+        })
+      );
 
-      dispatch(setNamespaces(namespaces));
-      dispatch(setLanguages(languages));
-      dispatch(setSelectedLanguagesMap(languages));
-      dispatch(setEditingRepoConfig(repoConfig));
-      dispatch(setBranch(branchName));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e?.message === 'Protected branch') {

@@ -20,7 +20,8 @@ import {
   addNewNamespace,
   addNewLanguage
 } from '../../../redux/editingRepoSlice';
-import Language from './Language';
+
+import LanguageList from './LanguageList';
 
 const TITLE_PROPS = {
   fontWeight: 'bold'
@@ -110,9 +111,7 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
             <AccordionIcon />
           </AccordionButton>
           <AccordionPanel padding={0}>
-            {languages.map((language) => (
-              <Language key={language} language={language} />
-            ))}
+            <LanguageList />
             <NewItemBtn
               addItemHandler={onAddNewLanguage}
               items={languages}

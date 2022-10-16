@@ -20,7 +20,7 @@ const TableHead = () => {
       </Flex>
       {languages.map((language) => (
         <Flex {...CELL_PROPS} fontWeight="bold" key={language} flex={1}>
-          <Text>{language}</Text>
+          <Text noOfLines={2}>{language}</Text>
         </Flex>
       ))}
       <ActionCell />

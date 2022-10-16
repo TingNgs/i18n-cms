@@ -7,8 +7,9 @@ export const CELL_PROPS = {
   backgroundColor: 'white',
   alignItems: 'center',
   height: '100%',
-  borderBottomWidth: 1
-};
+  borderBottomWidth: 1,
+  wordBreak: 'break-word'
+} as const;
 
 export const ROW_PROPS = {
   height: `${CELL_HEIGHT}px`,
@@ -16,7 +17,7 @@ export const ROW_PROPS = {
   alignItems: 'center',
   width: '100%',
   minWidth: 'fit-content'
-};
+} as const;
 
 export const LIST_PADDING_BOTTOM = 24;
 export const SIDEBAR_WIDTH = 240;

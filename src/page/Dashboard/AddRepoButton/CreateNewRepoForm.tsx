@@ -28,10 +28,7 @@ import TagInput from '../../../component/TagInput';
 import { dataToFiles } from '../../../utils/fileHelper';
 import OwnerSelect, { Owner } from '../../../component/OwnerSelect';
 import LoadingModal from '../../../component/LoadingModal';
-import {
-  setEditingRepo,
-  setEditingRepoConfig
-} from '../../../redux/editingRepoSlice';
+import { setEditingRepo } from '../../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../../redux/store';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 
@@ -98,8 +95,8 @@ const CreateNewRepoForm = () => {
         fullName: repo.full_name,
         recentBranches: []
       });
-      await dispatch(setEditingRepoConfig(repoConfig));
-      await dispatch(
+
+      dispatch(
         setEditingRepo({
           owner: repo.owner.login,
           repo: repo.name,

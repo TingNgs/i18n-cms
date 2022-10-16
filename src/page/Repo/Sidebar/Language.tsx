@@ -1,6 +1,11 @@
 import { memo, useCallback } from 'react';
 import { Text, Flex, IconButton, useDisclosure } from '@chakra-ui/react';
-import { DeleteIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import {
+  DeleteIcon,
+  DragHandleIcon,
+  ViewIcon,
+  ViewOffIcon
+} from '@chakra-ui/icons';
 import { useDispatch } from 'react-redux';
 import { createSelector } from '@reduxjs/toolkit';
 
@@ -11,6 +16,7 @@ import {
   setLanguageSelected
 } from '../../../redux/editingRepoSlice';
 import PopoverDeleteBtn from '../../../component/PopoverDeleteBtn';
+import { DraggableProvided } from 'react-beautiful-dnd';
 
 const isLanguageSelectedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.selectedLanguagesMap,
@@ -18,7 +24,13 @@ const isLanguageSelectedSelector = createSelector(
   (selectedLanguagesMap, language) => selectedLanguagesMap[language]
 );
 
-const Language = ({ language }: { language: string }) => {
+const Language = ({
+  language,
+  provided
+}: {
+  language: string;
+  provided: DraggableProvided;
+}) => {
   const { t: repoT } = useTranslation('repo');
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,7 +48,16 @@ const Language = ({ language }: { language: string }) => {
   }, [language]);
 
   return (
-    <Flex alignItems={'center'}>
+    <Flex
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      alignItems={'center'}>
+      <Flex {...provided.dragHandleProps} p={2}>
+        <DragHandleIcon w="3" h="3" />
+      </Flex>
+      <Text flex="1" noOfLines={2}>
+        {language}
+      </Text>
       <IconButton
         colorScheme="gray"
         aria-label="show-language"
@@ -45,8 +66,6 @@ const Language = ({ language }: { language: string }) => {
         icon={isSelected ? <ViewIcon /> : <ViewOffIcon />}
         onClick={onViewClicked}
       />
-      <Text flex="1">{language}</Text>
-
       <PopoverDeleteBtn
         isOpen={isOpen}
         onOpen={onOpen}
