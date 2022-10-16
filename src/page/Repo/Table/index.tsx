@@ -6,7 +6,7 @@ import {
   useCallback,
   useRef
 } from 'react';
-import { Flex, Spinner } from '@chakra-ui/react';
+import { Flex, Spinner, Text } from '@chakra-ui/react';
 
 import { FixedSizeList, FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -31,6 +31,8 @@ import { LIST_PADDING_BOTTOM } from '../constants';
 import { CELL_HEIGHT } from '../../../constants';
 import reorder from '../../../utils/reorder';
 import EventBus, { CustomEvents } from '../../../utils/eventBus';
+import { useTranslation } from 'react-i18next';
+import { ArrowLeftIcon } from '@chakra-ui/icons';
 
 const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
   function Inner({ children, style, ...rest }, ref) {
@@ -52,6 +54,7 @@ const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
 );
 
 const LocaleTable = () => {
+  const { t: repoT } = useTranslation('repo');
   const localeIds = useAppSelector(
     (state) => state.EditingRepoReducer.localeIds
   );
@@ -116,7 +119,13 @@ const LocaleTable = () => {
     [namespace, localeIds]
   );
 
-  if (!namespace) return null;
+  if (!namespace)
+    return (
+      <Flex flexGrow={1} align="center" justifyContent="center" gap="4">
+        <ArrowLeftIcon w="6" h="6" />
+        <Text fontSize="3xl">{repoT('Choose namespace you want to edit')}</Text>
+      </Flex>
+    );
 
   return (
     <Flex flexGrow={1} overflow="scroll">
