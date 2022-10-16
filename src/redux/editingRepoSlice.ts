@@ -161,7 +161,14 @@ export const editingRepoSlice = createSlice({
     ) => {
       const data = action.payload;
       state.isSaveModalOpen = false;
+      Object.keys(state.originalLocalesData).forEach((namespace) => {
+        if (!state.namespaces.includes(namespace))
+          delete state.originalLocalesData[namespace];
+      });
       for (const namespace in data) {
+        if (!state.originalLocalesData[namespace]) {
+          state.originalLocalesData[namespace] = {};
+        }
         for (const language in data[namespace]) {
           state.originalLocalesData[namespace][language] = {
             ...data[namespace][language]
@@ -169,12 +176,39 @@ export const editingRepoSlice = createSlice({
         }
       }
     },
-    addLocaleAfterIndex: (state, action: PayloadAction<{ index: number }>) => {
+    addLocaleAfterIndex: (state, action: PayloadAction<{ index?: number }>) => {
       const namespace = state.selectedNamespace;
-      if (!namespace) return state;
+      if (!namespace || !state.localeIds[namespace]) return state;
+      const { index } = action.payload;
       const id = uniqueId(namespace);
-      state.localeIds[namespace].splice(action.payload.index + 1, 0, id);
+      state.localeIds[namespace].splice(
+        index === undefined ? state.localeIds[namespace].length : index + 1,
+        0,
+        id
+      );
       state.modifiedLocalesData[namespace][id] = { key: id, value: {} };
+    },
+    addNewNamespace: (state, action: PayloadAction<string>) => {
+      const namespace = action.payload;
+      state.namespaces.push(namespace);
+      const firstLocaleId = uniqueId(namespace);
+
+      state.localeIds[namespace] = [firstLocaleId];
+      state.modifiedLocalesData[namespace] = {
+        [firstLocaleId]: { key: firstLocaleId, value: {} }
+      };
+      state.selectedNamespace = namespace;
+    },
+    removeNamespace: (state, action: PayloadAction<string>) => {
+      const removeNamespace = action.payload;
+      state.namespaces = state.namespaces.filter(
+        (namespace) => namespace !== removeNamespace
+      );
+
+      delete state.localeIds[removeNamespace];
+      delete state.modifiedLocalesData[removeNamespace];
+      if (state.selectedNamespace === removeNamespace)
+        state.selectedNamespace = undefined;
     },
     removeLocaleOnIndex: (state, action: PayloadAction<{ index: number }>) => {
       const namespace = state.selectedNamespace;
@@ -205,6 +239,8 @@ export const {
   reorderNamespaceIds,
   addLocaleAfterIndex,
   removeLocaleOnIndex,
+  addNewNamespace,
+  removeNamespace,
   closeEditingRepo
 } = editingRepoSlice.actions;
 

@@ -9,16 +9,19 @@ import { useTranslation } from 'react-i18next';
 
 const Namespaces = ({
   namespace,
-  isSelected
+  isSelected,
+  onCloseSidebar
 }: {
   namespace: string;
   isSelected: boolean;
+  onCloseSidebar: () => void;
 }) => {
   const { t } = useTranslation('repo');
   const dispatch = useDispatch();
   const onClick = useCallback(() => {
     dispatch(setSelectedNamespaces(namespace));
-  }, [namespace]);
+    onCloseSidebar();
+  }, [namespace, onCloseSidebar]);
 
   const isNsContainsDuplicatedKeys = useAppSelector(
     (state) => Object.keys(duplicatedKeySelector(state, namespace)).length > 0

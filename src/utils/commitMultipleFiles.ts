@@ -22,7 +22,7 @@ export interface Options {
   change: {
     message: string;
     filesToDelete?: string[];
-    ignoreDeletionFailures?: string;
+    ignoreDeletionFailures?: boolean;
     files: {
       [path: string]: string;
     };
@@ -31,7 +31,7 @@ export interface Options {
 
 interface TreeItem {
   path: string;
-  sha: string;
+  sha: string | null;
   mode?: '100644' | '100755' | '040000' | '160000' | '120000';
   type?: 'tree' | 'blob' | 'commit';
 }
@@ -215,9 +215,9 @@ export default async function (octokit: Octokit, opts: Options) {
           if (exists) {
             treeItems.push({
               path: fileName,
-              sha: '', // sha as null implies that the file should be deleted
+              sha: null, // sha as null implies that the file should be deleted
               mode: '100644',
-              type: 'commit'
+              type: 'blob'
             });
           }
         })

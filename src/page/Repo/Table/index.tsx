@@ -17,8 +17,8 @@ import {
 } from '../../../redux/editingRepoSlice';
 
 import Row from './Row';
-import TableRow from './TableRow';
-import TableHead from './TableHead';
+import TableRow from './component/TableRow';
+import TableHead from './component/TableHead';
 
 import { LIST_PADDING_BOTTOM } from '../constants';
 import { CELL_HEIGHT } from '../../../constants';
@@ -95,7 +95,7 @@ const LocaleTable = () => {
 
   return (
     <Flex flexGrow={1} overflow="scroll">
-      {listSize > 0 ? (
+      {localeIds[namespace] ? (
         <AutoSizer>
           {({ height, width }) => (
             <DragDropContext onDragEnd={onDragEnd}>

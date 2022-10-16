@@ -2,10 +2,10 @@ import { memo } from 'react';
 import { Flex, Text } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 
-import { useAppSelector } from '../../../redux/store';
+import { useAppSelector } from '../../../../redux/store';
 
-import { ROW_PROPS, CELL_PROPS } from '../constants';
-import EditButton from './EditButton';
+import { ROW_PROPS, CELL_PROPS } from '../../constants';
+import ActionCell from './ActionCell';
 
 const TableHead = () => {
   const languages = useAppSelector(
@@ -24,7 +24,7 @@ const TableHead = () => {
           <Text>{language}</Text>
         </Flex>
       ))}
-      <EditButton />
+      <ActionCell />
     </Flex>
   );
 };

@@ -14,7 +14,7 @@ const dataToJsOrTs = (data: { [key: string]: string }, language: string) => {
   )}; \n\nexport default ${language};`;
 };
 
-export const getLocalPath = ({
+export const getLocalePath = ({
   language,
   namespace,
   repoConfig: { fileStructure, fileType, basePath }
@@ -60,7 +60,7 @@ export const dataToFiles = ({
       const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
       if (!translation) return;
 
-      files[getLocalPath({ language, namespace, repoConfig })] =
+      files[getLocalePath({ language, namespace, repoConfig })] =
         fileType === 'json'
           ? dataToJson(translation)
           : dataToJsOrTs(translation, language);

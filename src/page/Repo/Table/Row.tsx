@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import { Draggable } from 'react-beautiful-dnd';
 
 import { RootState, useAppSelector } from '../../../redux/store';
-import TableRow from './TableRow';
+import TableRow from './component/TableRow';
 
 const idSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.localeIds,

@@ -5,11 +5,12 @@ import { useAppSelector } from '../../../redux/store';
 import { SIDEBAR_WIDTH } from '../constants';
 import Namespace from './Namespace';
 import { ArrowBackIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-import { useEffect } from 'react';
+import NewNamespaceBtn from './NewNamespaceBtn';
 
 const TITLE_PROPS = {
   fontWeight: 'bold',
-  fontSize: '0.8rem'
+  fontSize: '0.8rem',
+  marginBottom: '0.5'
 };
 
 const Sidebar = ({ onClose }: { onClose: () => void }) => {
@@ -17,10 +18,6 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
   const { namespaces, selectedNamespace, editingRepo, branch } = useAppSelector(
     (state) => state.EditingRepoReducer
   );
-
-  useEffect(() => {
-    if (selectedNamespace !== undefined) onClose();
-  }, [selectedNamespace, onClose]);
 
   const githubLink = `https://github.com/${editingRepo?.fullName}`;
   const branchLink = `${githubLink}/tree/${branch}`;
@@ -60,8 +57,10 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
             key={namespace}
             namespace={namespace}
             isSelected={namespace === selectedNamespace}
+            onCloseSidebar={onClose}
           />
         ))}
+        <NewNamespaceBtn onCloseSidebar={onClose} namespaces={namespaces} />
       </Flex>
     </Stack>
   );

@@ -8,8 +8,8 @@ import {
 import { WarningIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch } from '../../../redux/store';
-import { handleLocaleKeyOnChange } from '../../../redux/editingRepoSlice';
+import { useAppDispatch } from '../../../../redux/store';
+import { handleLocaleKeyOnChange } from '../../../../redux/editingRepoSlice';
 
 const TableCell = ({
   localeId,

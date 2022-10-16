@@ -8,13 +8,13 @@ import {
 import { createSelector } from '@reduxjs/toolkit';
 import { get } from 'lodash-es';
 
-import { CELL_PROPS } from '../constants';
+import { CELL_PROPS } from '../../constants';
 import {
   RootState,
   useAppDispatch,
   useAppSelector
-} from '../../../redux/store';
-import { handleLocaleOnChange } from '../../../redux/editingRepoSlice';
+} from '../../../../redux/store';
+import { handleLocaleOnChange } from '../../../../redux/editingRepoSlice';
 
 const localeSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.selectedNamespace,

@@ -4,7 +4,7 @@ import { RootState, useAppSelector } from '../../../redux/store';
 import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
 import {
   decodeGithubFileContent,
-  getLocalPath
+  getLocalePath
 } from '../../../utils/fileHelper';
 
 const propsSelector = createSelector(
@@ -35,7 +35,7 @@ const useGetEditingRepoLocalByNs = () => {
         repo: repo,
         owner: owner,
         ref: branch,
-        path: getLocalPath({ language, namespace, repoConfig })
+        path: getLocalePath({ language, namespace, repoConfig })
       }).unwrap()
     );
     const files = await Promise.all(filesPromise);

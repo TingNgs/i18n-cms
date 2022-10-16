@@ -3,13 +3,15 @@ import { type DraggableProvided } from 'react-beautiful-dnd';
 import { useBoolean, IconButton, Flex } from '@chakra-ui/react';
 import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
 
-import { useAppDispatch, useAppSelector } from '../../../redux/store';
-import { duplicatedKeySelector } from '../../../redux/selector';
+import { useAppDispatch, useAppSelector } from '../../../../redux/store';
+import { duplicatedKeySelector } from '../../../../redux/selector';
+import { addLocaleAfterIndex } from '../../../../redux/editingRepoSlice';
+
 import KeyCell from './KeyCell';
+import ActionCell from './ActionCell';
 import TableCell from './TableCell';
-import { CELL_PROPS, ROW_PROPS } from '../constants';
-import { addLocaleAfterIndex } from '../../../redux/editingRepoSlice';
-import EditButton from './EditButton';
+
+import { CELL_PROPS, ROW_PROPS } from '../../constants';
 
 const TableRow = ({
   style,
@@ -69,7 +71,7 @@ const TableRow = ({
       {languages.map((language) => (
         <TableCell key={language} language={language} localeId={localeId} />
       ))}
-      <EditButton localeId={localeId} localeKey={localeKey} index={index} />
+      <ActionCell localeId={localeId} localeKey={localeKey} index={index} />
       {isRowHover && (
         <IconButton
           onClick={onAddButtonClicked}

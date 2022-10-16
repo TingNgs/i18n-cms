@@ -3,13 +3,25 @@ import { useToast, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useCommitGithubFilesMutation } from '../../../redux/services/octokitApi';
 import { RootState, useAppDispatch, useAppStore } from '../../../redux/store';
-import { dataToFiles } from '../../../utils/fileHelper';
+import { dataToFiles, getLocalePath } from '../../../utils/fileHelper';
 import { createSelector } from '@reduxjs/toolkit';
 import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
 
 export const isDataChangedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer,
-  ({ originalLocalesData, modifiedLocalesData, languages, localeIds }) => {
+  ({
+    originalLocalesData,
+    modifiedLocalesData,
+    languages,
+    localeIds,
+    namespaces
+  }) => {
+    for (const namespace of Object.keys(originalLocalesData)) {
+      if (!namespaces.includes(namespace)) {
+        return true;
+      }
+    }
+
     const modifiedNamespaces = Object.keys(modifiedLocalesData);
     const data: {
       [namespace: string]: { [language: string]: { [key: string]: string } };
@@ -24,8 +36,8 @@ export const isDataChangedSelector = createSelector(
           if (locale) data[namespace][language][localeData['key']] = locale;
         }
         if (
-          JSON.stringify(data[namespace][language]) ===
-          JSON.stringify(originalLocalesData[namespace][language])
+          JSON.stringify(data[namespace]?.[language]) ===
+          JSON.stringify(originalLocalesData[namespace]?.[language])
         ) {
           delete data[namespace][language];
         } else {
@@ -58,6 +70,7 @@ const useSaveEditing = () => {
         setLoading(true);
         const {
           languages,
+          namespaces,
           branch,
           localeIds,
           editingRepo,
@@ -82,8 +95,8 @@ const useSaveEditing = () => {
               if (locale) data[namespace][language][localeData['key']] = locale;
             }
             if (
-              JSON.stringify(data[namespace][language]) ===
-              JSON.stringify(originalLocalesData[namespace][language])
+              JSON.stringify(data[namespace]?.[language]) ===
+              JSON.stringify(originalLocalesData[namespace]?.[language])
             ) {
               delete data[namespace][language];
             }
@@ -94,12 +107,33 @@ const useSaveEditing = () => {
         }
 
         if (!editingRepo || !branch || !editingRepoConfig) return;
+
+        const filesToDelete = Object.keys(originalLocalesData).reduce<string[]>(
+          (acc, namespace) => {
+            if (!namespaces.includes(namespace)) {
+              languages.forEach((language) => {
+                acc.push(
+                  getLocalePath({
+                    language,
+                    namespace,
+                    repoConfig: editingRepoConfig
+                  })
+                );
+              });
+            }
+            return acc;
+          },
+          []
+        );
+
         const { commit } = await commitGithubFiles({
           owner: editingRepo.owner,
           repo: editingRepo.repo,
           branch: branch,
           change: {
             message: commitMessage,
+            filesToDelete,
+            ignoreDeletionFailures: true,
             files: dataToFiles({
               data,
               languages,
@@ -121,7 +155,8 @@ const useSaveEditing = () => {
             />
           )
         });
-      } catch {
+      } catch (e) {
+        console.log(e);
         toast({
           title: t('Something went wrong')
         });
