@@ -32,8 +32,10 @@ export interface EdiotingRepoState {
   languages: string[];
 
   selectedNamespace?: string;
-  selectedLanguages: string[];
+  selectedLanguagesMap: { [key: string]: boolean };
 
+  originalNamespaces: string[];
+  originalLanguages: string[];
   originalLocalesData: {
     [namespace: string]: { [lng: string]: { [key: string]: string } };
   };
@@ -49,10 +51,12 @@ export interface EdiotingRepoState {
 }
 
 const initialState: EdiotingRepoState = {
+  originalNamespaces: [],
+  originalLanguages: [],
+  originalLocalesData: {},
   namespaces: [],
   languages: [],
-  selectedLanguages: [],
-  originalLocalesData: {},
+  selectedLanguagesMap: {},
   modifiedLocalesData: {},
   localeIds: {},
   isSaveModalOpen: false
@@ -76,12 +80,23 @@ export const editingRepoSlice = createSlice({
     },
     setLanguages: (state, action: PayloadAction<string[]>) => {
       state.languages = action.payload;
+      state.originalLanguages = action.payload;
     },
     setNamespaces: (state, action: PayloadAction<string[]>) => {
       state.namespaces = action.payload;
+      state.originalNamespaces = action.payload;
     },
-    setSelectedLanguages: (state, action: PayloadAction<string[]>) => {
-      state.selectedLanguages = action.payload;
+    setSelectedLanguagesMap: (state, action: PayloadAction<string[]>) => {
+      action.payload.forEach((language) => {
+        state.selectedLanguagesMap[language] = true;
+      });
+    },
+    setLanguageSelected: (
+      state,
+      action: PayloadAction<{ language: string; value: boolean }>
+    ) => {
+      const { language, value } = action.payload;
+      state.selectedLanguagesMap[language] = value;
     },
     setLocalesDataByNamespace: (
       state,
@@ -96,12 +111,12 @@ export const editingRepoSlice = createSlice({
       const defaultLanguage = state.editingRepoConfig?.defaultLanguage;
 
       let keySet = new Set<string>(
-        defaultLanguage ? Object.keys(data[defaultLanguage]) : []
+        defaultLanguage ? Object.keys(data[defaultLanguage] || {}) : []
       );
-      state.languages.forEach((language) => {
+      state.originalLanguages.forEach((language) => {
         keySet = new Set([
           ...Array.from(keySet),
-          ...Object.keys(data[language])
+          ...Object.keys(data[language] || {})
         ]);
       });
 
@@ -109,7 +124,7 @@ export const editingRepoSlice = createSlice({
         const id = uniqueId(namespace);
         state.modifiedLocalesData[namespace][id] = {
           key,
-          value: state.languages.reduce<{ [lng: string]: string }>(
+          value: state.originalLanguages.reduce<{ [lng: string]: string }>(
             (acc, cur) => {
               acc[cur] = data[cur][key];
               return acc;
@@ -166,6 +181,8 @@ export const editingRepoSlice = createSlice({
         if (!state.namespaces.includes(namespace))
           delete state.originalLocalesData[namespace];
       });
+      state.originalLanguages = state.languages;
+      state.originalNamespaces = state.namespaces;
       for (const namespace in data) {
         if (!state.originalLocalesData[namespace]) {
           state.originalLocalesData[namespace] = {};
@@ -187,6 +204,11 @@ export const editingRepoSlice = createSlice({
       state.localeIds[namespace].splice(newLocaleIndex, 0, id);
       state.modifiedLocalesData[namespace][id] = { key: id, value: {} };
       EventBus.dispatch('table_scroll_to_index', { index: newLocaleIndex });
+    },
+    removeLocaleOnIndex: (state, action: PayloadAction<{ index: number }>) => {
+      const namespace = state.selectedNamespace;
+      if (!namespace) return state;
+      state.localeIds[namespace].splice(action.payload.index, 1);
     },
     addNewNamespace: (state, action: PayloadAction<string>) => {
       const namespace = action.payload;
@@ -210,10 +232,18 @@ export const editingRepoSlice = createSlice({
       if (state.selectedNamespace === removeNamespace)
         state.selectedNamespace = undefined;
     },
-    removeLocaleOnIndex: (state, action: PayloadAction<{ index: number }>) => {
-      const namespace = state.selectedNamespace;
-      if (!namespace) return state;
-      state.localeIds[namespace].splice(action.payload.index, 1);
+    removeLanguage: (state, action: PayloadAction<string>) => {
+      const removeLanguage = action.payload;
+      state.languages = state.languages.filter(
+        (language) => language !== removeLanguage
+      );
+
+      delete state.selectedLanguagesMap[removeLanguage];
+    },
+    addNewLanguage: (state, action: PayloadAction<string>) => {
+      const language = action.payload;
+      state.languages.push(language);
+      state.selectedLanguagesMap[language] = true;
     },
     setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isSaveModalOpen = action.payload;
@@ -230,7 +260,8 @@ export const {
   setSelectedNamespaces,
   setLanguages,
   setNamespaces,
-  setSelectedLanguages,
+  setSelectedLanguagesMap,
+  setLanguageSelected,
   setLocalesDataByNamespace,
   handleLocaleOnChange,
   handleLocaleKeyOnChange,
@@ -240,7 +271,9 @@ export const {
   addLocaleAfterIndex,
   removeLocaleOnIndex,
   addNewNamespace,
+  addNewLanguage,
   removeNamespace,
+  removeLanguage,
   closeEditingRepo
 } = editingRepoSlice.actions;
 

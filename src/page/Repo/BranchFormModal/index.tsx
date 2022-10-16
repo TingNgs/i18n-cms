@@ -31,7 +31,7 @@ import {
   setEditingRepoConfig,
   setLanguages,
   setNamespaces,
-  setSelectedLanguages
+  setSelectedLanguagesMap
 } from '../../../redux/editingRepoSlice';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import {
@@ -152,7 +152,7 @@ const BranchFormModal = ({ repo }: IProps) => {
 
       dispatch(setNamespaces(namespaces));
       dispatch(setLanguages(languages));
-      dispatch(setSelectedLanguages(languages));
+      dispatch(setSelectedLanguagesMap(languages));
       dispatch(setEditingRepoConfig(repoConfig));
       dispatch(setBranch(branchName));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

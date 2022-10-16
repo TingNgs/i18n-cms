@@ -1,26 +1,53 @@
+import { useCallback } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Flex, Stack, Link, Text } from '@chakra-ui/react';
+import {
+  Stack,
+  Link,
+  Text,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon
+} from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { SIDEBAR_WIDTH } from '../constants';
 import Namespace from './Namespace';
 import { ArrowBackIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-import NewNamespaceBtn from './NewNamespaceBtn';
+import NewItemBtn from './NewItemBtn';
+import {
+  addNewNamespace,
+  addNewLanguage
+} from '../../../redux/editingRepoSlice';
+import Language from './Language';
 
 const TITLE_PROPS = {
+  fontWeight: 'bold'
+};
+
+const SUB_TITLE_PROPS = {
   fontWeight: 'bold',
-  fontSize: '0.8rem',
-  marginBottom: '0.5'
+  fontSize: '0.8rem'
 };
 
 const Sidebar = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
-  const { namespaces, selectedNamespace, editingRepo, branch } = useAppSelector(
-    (state) => state.EditingRepoReducer
-  );
+  const { t: repoT } = useTranslation('repo');
+  const dispatch = useAppDispatch();
+  const { namespaces, selectedNamespace, editingRepo, branch, languages } =
+    useAppSelector((state) => state.EditingRepoReducer);
 
   const githubLink = `https://github.com/${editingRepo?.fullName}`;
   const branchLink = `${githubLink}/tree/${branch}`;
+
+  const onAddNewNamespace = useCallback((value: string) => {
+    dispatch(addNewNamespace(value));
+  }, []);
+
+  const onAddNewLanguage = useCallback((value: string) => {
+    dispatch(addNewLanguage(value));
+  }, []);
 
   return (
     <Stack overflow="scroll" w={`${SIDEBAR_WIDTH}px`} spacing="3">
@@ -34,34 +61,68 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
         <ArrowBackIcon rotate={180} />
         {t('Back to dashboard')}
       </Link>
-      <Flex flexDir="column" w="100%" p="0 16px">
-        <Text {...TITLE_PROPS}>{t('Repository')}</Text>
-        <Link isExternal href={githubLink}>
-          <ExternalLinkIcon marginBottom={1} /> {editingRepo?.fullName}
-        </Link>
-      </Flex>
-      <Flex flexDir="column" w="100%" p="0 16px">
-        <Text {...TITLE_PROPS}>{t('Branch')}</Text>
-        <Link isExternal href={branchLink}>
-          <ExternalLinkIcon marginBottom={1} /> {branch}
-        </Link>
-      </Flex>
 
-      <Flex flexDir="column" w="100%">
-        <Text {...TITLE_PROPS} p="0 16px">
-          {t('Namespaces')}
-        </Text>
+      <Accordion allowMultiple>
+        <AccordionItem>
+          <AccordionButton justifyContent="space-between">
+            <Text {...TITLE_PROPS}>{t('Repository')}</Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel>
+            <Text {...SUB_TITLE_PROPS}>{t('Repository name')}</Text>
+            <Link isExternal href={githubLink}>
+              <ExternalLinkIcon marginBottom={1} /> {editingRepo?.fullName}
+            </Link>
 
-        {namespaces.map((namespace) => (
-          <Namespace
-            key={namespace}
-            namespace={namespace}
-            isSelected={namespace === selectedNamespace}
-            onCloseSidebar={onClose}
-          />
-        ))}
-        <NewNamespaceBtn onCloseSidebar={onClose} namespaces={namespaces} />
-      </Flex>
+            <Text {...SUB_TITLE_PROPS}>{t('Branch')}</Text>
+            <Link isExternal href={branchLink}>
+              <ExternalLinkIcon marginBottom={1} /> {branch}
+            </Link>
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton justifyContent="space-between">
+            <Text {...TITLE_PROPS}>{t('Namespaces')}</Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel padding={0}>
+            {namespaces.map((namespace) => (
+              <Namespace
+                key={namespace}
+                namespace={namespace}
+                isSelected={namespace === selectedNamespace}
+                onCloseSidebar={onClose}
+              />
+            ))}
+            <NewItemBtn
+              addItemHandler={onAddNewNamespace}
+              onCloseSidebar={onClose}
+              items={namespaces}
+              duplicatedErrMsg={repoT('Namespace already exist')}
+              title={repoT('New namespace')}
+              itemName={t('Namespace')}
+            />
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <AccordionButton justifyContent="space-between">
+            <Text {...TITLE_PROPS}>{t('Languages')}</Text>
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel padding={0}>
+            {languages.map((language) => (
+              <Language key={language} language={language} />
+            ))}
+            <NewItemBtn
+              addItemHandler={onAddNewLanguage}
+              items={languages}
+              duplicatedErrMsg={repoT('Language already exist')}
+              title={repoT('New language')}
+              itemName={t('Language')}
+            />
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
     </Stack>
   );
 };

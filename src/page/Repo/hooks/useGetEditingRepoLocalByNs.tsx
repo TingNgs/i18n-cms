@@ -1,5 +1,4 @@
-import { createSelector } from '@reduxjs/toolkit';
-import { RootState, useAppSelector } from '../../../redux/store';
+import { useAppStore } from '../../../redux/store';
 
 import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
 import {
@@ -7,28 +6,20 @@ import {
   getLocalePath
 } from '../../../utils/fileHelper';
 
-const propsSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.editingRepo?.repo,
-  (state: RootState) => state.EditingRepoReducer.editingRepo?.owner,
-  (state: RootState) => state.EditingRepoReducer.editingRepoConfig,
-  (state: RootState) => state.EditingRepoReducer.branch,
-  (state: RootState) => state.EditingRepoReducer.languages,
-  (repo, owner, repoConfig, branch, languages) => ({
-    repo,
-    owner,
-    repoConfig,
-    branch,
-    languages
-  })
-);
-
 const useGetEditingRepoLocalByNs = () => {
-  const { repo, owner, repoConfig, branch, languages } =
-    useAppSelector(propsSelector);
+  const { getState } = useAppStore();
 
   const [getGithubContent] = useLazyGetGithubContentQuery();
 
   const getLocalByNamespace = async ({ namespace }: { namespace: string }) => {
+    const {
+      editingRepo,
+      editingRepoConfig: repoConfig,
+      branch,
+      originalLanguages: languages
+    } = getState().EditingRepoReducer;
+    const { repo, owner } = editingRepo || {};
+
     if (!repo || !owner || !repoConfig) return;
     const filesPromise = languages.map((language) =>
       getGithubContent({

@@ -19,61 +19,67 @@ import {
   FormLabel,
   ModalCloseButton
 } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
 import { SmallAddIcon } from '@chakra-ui/icons';
 
-import { useAppDispatch } from '../../../redux/store';
 import { useForm } from 'react-hook-form';
 import { useCallback, useRef } from 'react';
-import { addNewNamespace } from '../../../redux/editingRepoSlice';
+import { useTranslation } from 'react-i18next';
 
-const NewNamespaceBtn = ({
+const NewItemBtn = ({
+  addItemHandler,
   onCloseSidebar,
-  namespaces
+  items,
+  duplicatedErrMsg,
+  title,
+  itemName
 }: {
-  onCloseSidebar: () => void;
-  namespaces: string[];
+  addItemHandler: (item: string) => void;
+  onCloseSidebar?: () => void;
+  items: string[];
+  duplicatedErrMsg: string;
+  title: string;
+  itemName: string;
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const isLg = useBreakpointValue(
     { base: false, lg: true },
     { fallback: 'md' }
   );
-  const dispatch = useAppDispatch();
 
   const {
     register,
     handleSubmit,
     setError,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = useForm<{
-    namespace: string;
+    item: string;
   }>();
-  const { isOpen, onToggle, onClose } = useDisclosure();
   const { t } = useTranslation();
-  const { t: repoT } = useTranslation('repo');
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
-  const { ref: namespaceRef, ...namespaceRest } = register('namespace');
+  const { ref: itemRef, ...itemRest } = register('item');
 
   const popoverInputRef = (e: HTMLInputElement) => {
-    namespaceRef(e);
+    itemRef(e);
     inputRef.current = e;
   };
 
   const onSubmit = useCallback(
     handleSubmit((values) => {
-      const { namespace } = values;
-      if (namespaces.includes(namespace)) {
-        setError('namespace', {
-          message: repoT('Namespace already exist', { namespace })
+      const { item } = values;
+      if (items.includes(item)) {
+        setError('item', {
+          message: duplicatedErrMsg
         });
         return;
       }
-      dispatch(addNewNamespace(namespace));
+      addItemHandler(item);
+      setValue('item', '');
       onClose();
-      onCloseSidebar();
+      onCloseSidebar?.();
     }),
-    [namespaces, setError, onClose, onCloseSidebar]
+    [items, setError, onClose, onCloseSidebar]
   );
 
   return (
@@ -92,7 +98,7 @@ const NewNamespaceBtn = ({
             p={2}
             onClick={onToggle}>
             <SmallAddIcon />
-            {repoT('New namespace')}
+            {title}
           </Button>
         </PopoverTrigger>
 
@@ -101,10 +107,10 @@ const NewNamespaceBtn = ({
             <PopoverArrow />
             <PopoverBody>
               <Stack>
-                <FormLabel>{repoT('New namespace')}</FormLabel>
-                <Input ref={popoverInputRef} {...namespaceRest} isRequired />
-                {errors.namespace?.message && (
-                  <Text color="red.500">{errors.namespace?.message}</Text>
+                <FormLabel>{title}</FormLabel>
+                <Input ref={popoverInputRef} {...itemRest} isRequired />
+                {errors.item?.message && (
+                  <Text color="red.500">{errors.item?.message}</Text>
                 )}
               </Stack>
             </PopoverBody>
@@ -120,14 +126,14 @@ const NewNamespaceBtn = ({
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalHeader>{repoT('New namespace')}</ModalHeader>
+          <ModalHeader>{title}</ModalHeader>
           <ModalBody>
             <form onSubmit={onSubmit}>
               <Stack>
-                <FormLabel>{t('Namespace')}</FormLabel>
-                <Input {...register('namespace')} isRequired autoFocus />
-                {errors.namespace?.message && (
-                  <Text color="red.500">{errors.namespace?.message}</Text>
+                <FormLabel>{itemName}</FormLabel>
+                <Input {...register('item')} isRequired autoFocus />
+                {errors.item?.message && (
+                  <Text color="red.500">{errors.item?.message}</Text>
                 )}
 
                 <Button type="submit">{t('Create')}</Button>
@@ -140,4 +146,4 @@ const NewNamespaceBtn = ({
   );
 };
 
-export default NewNamespaceBtn;
+export default NewItemBtn;

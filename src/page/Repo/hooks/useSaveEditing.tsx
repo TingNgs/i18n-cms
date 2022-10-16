@@ -6,6 +6,7 @@ import { RootState, useAppDispatch, useAppStore } from '../../../redux/store';
 import { dataToFiles, getLocalePath } from '../../../utils/fileHelper';
 import { createSelector } from '@reduxjs/toolkit';
 import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
+import { without } from 'lodash-es';
 
 export const isDataChangedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer,
@@ -14,13 +15,18 @@ export const isDataChangedSelector = createSelector(
     modifiedLocalesData,
     languages,
     localeIds,
-    namespaces
+    namespaces,
+    originalLanguages
   }) => {
-    for (const namespace of Object.keys(originalLocalesData)) {
-      if (!namespaces.includes(namespace)) {
-        return true;
-      }
-    }
+    // Removed namespace
+    if (without(Object.keys(originalLocalesData), ...namespaces).length)
+      return true;
+
+    // Removed language
+    if (without(originalLanguages, ...languages).length) return true;
+
+    // New language
+    if (without(languages, ...originalLanguages).length) return true;
 
     const modifiedNamespaces = Object.keys(modifiedLocalesData);
     const data: {
@@ -75,11 +81,14 @@ const useSaveEditing = () => {
           localeIds,
           editingRepo,
           editingRepoConfig,
+          originalLanguages,
+          originalNamespaces,
           originalLocalesData,
           modifiedLocalesData
         } = getState().EditingRepoReducer;
 
         const modifiedNamespaces = Object.keys(modifiedLocalesData);
+
         const data: {
           [namespace: string]: {
             [language: string]: { [key: string]: string };
@@ -106,25 +115,50 @@ const useSaveEditing = () => {
           }
         }
 
+        // New language with unchanged namespaces
+        const newLanguages = without(languages, ...originalLanguages);
+        if (newLanguages.length) {
+          const unchangedNamespaces = without(
+            namespaces,
+            ...modifiedNamespaces
+          );
+          for (const namespace of unchangedNamespaces) {
+            data[namespace] = {};
+            for (const language of newLanguages) {
+              data[namespace][language] = {};
+            }
+          }
+        }
+
         if (!editingRepo || !branch || !editingRepoConfig) return;
 
-        const filesToDelete = Object.keys(originalLocalesData).reduce<string[]>(
-          (acc, namespace) => {
-            if (!namespaces.includes(namespace)) {
-              languages.forEach((language) => {
-                acc.push(
-                  getLocalePath({
-                    language,
-                    namespace,
-                    repoConfig: editingRepoConfig
-                  })
-                );
-              });
-            }
-            return acc;
-          },
-          []
-        );
+        const removedNamespaces = without(originalNamespaces, ...namespaces);
+        const removedLanguages = without(originalLanguages, ...languages);
+
+        const filesToDeleteSet = new Set<string>();
+        // Removed languages
+        removedLanguages.forEach((language) => {
+          originalNamespaces.forEach((namespace) => {
+            const path = getLocalePath({
+              language,
+              namespace,
+              repoConfig: editingRepoConfig
+            });
+            filesToDeleteSet.add(path);
+          });
+        });
+
+        // Removed namespaces
+        removedNamespaces.forEach((namespace) => {
+          originalLanguages.forEach((language) => {
+            const path = getLocalePath({
+              language,
+              namespace,
+              repoConfig: editingRepoConfig
+            });
+            filesToDeleteSet.add(path);
+          });
+        });
 
         const { commit } = await commitGithubFiles({
           owner: editingRepo.owner,
@@ -132,7 +166,7 @@ const useSaveEditing = () => {
           branch: branch,
           change: {
             message: commitMessage,
-            filesToDelete,
+            filesToDelete: Array.from(filesToDeleteSet),
             ignoreDeletionFailures: true,
             files: dataToFiles({
               data,

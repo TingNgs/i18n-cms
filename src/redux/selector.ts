@@ -22,3 +22,10 @@ export const duplicatedKeySelector = createSelector(
     );
   }
 );
+
+export const selectedLanguagesSelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.languages,
+  (state: RootState) => state.EditingRepoReducer.selectedLanguagesMap,
+  (languages, selectedLanguagesMap) =>
+    languages.filter((language) => selectedLanguagesMap[language])
+);

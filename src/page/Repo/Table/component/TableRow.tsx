@@ -4,7 +4,10 @@ import { useBoolean, IconButton, Flex } from '@chakra-ui/react';
 import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
 
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
-import { duplicatedKeySelector } from '../../../../redux/selector';
+import {
+  duplicatedKeySelector,
+  selectedLanguagesSelector
+} from '../../../../redux/selector';
 import { addLocaleAfterIndex } from '../../../../redux/editingRepoSlice';
 
 import KeyCell from './KeyCell';
@@ -27,9 +30,7 @@ const TableRow = ({
   index: number;
 }) => {
   const dispatch = useAppDispatch();
-  const languages = useAppSelector(
-    (state) => state.EditingRepoReducer.selectedLanguages
-  );
+  const languages = useAppSelector(selectedLanguagesSelector);
   const duplicatedKeys = useAppSelector(duplicatedKeySelector);
   const localeKey = useAppSelector(
     (state) =>

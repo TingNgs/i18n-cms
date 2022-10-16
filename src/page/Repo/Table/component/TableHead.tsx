@@ -6,11 +6,10 @@ import { useAppSelector } from '../../../../redux/store';
 
 import { ROW_PROPS, CELL_PROPS } from '../../constants';
 import ActionCell from './ActionCell';
+import { selectedLanguagesSelector } from '../../../../redux/selector';
 
 const TableHead = () => {
-  const languages = useAppSelector(
-    (state) => state.EditingRepoReducer.selectedLanguages
-  );
+  const languages = useAppSelector(selectedLanguagesSelector);
   return (
     <Flex {...ROW_PROPS} position="sticky" top="0" zIndex={2}>
       <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1} gap="1">
