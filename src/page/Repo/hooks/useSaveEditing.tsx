@@ -101,6 +101,13 @@ const useSaveEditing = () => {
             for (const localeId of localeIds[namespace]) {
               const localeData = modifiedLocalesData[namespace][localeId];
               const locale = localeData['value'][language];
+              if (data[namespace][language][localeData['key']]) {
+                toast({
+                  title: repoT('Please remove all duplicated key'),
+                  status: 'error'
+                });
+                return;
+              }
               if (locale) data[namespace][language][localeData['key']] = locale;
             }
             if (

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Flex, Text, useToast } from '@chakra-ui/react';
 import { isEqual } from 'lodash-es';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import useCheckRepoPermissions from './AddRepoButton/useCheckRepoPermissions';
 import { Repo, setEditingRepo } from '../../redux/editingRepoSlice';
@@ -21,7 +21,7 @@ interface IProps {
 const RepoCard = ({ repo, refetch }: IProps) => {
   const { t } = useTranslation('dashboard');
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const history = useHistory();
   const toast = useToast();
   const [isLoading, setLoading] = useState(false);
 
@@ -48,7 +48,7 @@ const RepoCard = ({ repo, refetch }: IProps) => {
           await updateExistingRepo(updatedRepo);
         }
         await dispatch(setEditingRepo(updatedRepo));
-        navigate('/repo');
+        history.push('/repo');
       }
     } finally {
       setLoading(false);

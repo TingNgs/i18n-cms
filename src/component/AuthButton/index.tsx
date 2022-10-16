@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { isAuthSelector } from '../../redux/selector';
 import {
@@ -12,7 +12,7 @@ import { useAppSelector } from '../../redux/store';
 import LoadingModal from '../LoadingModal';
 
 const AuthButton = () => {
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const { t } = useTranslation();
   const [login, { isLoading: isLoginLoading }] = useLoginMutation();
@@ -22,12 +22,12 @@ const AuthButton = () => {
 
   const onLoginClicked = useCallback(async () => {
     await login(undefined).unwrap();
-    navigate('/dashboard');
+    history.push('/dashboard');
   }, [login]);
 
   const onLogoutClicked = useCallback(() => {
     logout(undefined);
-    navigate('/');
+    history.push('/');
   }, [logout]);
 
   if (isLoginLoading || isLogoutLoading) {

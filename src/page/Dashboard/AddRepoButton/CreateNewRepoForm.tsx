@@ -11,7 +11,7 @@ import {
   useToast,
   Select
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import {
@@ -33,7 +33,7 @@ import { useAppDispatch } from '../../../redux/store';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 
 const CreateNewRepoForm = () => {
-  const navigate = useNavigate();
+  const history = useHistory();
   const toast = useToast();
   const { t: dashboardT } = useTranslation('dashboard');
   const { t: commonT } = useTranslation('common');
@@ -104,7 +104,7 @@ const CreateNewRepoForm = () => {
           recentBranches: []
         })
       );
-      navigate('/repo');
+      history.push('/repo');
     } finally {
       setLoading(false);
     }

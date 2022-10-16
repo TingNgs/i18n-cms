@@ -1,5 +1,5 @@
 import { memo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Flex, useBoolean } from '@chakra-ui/react';
 
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -16,7 +16,7 @@ import Header from './Header';
 
 const Repo = () => {
   const [isSidebarOpen, setSidebarOpen] = useBoolean(true);
-  const navigate = useNavigate();
+  const history = useHistory();
   const dispatch = useAppDispatch();
 
   const { editingRepo, branch } = useAppSelector((state) => ({
@@ -25,7 +25,7 @@ const Repo = () => {
   }));
 
   useEffect(() => {
-    if (!editingRepo) navigate('/dashboard');
+    if (!editingRepo) history.push('/dashboard');
   }, [editingRepo]);
 
   useEffect(() => {

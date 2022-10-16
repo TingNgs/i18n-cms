@@ -3,7 +3,7 @@ import { Button, Text, Input, FormLabel, Stack } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import gh from 'parse-github-url';
-import { useNavigate } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import LoadingModal from '../../../component/LoadingModal';
 import { setEditingRepo } from '../../../redux/editingRepoSlice';
@@ -12,7 +12,7 @@ import { useUpdateExistingRepoMutation } from '../../../redux/services/firestore
 import useCheckRepoPermissions from './useCheckRepoPermissions';
 
 const CreateNewRepoForm = () => {
-  const navigate = useNavigate();
+  const history = useHistory();
   const { t } = useTranslation('dashboard');
   const dispatch = useAppDispatch();
   const checkRepoPermissions = useCheckRepoPermissions();
@@ -48,7 +48,7 @@ const CreateNewRepoForm = () => {
         await dispatch(
           setEditingRepo({ ...result.data.repo, recentBranches: [] })
         );
-        navigate('/repo');
+        history.push('/repo');
       }
     } finally {
       setLoading(false);

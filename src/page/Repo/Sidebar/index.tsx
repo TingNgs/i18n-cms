@@ -63,7 +63,7 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
         {t('Back to dashboard')}
       </Link>
 
-      <Accordion allowMultiple defaultIndex={1}>
+      <Accordion allowMultiple defaultIndex={[1]}>
         <AccordionItem>
           <AccordionButton justifyContent="space-between">
             <Text {...TITLE_PROPS}>{t('Repository')}</Text>
