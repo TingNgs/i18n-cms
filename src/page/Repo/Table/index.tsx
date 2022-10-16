@@ -1,7 +1,14 @@
-import { memo, useEffect, HTMLProps, forwardRef, useCallback } from 'react';
+import {
+  memo,
+  useEffect,
+  HTMLProps,
+  forwardRef,
+  useCallback,
+  useRef
+} from 'react';
 import { Flex, Spinner } from '@chakra-ui/react';
 
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList, FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {
   Droppable,
@@ -23,6 +30,7 @@ import TableHead from './component/TableHead';
 import { LIST_PADDING_BOTTOM } from '../constants';
 import { CELL_HEIGHT } from '../../../constants';
 import reorder from '../../../utils/reorder';
+import EventBus, { CustomEvents } from '../../../utils/eventBus';
 
 const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
   function Inner({ children, style, ...rest }, ref) {
@@ -54,6 +62,23 @@ const LocaleTable = () => {
 
   const dispatch = useAppDispatch();
   const getEditingRepoLocalByNs = useGetEditingRepoLocalByNs();
+
+  const listRef = useRef<FixedSizeList>(null);
+
+  useEffect(() => {
+    const handleTableScrollEvent = (
+      e: CustomEvent<CustomEvents['table_scroll_to_index']>
+    ) => {
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToItem(e.detail.index + 1);
+      });
+    };
+
+    EventBus.on('table_scroll_to_index', handleTableScrollEvent);
+    return () => {
+      EventBus.remove('table_scroll_to_index', handleTableScrollEvent);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchNamespaceData = async () => {
@@ -113,6 +138,7 @@ const LocaleTable = () => {
                 )}>
                 {(provided) => (
                   <List
+                    ref={listRef}
                     key={namespace}
                     height={height}
                     itemCount={listSize + 1}

@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { LOCALES_FILE_STRUCTURE, LOCALES_FILE_TYPE } from '../constants';
+import EventBus from '../utils/eventBus';
 
 export interface RepoConfig {
   fileStructure: typeof LOCALES_FILE_STRUCTURE[number];
@@ -181,12 +182,11 @@ export const editingRepoSlice = createSlice({
       if (!namespace || !state.localeIds[namespace]) return state;
       const { index } = action.payload;
       const id = uniqueId(namespace);
-      state.localeIds[namespace].splice(
-        index === undefined ? state.localeIds[namespace].length : index + 1,
-        0,
-        id
-      );
+      const newLocaleIndex =
+        index === undefined ? state.localeIds[namespace].length : index + 1;
+      state.localeIds[namespace].splice(newLocaleIndex, 0, id);
       state.modifiedLocalesData[namespace][id] = { key: id, value: {} };
+      EventBus.dispatch('table_scroll_to_index', { index: newLocaleIndex });
     },
     addNewNamespace: (state, action: PayloadAction<string>) => {
       const namespace = action.payload;
