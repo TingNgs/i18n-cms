@@ -1,6 +1,11 @@
 import { CSSProperties, memo, useCallback } from 'react';
 import { type DraggableProvided } from 'react-beautiful-dnd';
-import { useBoolean, IconButton, Flex } from '@chakra-ui/react';
+import {
+  useBoolean,
+  IconButton,
+  Flex,
+  useBreakpointValue
+} from '@chakra-ui/react';
 import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
 
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
@@ -29,6 +34,7 @@ const TableRow = ({
   localeId: string;
   index: number;
 }) => {
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const dispatch = useAppDispatch();
   const languages = useAppSelector(selectedLanguagesSelector);
   const duplicatedKeys = useAppSelector(duplicatedKeySelector);
@@ -57,23 +63,31 @@ const TableRow = ({
         ...provided.draggableProps.style,
         minWidth: 'fit-content'
       }}>
-      <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1} gap={1}>
+      <Flex
+        {...CELL_PROPS}
+        {...(isMobile ? { minWidth: undefined } : {})}
+        position="sticky"
+        left="0"
+        zIndex={1}
+        gap={1}>
         <Flex {...provided.dragHandleProps} marginRight="2">
           <DragHandleIcon w="3" h="3" />
         </Flex>
 
         <KeyCell
+          isMobile={!!isMobile}
           localeId={localeId}
           isDuplicated={!!duplicatedKeys[localeKey]}
           localeKey={localeKey}
         />
       </Flex>
 
-      {languages.map((language) => (
-        <TableCell key={language} language={language} localeId={localeId} />
-      ))}
+      {!isMobile &&
+        languages.map((language) => (
+          <TableCell key={language} language={language} localeId={localeId} />
+        ))}
       <ActionCell localeId={localeId} localeKey={localeKey} index={index} />
-      {isRowHover && (
+      {!isMobile && isRowHover && (
         <IconButton
           onClick={onAddButtonClicked}
           isRound

@@ -12,10 +12,12 @@ import { useAppDispatch } from '../../../../redux/store';
 import { handleLocaleKeyOnChange } from '../../../../redux/editingRepoSlice';
 
 const TableCell = ({
+  isMobile,
   localeId,
   localeKey,
   isDuplicated
 }: {
+  isMobile: boolean;
   localeId: string;
   localeKey: string;
   isDuplicated: boolean;
@@ -33,7 +35,11 @@ const TableCell = ({
 
   return (
     <>
-      <Editable defaultValue={localeKey} w="100%" onChange={onSubmit}>
+      <Editable
+        value={localeKey}
+        w="100%"
+        onChange={onSubmit}
+        isDisabled={isMobile}>
         <EditablePreview
           w="100%"
           overflow="hidden"

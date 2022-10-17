@@ -18,11 +18,10 @@ import { handleLocaleOnChange } from '../../../../redux/editingRepoSlice';
 
 const localeSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.selectedNamespace,
-  (state: RootState) => state.EditingRepoReducer.localeIds,
   (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
   (state: RootState, language: string) => language,
   (state: RootState, language: string, localeId: string) => localeId,
-  (selectedNamespace, localeIds, modifiedLocalesData, language, localeId) =>
+  (selectedNamespace, modifiedLocalesData, language, localeId) =>
     selectedNamespace &&
     get(
       modifiedLocalesData,
@@ -52,7 +51,7 @@ const TableCell = ({
 
   return (
     <Flex {...CELL_PROPS}>
-      <Editable defaultValue={value} w="100%" onChange={onSubmit}>
+      <Editable value={value} w="100%" onChange={onSubmit}>
         <EditablePreview w="100%" overflow="hidden" noOfLines={2} />
         <EditableInput />
       </Editable>

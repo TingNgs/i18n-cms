@@ -27,12 +27,14 @@ const useGetEditingRepoLocalByNs = () => {
         owner: owner,
         ref: branch,
         path: getLocalePath({ language, namespace, repoConfig })
-      }).unwrap()
+      })
+        .unwrap()
+        .catch(() => null)
     );
     const files = await Promise.all(filesPromise);
     return files.reduce<{ [language: string]: { [key: string]: string } }>(
       (acc, cur, index) => {
-        const file = decodeGithubFileContent(cur);
+        const file = cur ? decodeGithubFileContent(cur) : JSON.stringify({});
         acc[languages[index]] = JSON.parse(file);
         return acc;
       },

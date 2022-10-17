@@ -163,6 +163,17 @@ export const editingRepoSlice = createSlice({
         language
       ] = value;
     },
+    setLocaleDataById: (
+      state,
+      action: PayloadAction<{
+        localeId: string;
+        data: ModifiedLocalesData;
+        namespace: string;
+      }>
+    ) => {
+      const { localeId, data, namespace } = action.payload;
+      state.modifiedLocalesData[namespace][localeId] = data;
+    },
     handleLocaleKeyOnChange: (
       state,
       action: PayloadAction<{ value: string; localeId: string }>
@@ -264,6 +275,7 @@ export const {
   setLanguages,
   setLanguageSelected,
   setLocalesDataByNamespace,
+  setLocaleDataById,
   handleLocaleOnChange,
   handleLocaleKeyOnChange,
   saveLocaleSuccess,

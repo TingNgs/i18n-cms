@@ -47,7 +47,6 @@ const SaveButton = () => {
           'Changes you made may not be saved. Ary you sure you want to leave ?'
         )}
       />
-      ;
     </>
   );
 };

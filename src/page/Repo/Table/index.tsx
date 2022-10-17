@@ -121,9 +121,15 @@ const LocaleTable = () => {
 
   if (!namespace)
     return (
-      <Flex flexGrow={1} align="center" justifyContent="center" gap="4">
+      <Flex
+        flexGrow={1}
+        align="center"
+        justifyContent="center"
+        gap="4"
+        p="4"
+        textAlign="center">
         <ArrowLeftIcon w="6" h="6" />
-        <Text fontSize="3xl">{repoT('Choose namespace you want to edit')}</Text>
+        <Text fontSize="2xl">{repoT('Choose namespace you want to edit')}</Text>
       </Flex>
     );
 

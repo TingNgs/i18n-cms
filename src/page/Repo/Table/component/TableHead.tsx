@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Text, useBreakpointValue } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 
 import { useAppSelector } from '../../../../redux/store';
@@ -9,6 +9,7 @@ import ActionCell from './ActionCell';
 import { selectedLanguagesSelector } from '../../../../redux/selector';
 
 const TableHead = () => {
+  const isMd = useBreakpointValue({ base: false, md: true });
   const languages = useAppSelector(selectedLanguagesSelector);
   return (
     <Flex {...ROW_PROPS} position="sticky" top="0" zIndex={2}>
@@ -18,11 +19,12 @@ const TableHead = () => {
         </Flex>
         <Text fontWeight="bold">Key</Text>
       </Flex>
-      {languages.map((language) => (
-        <Flex {...CELL_PROPS} fontWeight="bold" key={language} flex={1}>
-          <Text noOfLines={2}>{language}</Text>
-        </Flex>
-      ))}
+      {isMd &&
+        languages.map((language) => (
+          <Flex {...CELL_PROPS} fontWeight="bold" key={language} flex={1}>
+            <Text noOfLines={2}>{language}</Text>
+          </Flex>
+        ))}
       <ActionCell />
     </Flex>
   );

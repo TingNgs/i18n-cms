@@ -3,6 +3,7 @@ import { memo } from 'react';
 
 import { CELL_PROPS } from '../../../constants';
 import DeleteBtn from './DeleteBtn';
+import EditModalBtn from './EditModalBtn';
 
 const ActionCell = ({
   localeId,
@@ -26,6 +27,7 @@ const ActionCell = ({
         size="sm"
         visibility={localeId ? 'visible' : 'hidden'}
         pointerEvents={localeId ? 'initial' : 'none'}>
+        <EditModalBtn localeId={localeId} />
         <DeleteBtn localeKey={localeKey} index={index} />
       </ButtonGroup>
     </Flex>
