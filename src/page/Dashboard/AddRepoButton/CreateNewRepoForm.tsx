@@ -110,10 +110,11 @@ const CreateNewRepoForm = () => {
     }
   });
 
-  const [owner, basePath, languages] = watch([
+  const [owner, basePath, languages, fileType] = watch([
     'owner',
     'basePath',
-    'languages'
+    'languages',
+    'fileType'
   ]);
 
   const getLoadingTitle = useCallback(() => {
@@ -168,7 +169,7 @@ const CreateNewRepoForm = () => {
                   key={value}
                   value={value}
                   maxW="100%">
-                  {basePath}/{value}
+                  {basePath}/{value}.{fileType}
                 </Radio>
               ))}
             </Stack>
