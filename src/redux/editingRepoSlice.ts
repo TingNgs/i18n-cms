@@ -10,6 +10,9 @@ export interface RepoConfig {
   fileType: typeof LOCALES_FILE_TYPE[number];
   basePath: string;
   defaultLanguage: string;
+  useCustomPath?: boolean;
+  namespaces?: string[];
+  languages?: string[];
 }
 
 export interface Repo {

@@ -23,7 +23,6 @@
     "i18next-http-backend": "^1.4.4",
     "is-base64": "^1.1.0",
     "lodash-es": "^4.17.21",
-    "module-from-string": "^3.3.0",
     "octokit": "^2.0.7",
     "octokit-commit-multiple-files": "^4.1.0",
     "octokit-plugin-create-pull-request": "^3.13.1",

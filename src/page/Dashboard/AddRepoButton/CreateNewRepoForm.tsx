@@ -60,7 +60,8 @@ const CreateNewRepoForm = () => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const { name, visibility, languages, namespaces, ...repoConfig } = values;
+      const { name, visibility, languages, namespaces, owner, ...repoConfig } =
+        values;
       setLoading(true);
       const repo = await createGithubRepo({
         name,

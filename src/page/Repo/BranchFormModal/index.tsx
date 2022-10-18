@@ -23,9 +23,11 @@ import LoadingModal from '../../../component/LoadingModal';
 
 import { CONFIG_PATH, RECENT_BRANCHES_SIZE } from '../../../constants';
 import useGetLanguagesAndNamespaces from '../hooks/useGetLanguagesAndNamespaces';
+import useGetCustomPathHandler from '../hooks/useGetCustomPathHandler';
 import {
   closeEditingRepo,
   Repo,
+  RepoConfig,
   setEditingRepo,
   setInitialRepoData
 } from '../../../redux/editingRepoSlice';
@@ -68,13 +70,15 @@ const BranchFormModal = ({ repo }: IProps) => {
     useUpdateExistingRepoMutation();
   const [getLanguagesAndNamespaces, { isLoading: isFetchingLngAndNsLoading }] =
     useGetLanguagesAndNamespaces();
+  const [getCustomPathHandler, { isLoading: isFetchingCustomPathHandler }] =
+    useGetCustomPathHandler();
 
   const getLoadingTitle = () => {
     if (isFetchBranchLoading) return t('Fetching branch');
     if (isFetchConfigLoading) return t('Fetching config');
     if (isCreateRefLoading) return t('Creating branch');
     if (isUpdateRepoLoading) return t('Updating config');
-    if (isFetchingLngAndNsLoading)
+    if (isFetchingLngAndNsLoading || isFetchingCustomPathHandler)
       return t('Fetching namespaces and languages');
     return undefined;
   };
@@ -116,7 +120,7 @@ const BranchFormModal = ({ repo }: IProps) => {
         ref: branch.name
       }).unwrap();
 
-      const repoConfig = decodeConfigFile(repoContent);
+      const repoConfig: RepoConfig = decodeConfigFile(repoContent);
       if (!repoConfig) throw new Error('Repo config error');
 
       if (action === 'create') {
@@ -138,21 +142,33 @@ const BranchFormModal = ({ repo }: IProps) => {
         }).unwrap();
         dispatch(setEditingRepo(updatedRepo));
       }
+      const initRepoData = {
+        namespaces: [''],
+        languages: [''],
+        repoConfig,
+        branch: branchName
+      };
 
-      const { namespaces, languages } = await getLanguagesAndNamespaces({
-        repo,
-        repoConfig: repoConfig,
-        branch: branchName,
-        rootSha: branch.commit.commit.tree.sha
-      });
-      dispatch(
-        setInitialRepoData({
-          namespaces,
-          languages,
-          repoConfig,
-          branch: branchName
-        })
-      );
+      if (
+        repoConfig.useCustomPath &&
+        repoConfig.namespaces !== undefined &&
+        repoConfig.languages !== undefined
+      ) {
+        const { namespaces, languages } = repoConfig;
+        initRepoData.namespaces = namespaces;
+        initRepoData.languages = languages;
+        await getCustomPathHandler({ repo, branch: branchName });
+      } else {
+        const { namespaces, languages } = await getLanguagesAndNamespaces({
+          repo,
+          repoConfig: repoConfig,
+          branch: branchName,
+          rootSha: branch.commit.commit.tree.sha
+        });
+        initRepoData.namespaces = namespaces;
+        initRepoData.languages = languages;
+      }
+      dispatch(setInitialRepoData(initRepoData));
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {

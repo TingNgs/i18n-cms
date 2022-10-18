@@ -179,7 +179,15 @@ const useSaveEditing = () => {
               data,
               languages,
               namespaces: Object.keys(data),
-              repoConfig: editingRepoConfig
+              repoConfig: {
+                ...editingRepoConfig,
+                ...(editingRepoConfig.useCustomPath
+                  ? {
+                      languages,
+                      namespaces
+                    }
+                  : {})
+              }
             })
           }
         }).unwrap();

@@ -1,32 +1,31 @@
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
-import { Octokit } from 'octokit';
+import { Octokit } from 'octokit/dist-types';
+
 import { CONFIG_PATH } from '../constants';
 import { RepoConfig } from '../redux/editingRepoSlice';
-const octokit = new Octokit();
 
-const dataToJson = (data: { [key: string]: string }) => {
+const dataToJson = (data: Record<string, unknown>) => {
   return JSON.stringify(data, null, 2);
-};
-
-const dataToJsOrTs = (data: { [key: string]: string }, language: string) => {
-  return `const ${language} = ${dataToJson(
-    data
-  )}; \n\nexport default ${language};`;
 };
 
 export const getLocalePath = ({
   language,
   namespace,
-  repoConfig: { fileStructure, fileType, basePath }
+  repoConfig
 }: {
   language: string;
   namespace: string;
   repoConfig: RepoConfig;
 }) => {
-  const filePath = fileStructure
-    .replace('{lng}', language)
-    .replace('{ns}', namespace)
-    .concat(`.${fileType}`);
+  const { fileStructure, fileType, basePath, useCustomPath } = repoConfig;
+
+  const filePath =
+    useCustomPath && window.getCustomPath
+      ? window.getCustomPath({ namespace, language, repoConfig })
+      : fileStructure
+          .replace('{lng}', language)
+          .replace('{ns}', namespace)
+          .concat(`.${fileType}`);
 
   const fullPath = `${basePath ? `${basePath}/` : ''}${filePath}`;
   return fullPath;
@@ -45,14 +44,8 @@ export const dataToFiles = ({
   };
   repoConfig: RepoConfig;
 }) => {
-  const { fileStructure, fileType, basePath, defaultLanguage } = repoConfig;
   const files: { [path: string]: string } = {
-    [CONFIG_PATH]: dataToJson({
-      fileStructure,
-      fileType,
-      basePath,
-      defaultLanguage
-    })
+    [CONFIG_PATH]: dataToJson(repoConfig as unknown as Record<string, unknown>)
   };
 
   namespaces.forEach((namespace) => {
@@ -61,9 +54,7 @@ export const dataToFiles = ({
       if (!translation) return;
 
       files[getLocalePath({ language, namespace, repoConfig })] =
-        fileType === 'json'
-          ? dataToJson(translation)
-          : dataToJsOrTs(translation, language);
+        dataToJson(translation);
     });
   });
   return files;
@@ -71,7 +62,7 @@ export const dataToFiles = ({
 
 export const decodeGithubFileContent = (
   file: GetResponseDataTypeFromEndpointMethod<
-    typeof octokit.rest.repos.getContent
+    Octokit['rest']['repos']['getContent']
   >
 ) => {
   if (typeof file === 'object' && 'type' in file && file.type === 'file') {
@@ -82,7 +73,7 @@ export const decodeGithubFileContent = (
 
 export const decodeConfigFile = (
   file: GetResponseDataTypeFromEndpointMethod<
-    typeof octokit.rest.repos.getContent
+    Octokit['rest']['repos']['getContent']
   >
 ) => {
   try {

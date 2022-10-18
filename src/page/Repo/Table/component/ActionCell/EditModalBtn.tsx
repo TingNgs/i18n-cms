@@ -45,8 +45,6 @@ const EditModalBtn = ({ localeId }: IProps) => {
       ][localeId || '']
   );
 
-  if (!localeId) return null;
-
   const {
     register,
     handleSubmit,
@@ -57,6 +55,7 @@ const EditModalBtn = ({ localeId }: IProps) => {
   } = useForm<{ key: string; value: { [language: string]: string } }>();
 
   const onSubmit = handleSubmit((data) => {
+    if (!localeId) return null;
     const {
       localeIds,
       modifiedLocalesData,
