@@ -18,10 +18,12 @@
     "@types/react-dom": "^18.0.6",
     "buffer": "^6.0.3",
     "firebase": "^9.12.1",
+    "flat": "^5.0.2",
     "framer-motion": "^7.5.2",
     "i18next": "^21.10.0",
     "i18next-http-backend": "^1.4.4",
     "is-base64": "^1.1.0",
+    "jsonp": "^0.2.1",
     "lodash-es": "^4.17.21",
     "octokit": "^2.0.7",
     "octokit-commit-multiple-files": "^4.1.0",
@@ -70,7 +72,9 @@
     ]
   },
   "devDependencies": {
+    "@types/flat": "^5.0.2",
     "@types/is-base64": "^1.1.1",
+    "@types/jsonp": "^0.2.1",
     "@types/lodash-es": "^4.17.6",
     "@types/parse-github-url": "^1.0.0",
     "@types/path-browserify": "^1.0.0",

@@ -18,8 +18,8 @@ import CreateNewRepoForm from './CreateNewRepoForm';
 import ImportGithubRepoForm from './ImportGithubRepoForm';
 
 const FORM_BUTTON_LIST = [
-  { title: 'Create new repository', id: 'new' },
-  { title: 'Import existing repository', id: 'import' }
+  { title: 'Create new Github repository', id: 'new' },
+  { title: 'Import existing Github repository', id: 'import' }
 ] as const;
 
 const AddRepoButton = () => {

@@ -1,3 +1,4 @@
+import flatten from 'flat';
 import { useAppStore } from '../../../redux/store';
 
 import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
@@ -35,7 +36,7 @@ const useGetEditingRepoLocalByNs = () => {
     return files.reduce<{ [language: string]: { [key: string]: string } }>(
       (acc, cur, index) => {
         const file = cur ? decodeGithubFileContent(cur) : JSON.stringify({});
-        acc[languages[index]] = JSON.parse(file);
+        acc[languages[index]] = flatten(JSON.parse(file));
         return acc;
       },
       {}

@@ -59,7 +59,7 @@ const CreateNewRepoForm = () => {
     <>
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
-          <Text fontSize="2xl">{t('Import existing i18n repository')}</Text>
+          <Text fontSize="2xl">{t('Import existing Github repository')}</Text>
 
           <FormLabel>{t('Github repository url')}</FormLabel>
           <Input

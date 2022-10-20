@@ -226,7 +226,10 @@ export const editingRepoSlice = createSlice({
     removeLocaleOnIndex: (state, action: PayloadAction<{ index: number }>) => {
       const namespace = state.selectedNamespace;
       if (!namespace) return state;
-      state.localeIds[namespace].splice(action.payload.index, 1);
+      const { index } = action.payload;
+      const localeId = state.localeIds[namespace][index];
+      delete state.modifiedLocalesData[namespace][localeId];
+      state.localeIds[namespace].splice(index, 1);
     },
     addNewNamespace: (state, action: PayloadAction<string>) => {
       const namespace = action.payload;

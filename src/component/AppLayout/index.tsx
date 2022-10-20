@@ -1,18 +1,21 @@
 import { PropsWithChildren } from 'react';
 
-import { Flex } from '@chakra-ui/react';
-import { useLocation } from 'react-router-dom';
+import { Button, ButtonGroup, Flex } from '@chakra-ui/react';
+import { Link, useLocation } from 'react-router-dom';
 
 import useAuth from '../../hooks/useAuth';
 
 import AuthButton from '../AuthButton';
 import LoadingModal from '../LoadingModal';
 import { useAppSelector } from '../../redux/store';
+import { isAuthSelector } from '../../redux/selector';
 
 const AppLayout = ({ children }: PropsWithChildren) => {
   const location = useLocation();
   const authState = useAppSelector((state) => state.AppReducer.authState);
   useAuth();
+
+  const isAuth = useAppSelector(isAuthSelector);
 
   if (authState === 'initial') {
     return <LoadingModal />;
@@ -22,7 +25,17 @@ const AppLayout = ({ children }: PropsWithChildren) => {
     <Flex direction="column" h="100%">
       {location.pathname !== '/repo' && (
         <Flex align="flex-end" justifyContent="flex-end" padding="2">
-          <AuthButton />
+          <ButtonGroup>
+            <Link to="/doc">
+              <Button variant="ghost">Doc</Button>
+            </Link>
+            {isAuth && (
+              <Link to="/dashboard">
+                <Button variant="ghost">Get Started</Button>
+              </Link>
+            )}
+            <AuthButton />
+          </ButtonGroup>
         </Flex>
       )}
       {children}

@@ -8,18 +8,37 @@ export const isAuthSelector = createSelector(
 );
 
 export const duplicatedKeySelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.localeIds,
   (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
   (state: RootState, namespace?: string) =>
     namespace || state.EditingRepoReducer.selectedNamespace,
-  (modifiedLocalesData, namespace) => {
+  (localeIds, modifiedLocalesData, namespace) => {
     if (!namespace || !modifiedLocalesData[namespace]) return {};
-    const keys = Object.entries(modifiedLocalesData[namespace]).map(
-      ([, data]) => data.key
-    );
-    return mapValues(
-      pickBy(groupBy(keys), (value) => value.length > 1),
-      () => true
-    );
+    const nestedKeyList: string[] = [];
+    const keys = localeIds[namespace].map((localeId) => {
+      const data = modifiedLocalesData[namespace][localeId];
+      const { key } = data;
+      if (key.split('.').length > 1) {
+        nestedKeyList.push(data.key);
+      }
+      return data.key;
+    });
+
+    const keyCountMap = mapValues(groupBy(keys), (value) => value.length);
+
+    nestedKeyList.forEach((nestedKey) => {
+      const keyArray = nestedKey.split('.');
+      keyArray.forEach((n, index) => {
+        const key = keyArray.slice(0, index + 1).join('.');
+        if (index === keyArray.length - 1) return;
+        if (keyCountMap[key]) {
+          keyCountMap[key]++;
+          keyCountMap[nestedKey]++;
+        }
+      });
+    });
+
+    return pickBy(keyCountMap, (value) => value > 1);
   }
 );
 

@@ -35,7 +35,9 @@ const AuthButton = () => {
   }
 
   return isAuth ? (
-    <Button onClick={onLogoutClicked}>{t('Logout')}</Button>
+    <Button onClick={onLogoutClicked} variant="outline">
+      {t('Logout')}
+    </Button>
   ) : (
     <Button onClick={onLoginClicked}>{t('Login with Github')}</Button>
   );

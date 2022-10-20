@@ -128,7 +128,9 @@ const CreateNewRepoForm = () => {
     <>
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
-          <Text fontSize="2xl">{dashboardT('Create new i18n repository')}</Text>
+          <Text fontSize="2xl">
+            {dashboardT('Create new Github repository')}
+          </Text>
 
           <FormLabel>{commonT('Owner')}</FormLabel>
           <Controller

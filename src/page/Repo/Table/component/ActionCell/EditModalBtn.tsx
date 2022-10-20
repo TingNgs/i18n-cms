@@ -22,10 +22,14 @@ import {
   useAppStore
 } from '../../../../../redux/store';
 import { setLocaleDataById } from '../../../../../redux/editingRepoSlice';
+import { flatten, unflatten } from 'flat';
 
 interface IProps {
   localeId?: string;
 }
+
+const isDuplicatedKey = (key1: string, key2: string) =>
+  Object.keys(flatten(unflatten({ [key1]: true, [key2]: true }))).length !== 2;
 
 const EditModalBtn = ({ localeId }: IProps) => {
   const dispatch = useAppDispatch();
@@ -65,7 +69,7 @@ const EditModalBtn = ({ localeId }: IProps) => {
 
     for (const id of localeIds[namespace]) {
       if (id === localeId) continue;
-      if (modifiedLocalesData[namespace][id].key === data.key) {
+      if (isDuplicatedKey(modifiedLocalesData[namespace][id].key, data.key)) {
         setError('key', { message: repoT('Duplicated key') });
         setFocus('key');
         return;

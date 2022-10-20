@@ -7,6 +7,7 @@ import { dataToFiles, getLocalePath } from '../../../utils/fileHelper';
 import { createSelector } from '@reduxjs/toolkit';
 import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
 import { without } from 'lodash-es';
+import { unflatten } from 'flat';
 
 export const isDataChangedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer,
@@ -42,8 +43,8 @@ export const isDataChangedSelector = createSelector(
           if (locale) data[namespace][language][localeData['key']] = locale;
         }
         if (
-          JSON.stringify(data[namespace]?.[language]) ===
-          JSON.stringify(originalLocalesData[namespace]?.[language])
+          JSON.stringify(unflatten(data[namespace]?.[language])) ===
+          JSON.stringify(unflatten(originalLocalesData[namespace]?.[language]))
         ) {
           delete data[namespace][language];
         } else {
@@ -110,9 +111,12 @@ const useSaveEditing = () => {
               }
               if (locale) data[namespace][language][localeData['key']] = locale;
             }
+            data[namespace][language] = unflatten(data[namespace][language]);
             if (
-              JSON.stringify(data[namespace]?.[language]) ===
-              JSON.stringify(originalLocalesData[namespace]?.[language])
+              JSON.stringify(data[namespace][language]) ===
+              JSON.stringify(
+                unflatten(originalLocalesData[namespace]?.[language])
+              )
             ) {
               delete data[namespace][language];
             }

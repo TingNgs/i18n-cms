@@ -63,7 +63,10 @@ const useGetLanguagesAndNamespaces = () => {
           (acc, cur) => {
             if (!cur.path) return acc;
             const { dir, name } = path.parse(cur.path);
-            if (repoConfig.basePath === '' && (dir === CONFIG_FOLDER || !dir)) {
+            if (
+              repoConfig.basePath === '' &&
+              (dir === CONFIG_FOLDER || !dir || dir.startsWith('.'))
+            ) {
               return acc;
             }
             if (repoConfig.fileStructure === '{lng}/{ns}') {
