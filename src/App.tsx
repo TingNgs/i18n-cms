@@ -10,9 +10,11 @@ import Repo from './page/Repo';
 
 import { useAppSelector } from './redux/store';
 import { isAuthSelector } from './redux/selector';
+import usePageTracking from './hooks/usePageTracking';
 
 function App() {
   const isAuth = useAppSelector(isAuthSelector);
+  usePageTracking();
 
   return (
     <Suspense fallback={<LoadingModal />}>

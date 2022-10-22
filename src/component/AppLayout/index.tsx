@@ -1,6 +1,11 @@
 import { PropsWithChildren } from 'react';
 
-import { Button, ButtonGroup, Flex } from '@chakra-ui/react';
+import {
+  Button,
+  ButtonGroup,
+  Flex,
+  Link as ChakraLink
+} from '@chakra-ui/react';
 import { Link, useLocation } from 'react-router-dom';
 
 import useAuth from '../../hooks/useAuth';
@@ -27,12 +32,17 @@ const AppLayout = ({ children }: PropsWithChildren) => {
       {location.pathname !== '/repo' && (
         <Flex justifyContent="flex-end" padding="2">
           <ButtonGroup flexWrap="wrap" alignItems="center">
-            <a
+            <ChakraLink
+              p="0 12px"
+              fontWeight="bold"
+              color="blue.500"
+              h="100%"
+              display="flex"
+              alignItems="center"
               href={process.env.REACT_APP_DOC_URL}
-              target="_blank"
-              rel="noreferrer noopener">
-              <Button variant="ghost">Doc</Button>
-            </a>
+              isExternal>
+              Doc
+            </ChakraLink>
             {isAuth && location.pathname !== '/dashboard' && (
               <Link to="/dashboard">
                 <Button variant="ghost">Get Started</Button>
