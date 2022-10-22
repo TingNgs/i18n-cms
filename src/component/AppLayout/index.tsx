@@ -9,6 +9,7 @@ import AuthButton from '../AuthButton';
 import LoadingModal from '../LoadingModal';
 import { useAppSelector } from '../../redux/store';
 import { isAuthSelector } from '../../redux/selector';
+import LanguageSelector from '../LanguageSelector';
 
 const AppLayout = ({ children }: PropsWithChildren) => {
   const location = useLocation();
@@ -24,19 +25,20 @@ const AppLayout = ({ children }: PropsWithChildren) => {
   return (
     <Flex direction="column" h="100%">
       {location.pathname !== '/repo' && (
-        <Flex align="flex-end" justifyContent="flex-end" padding="2">
-          <ButtonGroup>
+        <Flex justifyContent="flex-end" padding="2">
+          <ButtonGroup flexWrap="wrap" alignItems="center">
             <a
               href={process.env.REACT_APP_DOC_URL}
               target="_blank"
               rel="noreferrer noopener">
               <Button variant="ghost">Doc</Button>
             </a>
-            {isAuth && (
+            {isAuth && location.pathname !== '/dashboard' && (
               <Link to="/dashboard">
                 <Button variant="ghost">Get Started</Button>
               </Link>
             )}
+            <LanguageSelector />
             <AuthButton />
           </ButtonGroup>
         </Flex>

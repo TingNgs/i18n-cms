@@ -25,7 +25,7 @@ const Header = ({
   }, []);
 
   return (
-    <Flex w="100%" justifyContent="space-between">
+    <Flex w="100%" justifyContent="space-between" flexWrap="wrap">
       <IconButton
         w="56px"
         h="56px"
@@ -42,7 +42,7 @@ const Header = ({
         onClick={setSidebarOpen.toggle}
         bgColor="white"
       />
-      <Flex p={2} flex={1} alignItems="center" gap={2}>
+      <Flex p={2} flex={1} alignItems="center" gap={2} flexWrap="wrap">
         <Text fontWeight="bold">{selectedNamespace}</Text>
         <Flex flex={1} justifyContent="flex-end" gap={2}>
           <ButtonGroup isAttached>
@@ -55,6 +55,7 @@ const Header = ({
             </Button>
             <ActionButton setSidebarOpen={setSidebarOpen} />
           </ButtonGroup>
+
           <SaveButton />
         </Flex>
       </Flex>

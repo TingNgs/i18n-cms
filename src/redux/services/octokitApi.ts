@@ -2,7 +2,7 @@ import { Octokit } from 'octokit';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { REPOSITORY_VISIBILITY } from '../../constants';
-import { getSessionStorage } from '../../utils/sessionStorage';
+import { getSessionStorage } from '../../utils/storage';
 import commitMultipleFiles, {
   Options as CommentMultipleFilesOptions
 } from '../../utils/commitMultipleFiles';

@@ -8,7 +8,8 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon
+  AccordionIcon,
+  Flex
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
@@ -22,6 +23,7 @@ import {
 } from '../../../redux/editingRepoSlice';
 
 import LanguageList from './LanguageList';
+import LanguageSelector from '../../../component/LanguageSelector';
 
 const TITLE_PROPS = {
   fontWeight: 'bold'
@@ -51,7 +53,7 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
   }, []);
 
   return (
-    <Stack overflow="scroll" w={`${SIDEBAR_WIDTH}px`} spacing="3">
+    <Stack overflow="scroll" w={`${SIDEBAR_WIDTH}px`} spacing="3" flex="1">
       <Link
         as={RouterLink}
         to="/dashboard"
@@ -122,6 +124,9 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+      <Flex p="4" flex={1} alignItems="flex-end" flexDir="row">
+        <LanguageSelector />
+      </Flex>
     </Stack>
   );
 };

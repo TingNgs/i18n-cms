@@ -9,10 +9,7 @@ import {
   setPersistence
 } from 'firebase/auth';
 import firebase from '../../utils/firebase';
-import {
-  removeSessionStorage,
-  setSessionStorage
-} from '../../utils/sessionStorage';
+import { removeSessionStorage, setSessionStorage } from '../../utils/storage';
 
 const auth = getAuth(firebase);
 const provider = new GithubAuthProvider();

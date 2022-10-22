@@ -5,7 +5,7 @@ import { useAppDispatch, useAppStore } from '../redux/store';
 import firebase from '../utils/firebase';
 
 import { setAuthState } from '../redux/appSlice';
-import { getSessionStorage } from '../utils/sessionStorage';
+import { getSessionStorage } from '../utils/storage';
 
 const auth = getAuth(firebase);
 

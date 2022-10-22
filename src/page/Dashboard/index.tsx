@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   return (
     <Stack alignItems="center" width="100%">
-      <Stack width="300px">
+      <Stack width="300px" maxW={'100%'}>
         <AddRepoButton />
         <Text fontSize="2xl">{t('Existing repository')}</Text>
         {data ? (
