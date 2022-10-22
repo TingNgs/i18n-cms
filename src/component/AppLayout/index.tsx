@@ -26,9 +26,12 @@ const AppLayout = ({ children }: PropsWithChildren) => {
       {location.pathname !== '/repo' && (
         <Flex align="flex-end" justifyContent="flex-end" padding="2">
           <ButtonGroup>
-            <Link to="/doc">
+            <a
+              href={process.env.REACT_APP_DOC_URL}
+              target="_blank"
+              rel="noreferrer noopener">
               <Button variant="ghost">Doc</Button>
-            </Link>
+            </a>
             {isAuth && (
               <Link to="/dashboard">
                 <Button variant="ghost">Get Started</Button>

@@ -25,7 +25,6 @@ const useGetCustomPathHandler = () => {
         ref: branch,
         path: CUSTOM_PATH_HANDLER_PATH
       }).unwrap();
-      console.log(file);
       const module = await import(
         /* webpackIgnore: true */ `data:text/javascript;base64,${get(
           file,
