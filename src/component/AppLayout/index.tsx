@@ -4,7 +4,9 @@ import {
   Button,
   ButtonGroup,
   Flex,
-  Link as ChakraLink
+  Link as ChakraLink,
+  Image,
+  Text
 } from '@chakra-ui/react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -30,7 +32,16 @@ const AppLayout = ({ children }: PropsWithChildren) => {
   return (
     <Flex direction="column" h="100%">
       {location.pathname !== '/repo' && (
-        <Flex justifyContent="flex-end" padding="2">
+        <Flex justifyContent="space-between" padding="2">
+          <Link to="/">
+            <Flex gap="2" alignItems="center">
+              <Image w="10" h="10" src="/logo.svg" />
+              <Text color="blue.500" fontWeight="bold">
+                i18n cms
+              </Text>
+            </Flex>
+          </Link>
+
           <ButtonGroup flexWrap="wrap" alignItems="center">
             <ChakraLink
               p="0 12px"
