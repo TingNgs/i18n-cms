@@ -1,3 +1,6 @@
+import { HamburgerIcon } from '@chakra-ui/icons';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ButtonGroup,
   Flex,
@@ -25,10 +28,9 @@ import AuthButton from '../../AuthButton';
 import { useAppSelector } from '../../../redux/store';
 import { isAuthSelector } from '../../../redux/selector';
 import LanguageSelector from '../../LanguageSelector';
-import { HamburgerIcon } from '@chakra-ui/icons';
-import { useEffect } from 'react';
 
 const Header = () => {
+  const { t } = useTranslation();
   const isDesktop = useBreakpointValue({ base: false, md: true });
   const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,7 +64,7 @@ const Header = () => {
               display="flex"
               to="/dashboard"
               alignItems="center">
-              Get Started
+              {t('Get Started')}
             </ChakraLink>
           )}
           <ChakraLink
@@ -74,7 +76,7 @@ const Header = () => {
             alignItems="center"
             href={process.env.REACT_APP_DOC_URL}
             isExternal>
-            Doc
+            {t('Documentation')}
           </ChakraLink>
           <ChakraLink
             p="0 12px"
@@ -116,7 +118,7 @@ const Header = () => {
                 to="/"
                 alignItems="center"
                 onClick={onClose}>
-                Home
+                {t('Home')}
               </ChakraLink>
               {isAuth && (
                 <ChakraLink
@@ -129,7 +131,7 @@ const Header = () => {
                   to="/dashboard"
                   alignItems="center"
                   onClick={onClose}>
-                  Dashboard
+                  {t('Dashboard')}
                 </ChakraLink>
               )}
               <ChakraLink
@@ -142,7 +144,7 @@ const Header = () => {
                 href={process.env.REACT_APP_DOC_URL}
                 isExternal
                 onClick={onClose}>
-                Doc
+                {t('Documentation')}
               </ChakraLink>
             </Stack>
           </DrawerBody>

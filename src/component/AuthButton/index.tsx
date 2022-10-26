@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
+import { AiOutlineGithub } from 'react-icons/ai';
 
 import { isAuthSelector } from '../../redux/selector';
 import {
@@ -39,7 +40,9 @@ const AuthButton = () => {
       {t('Logout')}
     </Button>
   ) : (
-    <Button onClick={onLoginClicked}>{t('Login with Github')}</Button>
+    <Button onClick={onLoginClicked} leftIcon={<AiOutlineGithub />}>
+      {t('Login with GitHub')}
+    </Button>
   );
 };
 

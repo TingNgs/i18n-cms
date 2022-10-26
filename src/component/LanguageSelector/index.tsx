@@ -7,7 +7,7 @@ import {
   MenuList
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { HiLanguage } from 'react-icons/hi2';
+import { IoLanguageOutline } from 'react-icons/io5';
 
 const LanguageSelector = ({ onChange }: { onChange?: () => void }) => {
   const { i18n, t } = useTranslation();
@@ -17,7 +17,7 @@ const LanguageSelector = ({ onChange }: { onChange?: () => void }) => {
       <MenuButton
         as={IconButton}
         aria-label="language-selector"
-        icon={<Icon color="white" as={HiLanguage}></Icon>}
+        icon={<Icon color="white" as={IoLanguageOutline}></Icon>}
       />
       <MenuList>
         {['en', 'zh'].map((language) => (
