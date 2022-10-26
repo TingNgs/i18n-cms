@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Button, Text, Input, FormLabel, Stack } from '@chakra-ui/react';
+import {
+  Button,
+  Text,
+  Input,
+  FormLabel,
+  Stack,
+  Link,
+  Alert,
+  AlertIcon
+} from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import gh from 'parse-github-url';
@@ -10,6 +19,7 @@ import { setEditingRepo } from '../../../redux/editingRepoSlice';
 import { useAppDispatch } from '../../../redux/store';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import useCheckRepoPermissions from './useCheckRepoPermissions';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 const CreateNewRepoForm = () => {
   const history = useHistory();
@@ -60,6 +70,17 @@ const CreateNewRepoForm = () => {
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
           <Text fontSize="2xl">{t('Import existing Github repository')}</Text>
+          <Alert>
+            <AlertIcon display={'inline-block'} />
+            <Text>
+              {t('Setup repo warning')}
+              <Link
+                href={`${process.env.REACT_APP_DOC_URL}add-repository/existing-repo/#setup-your-existing-repository`}
+                isExternal>
+                <ExternalLinkIcon _hover={{ color: 'blue.500' }} m={'0 4px'} />
+              </Link>
+            </Text>
+          </Alert>
 
           <FormLabel>{t('Github repository url')}</FormLabel>
           <Input
