@@ -29,7 +29,9 @@ const OwnerSelect = ({ value, onChange }: IProps) => {
 
   useEffect(() => {
     if (data.length && !value) {
-      onChange(data[0]);
+      setTimeout(() => {
+        onChange(data[0]);
+      });
     }
   }, [value, onChange, data]);
 
