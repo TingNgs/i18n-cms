@@ -10,14 +10,13 @@ import {
   useLogoutMutation
 } from '../../redux/services/authApi';
 import { useAppSelector } from '../../redux/store';
-import LoadingModal from '../LoadingModal';
 
 const AuthButton = () => {
   const history = useHistory();
 
   const { t } = useTranslation();
-  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
-  const [logout, { isLoading: isLogoutLoading }] = useLogoutMutation();
+  const [login] = useLoginMutation();
+  const [logout] = useLogoutMutation();
 
   const isAuth = useAppSelector(isAuthSelector);
 
@@ -30,10 +29,6 @@ const AuthButton = () => {
     logout(undefined);
     history.push('/');
   }, [logout]);
-
-  if (isLoginLoading || isLogoutLoading) {
-    return <LoadingModal />;
-  }
 
   return isAuth ? (
     <Button onClick={onLogoutClicked} variant="outline">
