@@ -1,9 +1,9 @@
 
-<p align="center">
+<div align="center">
   <img src="public/logo.svg"  width="100" height="100" margin="0 auto">
-</p>
+  <h1>i18n-cms</h1>
+</div>
 
-# i18n-cms
 i18n cms is a git-based CMS.
 Integrating this app into your GitHub repository, and help you to manage the translations.
 All translations are stored in your GitHub repository for better versioning and publishing.
