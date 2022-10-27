@@ -14,7 +14,9 @@ import {
   Input,
   Button,
   useToast,
-  Flex
+  Flex,
+  Alert,
+  AlertIcon
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -39,6 +41,7 @@ import {
 } from '../../../redux/services/octokitApi';
 import { useAppDispatch } from '../../../redux/store';
 import { decodeConfigFile } from '../../../utils/fileHelper';
+import SetupRepoAlert from '../../../component/SetupRepoAlert';
 
 interface IProps {
   repo: Repo;
@@ -52,9 +55,12 @@ interface FormValues {
   isRecentBranch: boolean;
 }
 
+const CONFIG_NOT_FOUND_ERROR_TYPE = 'config_not_found';
+
 const BranchFormModal = ({ repo }: IProps) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation('repo');
+
   const { t: commonT } = useTranslation();
   const toast = useToast();
 
@@ -207,7 +213,8 @@ const BranchFormModal = ({ repo }: IProps) => {
         }
       } else if (e?.message === 'Not Found') {
         setError(action === 'create' ? 'baseOn' : 'existingBranchName', {
-          message: t('Config file not found in this branch')
+          message: t('Config file not found in this branch'),
+          type: CONFIG_NOT_FOUND_ERROR_TYPE
         });
       } else if (
         action === 'create' &&
@@ -239,6 +246,10 @@ const BranchFormModal = ({ repo }: IProps) => {
           <ModalCloseButton />
           <ModalBody>
             <Stack>
+              <Alert>
+                <AlertIcon />
+                <Text>{t('Branch alert')}</Text>
+              </Alert>
               {repo.recentBranches?.length && (
                 <>
                   <Text>{t('Recent branches')}</Text>
@@ -286,7 +297,11 @@ const BranchFormModal = ({ repo }: IProps) => {
                         required
                       />
                       {errors.baseOn && (
-                        <Text color="red.500">{errors.baseOn.message}</Text>
+                        <>
+                          <Text color="red.500">{errors.baseOn.message}</Text>
+                          {errors.baseOn.type ===
+                            CONFIG_NOT_FOUND_ERROR_TYPE && <SetupRepoAlert />}
+                        </>
                       )}
                       <FormLabel>{t('New branch name')}</FormLabel>
                       <Input
@@ -321,9 +336,13 @@ const BranchFormModal = ({ repo }: IProps) => {
                         required
                       />
                       {errors.existingBranchName && (
-                        <Text color="red.500">
-                          {errors.existingBranchName.message}
-                        </Text>
+                        <>
+                          <Text color="red.500">
+                            {errors.existingBranchName.message}
+                          </Text>
+                          {errors.existingBranchName.type ===
+                            CONFIG_NOT_FOUND_ERROR_TYPE && <SetupRepoAlert />}
+                        </>
                       )}
                     </>
                   )}
