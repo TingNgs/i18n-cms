@@ -45,8 +45,8 @@ const RepoCard = ({ repo, refetch }: IProps) => {
         const updatedRepo = { ...repo, ...validRepo };
         if (!isEqual(validRepo, repo)) {
           await removeExistingRepo(repo);
-          await updateExistingRepo(updatedRepo);
         }
+        await updateExistingRepo(updatedRepo);
         await dispatch(setEditingRepo(updatedRepo));
         history.push('/repo');
       }

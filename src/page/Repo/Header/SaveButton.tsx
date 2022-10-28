@@ -1,22 +1,41 @@
 import { memo, useCallback, useEffect } from 'react';
-import { Button } from '@chakra-ui/react';
+import { Button, useToast } from '@chakra-ui/react';
 import { Prompt } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
-import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import {
+  useAppDispatch,
+  useAppSelector,
+  useAppStore
+} from '../../../redux/store';
 
 import { isDataChangedSelector } from '../hooks/useSaveEditing';
 
 import { setSaveModalOpen } from '../../../redux/editingRepoSlice';
-import { useTranslation } from 'react-i18next';
+import { duplicatedKeySelector } from '../../../redux/selector';
 
 const SaveButton = () => {
   const { t } = useTranslation();
   const { t: repoT } = useTranslation('repo');
+  const toast = useToast();
 
   const dispatch = useAppDispatch();
+  const { getState } = useAppStore();
   const isDataChanged = useAppSelector(isDataChangedSelector);
 
   const openSaveModal = useCallback(() => {
+    const state = getState();
+    const { namespaces } = state.EditingRepoReducer;
+    for (const namespace of namespaces) {
+      if (Object.keys(duplicatedKeySelector(state, namespace)).length > 0) {
+        toast({
+          title: repoT('Please remove all duplicated key'),
+          status: 'error'
+        });
+        return;
+      }
+    }
+
     dispatch(setSaveModalOpen(true));
   }, []);
 

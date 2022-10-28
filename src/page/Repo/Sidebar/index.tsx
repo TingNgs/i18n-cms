@@ -24,6 +24,7 @@ import {
 
 import LanguageList from './LanguageList';
 import LanguageSelector from '../../../component/LanguageSelector';
+import { getGithubBranchUrl, getGithubUrl } from '../../../utils';
 
 const TITLE_PROPS = {
   fontWeight: 'bold'
@@ -41,9 +42,6 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
   const { namespaces, selectedNamespace, editingRepo, branch, languages } =
     useAppSelector((state) => state.EditingRepoReducer);
 
-  const githubLink = `https://github.com/${editingRepo?.fullName}`;
-  const branchLink = `${githubLink}/tree/${branch}`;
-
   const onAddNewNamespace = useCallback((value: string) => {
     dispatch(addNewNamespace(value));
   }, []);
@@ -51,6 +49,11 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
   const onAddNewLanguage = useCallback((value: string) => {
     dispatch(addNewLanguage(value));
   }, []);
+
+  if (!editingRepo || !branch) return null;
+
+  const githubLink = getGithubUrl(editingRepo);
+  const branchLink = getGithubBranchUrl(editingRepo, branch);
 
   return (
     <Stack overflow="scroll" w={`${SIDEBAR_WIDTH}px`} spacing="3" flex="1">

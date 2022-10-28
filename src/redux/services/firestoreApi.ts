@@ -4,9 +4,12 @@ import {
   getFirestore,
   setDoc,
   doc,
-  collection,
   getDocs,
-  deleteDoc
+  collection,
+  query,
+  deleteDoc,
+  orderBy,
+  Timestamp
 } from 'firebase/firestore';
 import firebase from '../../utils/firebase';
 import { Repo } from '../editingRepoSlice';
@@ -24,7 +27,12 @@ export const FirestoreApi = createApi({
       queryFn: async (arg, { getState }) => {
         const uid = (getState() as RootState).AppReducer.firebaseUid;
         if (!uid) throw new Error('no uid');
-        const q = await getDocs(collection(db, 'users', uid, 'repos'));
+        const q = await getDocs(
+          query(
+            collection(db, 'users', uid, 'repos'),
+            orderBy('updated_at', 'desc')
+          )
+        );
         const data: Repo[] = [];
         q.forEach((e) => data.push(e.data() as Repo));
         return { data };
@@ -41,7 +49,8 @@ export const FirestoreApi = createApi({
           repo,
           owner,
           fullName,
-          recentBranches
+          recentBranches,
+          updated_at: Timestamp.now()
         });
 
         return {

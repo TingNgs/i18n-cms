@@ -16,11 +16,13 @@ import {
   useToast,
   Flex,
   Alert,
-  AlertIcon
+  AlertIcon,
+  Link
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { ExternalLinkIcon } from '@chakra-ui/icons';
 import LoadingModal from '../../../component/LoadingModal';
 
 import { CONFIG_PATH, RECENT_BRANCHES_SIZE } from '../../../constants';
@@ -42,6 +44,7 @@ import {
 import { useAppDispatch } from '../../../redux/store';
 import { decodeConfigFile } from '../../../utils/fileHelper';
 import SetupRepoAlert from '../../../component/SetupRepoAlert';
+import { getGithubUrl } from '../../../utils';
 
 interface IProps {
   repo: Repo;
@@ -231,6 +234,8 @@ const BranchFormModal = ({ repo }: IProps) => {
     }
   };
 
+  if (!repo) return null;
+
   return (
     <>
       <Modal
@@ -250,31 +255,36 @@ const BranchFormModal = ({ repo }: IProps) => {
                 <AlertIcon />
                 <Text>{t('Branch alert')}</Text>
               </Alert>
-              {repo.recentBranches?.length && (
-                <>
-                  <Text>{t('Recent branches')}</Text>
-                  {repo.recentBranches?.map((branchName) => (
-                    <Flex
-                      key={branchName}
-                      cursor="pointer"
-                      onClick={() => {
-                        onSubmit({
-                          action: 'existing',
-                          baseOn: '',
-                          newBranchName: '',
-                          existingBranchName: branchName,
-                          isRecentBranch: true
-                        });
-                      }}>
-                      <Text color="blue.500">{branchName}</Text>
-                    </Flex>
-                  ))}
-                  <Divider />
-                </>
-              )}
-
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack>
+                  <Text fontWeight="semibold">{commonT('Repository')}</Text>
+                  <Link isExternal href={getGithubUrl(repo)}>
+                    <ExternalLinkIcon marginBottom={1} /> {repo?.fullName}
+                  </Link>
+                  <Divider />
+
+                  {repo.recentBranches?.length && (
+                    <>
+                      <Text fontWeight="semibold">{t('Recent branches')}</Text>
+                      {repo.recentBranches?.map((branchName) => (
+                        <Flex
+                          key={branchName}
+                          cursor="pointer"
+                          onClick={() => {
+                            onSubmit({
+                              action: 'existing',
+                              baseOn: '',
+                              newBranchName: '',
+                              existingBranchName: branchName,
+                              isRecentBranch: true
+                            });
+                          }}>
+                          <Text color="blue.500">{branchName}</Text>
+                        </Flex>
+                      ))}
+                      <Divider />
+                    </>
+                  )}
                   <RadioGroup defaultValue="existing">
                     <Stack>
                       <Radio {...register('action')} value="existing">

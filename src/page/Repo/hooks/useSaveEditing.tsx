@@ -1,13 +1,14 @@
 import { useCallback, useState } from 'react';
 import { useToast, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import { createSelector } from '@reduxjs/toolkit';
+import { without } from 'lodash-es';
+import { unflatten } from 'flat';
+
 import { useCommitGithubFilesMutation } from '../../../redux/services/octokitApi';
 import { RootState, useAppDispatch, useAppStore } from '../../../redux/store';
 import { dataToFiles, getLocalePath } from '../../../utils/fileHelper';
-import { createSelector } from '@reduxjs/toolkit';
 import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
-import { without } from 'lodash-es';
-import { unflatten } from 'flat';
 
 export const isDataChangedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer,
@@ -102,13 +103,6 @@ const useSaveEditing = () => {
             for (const localeId of localeIds[namespace]) {
               const localeData = modifiedLocalesData[namespace][localeId];
               const locale = localeData['value'][language];
-              if (data[namespace][language][localeData['key']]) {
-                toast({
-                  title: repoT('Please remove all duplicated key'),
-                  status: 'error'
-                });
-                return;
-              }
               if (locale) data[namespace][language][localeData['key']] = locale;
             }
             data[namespace][language] = unflatten(data[namespace][language]);
