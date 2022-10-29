@@ -20,6 +20,7 @@ export interface Repo {
   repo: string;
   fullName: string;
   recentBranches?: string[];
+  updated_at?: string;
 }
 
 export interface ModifiedLocalesData {

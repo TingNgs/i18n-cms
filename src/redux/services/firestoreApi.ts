@@ -34,7 +34,13 @@ export const FirestoreApi = createApi({
           )
         );
         const data: Repo[] = [];
-        q.forEach((e) => data.push(e.data() as Repo));
+        q.forEach((e) => {
+          const repo = e.data() as Omit<Repo, 'updated_at'> & {
+            updated_at: Timestamp;
+          };
+
+          data.push({ ...repo, updated_at: repo.updated_at.toString() });
+        });
         return { data };
       }
     }),
