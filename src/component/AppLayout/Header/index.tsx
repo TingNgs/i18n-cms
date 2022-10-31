@@ -55,36 +55,18 @@ const Header = () => {
       {isDesktop ? (
         <ButtonGroup flexWrap="wrap" alignItems="center">
           {isAuth && location.pathname !== '/dashboard' && (
-            <ChakraLink
-              as={Link}
-              p="0 12px"
-              fontWeight="bold"
-              color="blue.500"
-              h="100%"
-              display="flex"
-              to="/dashboard"
-              alignItems="center">
+            <ChakraLink as={Link} variant="link" to="/dashboard">
               {t('Get Started')}
             </ChakraLink>
           )}
           <ChakraLink
-            p="0 12px"
-            fontWeight="bold"
-            color="blue.500"
-            h="100%"
-            display="flex"
-            alignItems="center"
+            variant="link"
             href={process.env.REACT_APP_DOC_URL}
             isExternal>
             {t('Documentation')}
           </ChakraLink>
           <ChakraLink
-            p="0 12px"
-            fontWeight="bold"
-            color="blue.500"
-            h="100%"
-            display="flex"
-            alignItems="center"
+            variant="link"
             href={process.env.REACT_APP_GITHUB_URL}
             isExternal>
             <Icon as={AiOutlineGithub} w="6" h="6" />
@@ -108,39 +90,21 @@ const Header = () => {
           <DrawerBody>
             <Stack spacing={5} paddingTop="5">
               <AuthButton />
-              <ChakraLink
-                as={Link}
-                p="0 12px"
-                fontWeight="bold"
-                color="blue.500"
-                h="100%"
-                display="flex"
-                to="/"
-                alignItems="center"
-                onClick={onClose}>
+              <ChakraLink as={Link} variant="link" to="/" onClick={onClose}>
                 {t('Home')}
               </ChakraLink>
               {isAuth && (
                 <ChakraLink
                   as={Link}
-                  p="0 12px"
-                  fontWeight="bold"
-                  color="blue.500"
-                  h="100%"
-                  display="flex"
+                  variant="link"
                   to="/dashboard"
-                  alignItems="center"
                   onClick={onClose}>
                   {t('Dashboard')}
                 </ChakraLink>
               )}
               <ChakraLink
                 p="0 12px"
-                fontWeight="bold"
-                color="blue.500"
-                h="100%"
-                display="flex"
-                alignItems="center"
+                variant="link"
                 href={process.env.REACT_APP_DOC_URL}
                 isExternal
                 onClick={onClose}>
@@ -151,12 +115,7 @@ const Header = () => {
 
           <DrawerFooter justifyContent={'space-between'} alignItems="center">
             <ChakraLink
-              p="0 12px"
-              fontWeight="bold"
-              color="blue.500"
-              h="100%"
-              display="flex"
-              alignItems="center"
+              variant="link"
               href={process.env.REACT_APP_GITHUB_URL}
               isExternal>
               <Icon as={AiOutlineGithub} w="6" h="6" />

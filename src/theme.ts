@@ -29,6 +29,14 @@ const theme = extendTheme(
       },
       Link: {
         variants: {
+          link: defineStyle({
+            p: '0 12px',
+            fontWeight: 'bold',
+            color: 'blue.500',
+            h: '100%',
+            display: 'flex',
+            alignItems: 'center'
+          }),
           button: defineStyle({
             backgroundColor: 'blue.500',
             color: 'white',
@@ -56,8 +64,7 @@ const theme = extendTheme(
     }
   },
   withDefaultColorScheme({
-    colorScheme: 'blue',
-    components: ['Button']
+    colorScheme: 'blue'
   })
 );
 
