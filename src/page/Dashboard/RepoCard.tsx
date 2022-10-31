@@ -69,9 +69,10 @@ const RepoCard = ({ repo, refetch }: IProps) => {
       onClick={onRepoClick}
       cursor="pointer"
       borderWidth={1}
-      p="4"
+      p={3}
       alignItems="center"
-      justifyContent="space-between">
+      justifyContent="space-between"
+      gap={2}>
       <Text color="blue.500">{repo.fullName}</Text>
       <PopoverDeleteBtn
         onConfirm={onDeleteClicked}
