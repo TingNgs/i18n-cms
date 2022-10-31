@@ -1,11 +1,5 @@
 import { memo, useCallback } from 'react';
-import {
-  Text,
-  Flex,
-  IconButton,
-  useDisclosure,
-  useBreakpointValue
-} from '@chakra-ui/react';
+import { Text, Flex, IconButton, useBreakpointValue } from '@chakra-ui/react';
 import {
   DeleteIcon,
   DragHandleIcon,
@@ -40,7 +34,6 @@ const Language = ({
   const { t: repoT } = useTranslation('repo');
   const isMd = useBreakpointValue({ base: false, md: true });
   const dispatch = useDispatch();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const isSelected = useAppSelector((state) =>
     isLanguageSelectedSelector(state, language)
@@ -76,9 +69,6 @@ const Language = ({
         />
       )}
       <PopoverDeleteBtn
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onClose={onClose}
         onConfirm={onDeleteClicked}
         title={
           <Text

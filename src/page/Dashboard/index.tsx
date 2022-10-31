@@ -7,7 +7,9 @@ import RepoCard from './RepoCard';
 
 const Dashboard = () => {
   const { t } = useTranslation('dashboard');
-  const { data, refetch } = useGetExistingRepoQuery(undefined);
+  const { data, refetch } = useGetExistingRepoQuery(undefined, {
+    refetchOnMountOrArgChange: true
+  });
 
   return (
     <Stack alignItems="center" width="100%">

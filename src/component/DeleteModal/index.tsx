@@ -17,6 +17,7 @@ interface IProps {
   onConfirm: () => void;
   title?: ReactNode;
   content?: ReactNode;
+  isLoading?: boolean;
 }
 
 const DeleteModal = ({
@@ -24,7 +25,8 @@ const DeleteModal = ({
   onClose,
   onConfirm,
   title,
-  content
+  content,
+  isLoading
 }: IProps) => {
   const { t } = useTranslation();
 
@@ -40,7 +42,10 @@ const DeleteModal = ({
               <Button variant="outline" onClick={onClose}>
                 {t('Cancel')}
               </Button>
-              <Button colorScheme="red" onClick={onConfirm}>
+              <Button
+                colorScheme="red"
+                onClick={onConfirm}
+                isLoading={isLoading}>
                 {t('Delete')}
               </Button>
             </ButtonGroup>

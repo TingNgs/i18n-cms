@@ -1,4 +1,10 @@
-import { memo, PropsWithChildren, ReactNode } from 'react';
+import {
+  memo,
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useState
+} from 'react';
 import {
   ButtonGroup,
   Button,
@@ -9,31 +15,34 @@ import {
   Portal,
   PopoverBody,
   PopoverFooter,
-  useBreakpointValue
+  useBreakpointValue,
+  useDisclosure
 } from '@chakra-ui/react';
 
 import { useTranslation } from 'react-i18next';
 import DeleteModal from '../DeleteModal';
 
 interface IProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onOpen: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void> | void;
   title?: ReactNode;
   content?: ReactNode;
 }
 
 const PopoverDeleteBtn = ({
-  isOpen,
-  onOpen,
-  onClose,
   onConfirm,
   title,
   content,
   children
 }: PropsWithChildren<IProps>) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isLoading, setLoading] = useState(false);
   const isLg = useBreakpointValue({ base: false, lg: true });
+
+  const onDeleteClicked = useCallback(async () => {
+    setLoading(true);
+    await onConfirm();
+    onClose();
+  }, [onConfirm]);
 
   const { t } = useTranslation();
 
@@ -42,7 +51,7 @@ const PopoverDeleteBtn = ({
       <Popover onOpen={onOpen} isOpen={isLg && isOpen} onClose={onClose}>
         <PopoverTrigger>{children}</PopoverTrigger>
         <Portal>
-          <PopoverContent>
+          <PopoverContent onClick={(e) => e.stopPropagation()}>
             <PopoverArrow />
             <PopoverBody>{content}</PopoverBody>
             <PopoverFooter>
@@ -50,7 +59,10 @@ const PopoverDeleteBtn = ({
                 <Button variant="outline" onClick={onClose}>
                   {t('Cancel')}
                 </Button>
-                <Button colorScheme="red" onClick={onConfirm}>
+                <Button
+                  colorScheme="red"
+                  onClick={onDeleteClicked}
+                  isLoading={isLoading}>
                   {t('Delete')}
                 </Button>
               </ButtonGroup>
@@ -63,7 +75,8 @@ const PopoverDeleteBtn = ({
         title={title}
         content={content}
         onClose={onClose}
-        onConfirm={onConfirm}
+        onConfirm={onDeleteClicked}
+        isLoading={isLoading}
         isOpen={isOpen && !isLg}
       />
     </>

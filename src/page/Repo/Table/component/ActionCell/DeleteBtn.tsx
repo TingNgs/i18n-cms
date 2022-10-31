@@ -1,5 +1,5 @@
 import { DeleteIcon } from '@chakra-ui/icons';
-import { IconButton, Text, useDisclosure } from '@chakra-ui/react';
+import { IconButton, Text } from '@chakra-ui/react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,21 +17,16 @@ const DeleteBtn = ({
   index?: number;
 }) => {
   const dispatch = useAppDispatch();
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { t: repoT } = useTranslation('repo');
 
   const onDeleteBtnClicked = useCallback(() => {
     if (index === undefined) return;
-    onClose();
     dispatch(removeLocaleOnIndex({ index }));
   }, [index]);
 
   return (
     <PopoverDeleteBtn
-      isOpen={isOpen}
-      onOpen={onOpen}
-      onClose={onClose}
       title={
         <Text
           dangerouslySetInnerHTML={{

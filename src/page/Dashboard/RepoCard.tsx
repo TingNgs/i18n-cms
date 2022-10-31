@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flex, Text, useToast } from '@chakra-ui/react';
+import { Flex, IconButton, Text, useToast } from '@chakra-ui/react';
 import { isEqual } from 'lodash-es';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { DeleteIcon } from '@chakra-ui/icons';
 
 import useCheckRepoPermissions from './AddRepoButton/useCheckRepoPermissions';
 import { Repo, setEditingRepo } from '../../redux/editingRepoSlice';
@@ -11,7 +12,9 @@ import {
   useUpdateExistingRepoMutation,
   useRemoveExistingRepoMutation
 } from '../../redux/services/firestoreApi';
+
 import LoadingModal from '../../component/LoadingModal';
+import PopoverDeleteBtn from '../../component/PopoverDeleteBtn';
 
 interface IProps {
   repo: Repo;
@@ -53,7 +56,12 @@ const RepoCard = ({ repo, refetch }: IProps) => {
     } finally {
       setLoading(false);
     }
-  }, [repo]);
+  }, [repo, refetch]);
+
+  const onDeleteClicked = useCallback(async () => {
+    await removeExistingRepo(repo);
+    await refetch();
+  }, [repo, refetch]);
 
   return (
     <Flex
@@ -61,8 +69,28 @@ const RepoCard = ({ repo, refetch }: IProps) => {
       onClick={onRepoClick}
       cursor="pointer"
       borderWidth={1}
-      p="4">
+      p="4"
+      alignItems="center"
+      justifyContent="space-between">
       <Text color="blue.500">{repo.fullName}</Text>
+      <PopoverDeleteBtn
+        onConfirm={onDeleteClicked}
+        title={t(`Remove existing repository`)}
+        content={
+          <Text
+            dangerouslySetInnerHTML={{
+              __html: t(`Remove existing repository confirmation`, {
+                repo: repo.fullName
+              })
+            }}
+          />
+        }>
+        <IconButton
+          icon={<DeleteIcon />}
+          aria-label="repo-remove-btn"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </PopoverDeleteBtn>
       {isLoading && <LoadingModal title={t('Fetching repo')} />}
     </Flex>
   );
