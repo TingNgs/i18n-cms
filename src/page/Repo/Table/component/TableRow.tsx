@@ -11,6 +11,7 @@ import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import {
   duplicatedKeySelector,
+  isSearchResultSelector,
   selectedLanguagesSelector
 } from '../../../../redux/selector';
 import { addLocaleAfterIndex } from '../../../../redux/editingRepoSlice';
@@ -36,6 +37,7 @@ const TableRow = ({
 }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const dispatch = useAppDispatch();
+  const isSearchResult = useAppSelector(isSearchResultSelector);
   const languages = useAppSelector(selectedLanguagesSelector);
   const duplicatedKeys = useAppSelector(duplicatedKeySelector);
   const localeKey = useAppSelector(
@@ -70,7 +72,11 @@ const TableRow = ({
         left="0"
         zIndex={1}
         gap={1}>
-        <Flex {...provided.dragHandleProps} marginRight="2">
+        <Flex
+          {...provided.dragHandleProps}
+          marginRight="2"
+          visibility={isSearchResult ? 'hidden' : 'visible'}
+          pointerEvents={isSearchResult ? 'none' : 'all'}>
           <DragHandleIcon w="3" h="3" />
         </Flex>
 
@@ -87,7 +93,7 @@ const TableRow = ({
           <TableCell key={language} language={language} localeId={localeId} />
         ))}
       <ActionCell localeId={localeId} localeKey={localeKey} index={index} />
-      {!isMobile && isRowHover && (
+      {!isMobile && isRowHover && !isSearchResult && (
         <IconButton
           onClick={onAddButtonClicked}
           isRound

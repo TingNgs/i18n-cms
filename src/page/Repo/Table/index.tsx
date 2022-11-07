@@ -6,7 +6,7 @@ import {
   useCallback,
   useRef
 } from 'react';
-import { Flex, Spinner, Text } from '@chakra-ui/react';
+import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
 
 import { FixedSizeList, FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -33,6 +33,7 @@ import reorder from '../../../utils/reorder';
 import EventBus, { CustomEvents } from '../../../utils/eventBus';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeftIcon } from '@chakra-ui/icons';
+import { currentLocaleIdsSelector } from '../../../redux/selector';
 
 const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
   function Inner({ children, style, ...rest }, ref) {
@@ -53,6 +54,23 @@ const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
   }
 );
 
+const Outer = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
+  function Outer({ children, style, ...rest }, ref) {
+    const isMobile = useBreakpointValue({ base: true, md: false });
+    return (
+      <div
+        {...rest}
+        style={{
+          ...style,
+          overflowX: isMobile ? 'hidden' : 'auto'
+        }}
+        ref={ref}>
+        {children}
+      </div>
+    );
+  }
+);
+
 const LocaleTable = () => {
   const { t: repoT } = useTranslation('repo');
   const localeIds = useAppSelector(
@@ -61,7 +79,8 @@ const LocaleTable = () => {
   const namespace = useAppSelector(
     (state) => state.EditingRepoReducer.selectedNamespace
   );
-  const listSize = (namespace && localeIds[namespace]?.length) || 0;
+  const currentLocaleIds = useAppSelector(currentLocaleIdsSelector);
+  const listSize = currentLocaleIds.length;
 
   const dispatch = useAppDispatch();
   const getEditingRepoLocalByNs = useGetEditingRepoLocalByNs();
@@ -147,7 +166,7 @@ const LocaleTable = () => {
                     provided={provided}
                     isDragging={snapshot.isDragging}
                     style={{ margin: 0 }}
-                    localeId={localeIds[namespace][rubric.source.index]}
+                    localeId={currentLocaleIds[rubric.source.index]}
                     index={rubric.source.index}
                   />
                 )}>
@@ -160,6 +179,7 @@ const LocaleTable = () => {
                     itemSize={CELL_HEIGHT}
                     width={width}
                     innerElementType={Inner}
+                    outerElementType={Outer}
                     outerRef={provided.innerRef}>
                     {Row}
                   </List>

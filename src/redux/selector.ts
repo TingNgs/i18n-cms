@@ -48,3 +48,17 @@ export const selectedLanguagesSelector = createSelector(
   (languages, selectedLanguagesMap) =>
     languages.filter((language) => selectedLanguagesMap[language])
 );
+
+export const currentLocaleIdsSelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.selectedNamespace,
+  (state: RootState) => state.EditingRepoReducer.localeIds,
+  (state: RootState) => state.EditingRepoReducer.searchText,
+  (state: RootState) => state.EditingRepoReducer.filteredIds,
+  (selectedNamespace, localeIds, searchText, filteredIds) =>
+    searchText ? filteredIds : localeIds[selectedNamespace || ''] || []
+);
+
+export const isSearchResultSelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.searchText,
+  (searchText) => !!searchText
+);

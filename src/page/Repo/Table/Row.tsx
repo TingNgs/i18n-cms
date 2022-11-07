@@ -4,17 +4,13 @@ import { Draggable } from 'react-beautiful-dnd';
 
 import { RootState, useAppSelector } from '../../../redux/store';
 import TableRow from './component/TableRow';
+import { currentLocaleIdsSelector } from '../../../redux/selector';
 
 const idSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.localeIds,
-  (state: RootState) => state.EditingRepoReducer.selectedNamespace,
+  (state: RootState) => currentLocaleIdsSelector(state),
   (state: RootState, index: number) => index,
-  (localeIds, selectedNamespace, index) =>
-    index >= 0 &&
-    selectedNamespace &&
-    index < localeIds[selectedNamespace].length
-      ? localeIds[selectedNamespace][index]
-      : null
+  (currentLocaleId, index) =>
+    index >= 0 && index < currentLocaleId.length ? currentLocaleId[index] : null
 );
 
 const Row = ({ index, style }: { index: number; style: CSSProperties }) => {

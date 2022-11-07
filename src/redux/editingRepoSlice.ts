@@ -1,5 +1,5 @@
 import { uniqueId } from 'lodash-es';
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { LOCALES_FILE_STRUCTURE, LOCALES_FILE_TYPE } from '../constants';
@@ -52,6 +52,8 @@ export interface EdiotingRepoState {
   };
 
   isSaveModalOpen: boolean;
+  searchText: string;
+  filteredIds: string[];
 }
 
 const initialState: EdiotingRepoState = {
@@ -63,7 +65,9 @@ const initialState: EdiotingRepoState = {
   selectedLanguagesMap: {},
   modifiedLocalesData: {},
   localeIds: {},
-  isSaveModalOpen: false
+  isSaveModalOpen: false,
+  searchText: '',
+  filteredIds: []
 };
 
 export const editingRepoSlice = createSlice({
@@ -95,6 +99,8 @@ export const editingRepoSlice = createSlice({
     },
     setSelectedNamespaces: (state, action: PayloadAction<string>) => {
       state.selectedNamespace = action.payload;
+      state.searchText = '';
+      state.filteredIds = [];
     },
     setLanguages: (state, action: PayloadAction<string[]>) => {
       state.languages = action.payload;
@@ -242,6 +248,8 @@ export const editingRepoSlice = createSlice({
         [firstLocaleId]: { key: firstLocaleId, value: {} }
       };
       state.selectedNamespace = namespace;
+      state.searchText = '';
+      state.filteredIds = [];
     },
     removeNamespace: (state, action: PayloadAction<string>) => {
       const removeNamespace = action.payload;
@@ -251,8 +259,11 @@ export const editingRepoSlice = createSlice({
 
       delete state.localeIds[removeNamespace];
       delete state.modifiedLocalesData[removeNamespace];
-      if (state.selectedNamespace === removeNamespace)
+      if (state.selectedNamespace === removeNamespace) {
         state.selectedNamespace = undefined;
+        state.searchText = '';
+        state.filteredIds = [];
+      }
     },
     removeLanguage: (state, action: PayloadAction<string>) => {
       const removeLanguage = action.payload;
@@ -269,6 +280,23 @@ export const editingRepoSlice = createSlice({
     },
     setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isSaveModalOpen = action.payload;
+    },
+    handleSearch: (state, action: PayloadAction<{ text: string }>) => {
+      if (!state.selectedNamespace) return;
+      const selectedNamespace = state.selectedNamespace;
+      const { text } = action.payload;
+      state.searchText = text;
+      state.filteredIds = state.localeIds[selectedNamespace].filter((id) => {
+        const locale = current(
+          state.modifiedLocalesData[selectedNamespace][id]
+        );
+        return (
+          locale.key.includes(text) ||
+          state.languages.some((language) =>
+            locale.value[language]?.includes(text)
+          )
+        );
+      });
     },
     closeEditingRepo: () => initialState
   }
@@ -294,7 +322,8 @@ export const {
   addNewLanguage,
   removeNamespace,
   removeLanguage,
-  closeEditingRepo
+  closeEditingRepo,
+  handleSearch
 } = editingRepoSlice.actions;
 
 export default editingRepoSlice.reducer;
