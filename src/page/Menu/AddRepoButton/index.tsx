@@ -59,7 +59,7 @@ const AddRepoButton = () => {
               justifyContent="center"
               alignItems="center">
               <Text fontSize="2xl" textAlign="center">
-                {button.title}
+                {t(button.title)}
               </Text>
             </Flex>
           </Box>
