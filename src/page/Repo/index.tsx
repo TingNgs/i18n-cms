@@ -25,7 +25,7 @@ const Repo = () => {
   }));
 
   useEffect(() => {
-    if (!editingRepo) history.push('/dashboard');
+    if (!editingRepo) history.push('/menu');
   }, [editingRepo, history]);
 
   useEffect(() => {

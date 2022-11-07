@@ -22,7 +22,7 @@ interface IProps {
 }
 
 const RepoCard = ({ repo, refetch }: IProps) => {
-  const { t } = useTranslation('dashboard');
+  const { t } = useTranslation('menu');
   const dispatch = useDispatch();
   const history = useHistory();
   const toast = useToast();

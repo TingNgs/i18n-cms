@@ -15,7 +15,7 @@ import SetupRepoAlert from '../../../component/SetupRepoAlert';
 
 const CreateNewRepoForm = () => {
   const history = useHistory();
-  const { t } = useTranslation('dashboard');
+  const { t } = useTranslation('menu');
 
   const dispatch = useAppDispatch();
   const checkRepoPermissions = useCheckRepoPermissions();

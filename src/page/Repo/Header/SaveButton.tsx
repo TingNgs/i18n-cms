@@ -57,7 +57,7 @@ const SaveButton = () => {
 
   return (
     <>
-      <Button disabled={!isDataChanged} onClick={openSaveModal}>
+      <Button disabled={!isDataChanged} onClick={openSaveModal} size="sm">
         {t('Save')}
       </Button>
       <Prompt

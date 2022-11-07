@@ -25,7 +25,7 @@ const FORM_BUTTON_LIST = [
 const AddRepoButton = () => {
   const [form, setForm] = useState<'new' | 'import' | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { t } = useTranslation('dashboard');
+  const { t } = useTranslation('menu');
 
   const renderForm = useCallback(() => {
     switch (form) {

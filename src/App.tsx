@@ -5,7 +5,7 @@ import LoadingModal from './component/LoadingModal';
 import AppLayout from './component/AppLayout';
 
 import About from './page/About';
-import Dashboard from './page/Dashboard';
+import Menu from './page/Menu';
 import Repo from './page/Repo';
 
 import { useAppSelector } from './redux/store';
@@ -22,8 +22,8 @@ function App() {
         <Switch>
           <Route path="/" exact render={() => <About />} />
           <Route
-            path="/dashboard"
-            render={() => (isAuth ? <Dashboard /> : <Redirect to="/" />)}
+            path="/menu"
+            render={() => (isAuth ? <Menu /> : <Redirect to="/" />)}
           />
           <Route
             path="/repo"

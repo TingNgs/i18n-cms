@@ -5,8 +5,8 @@ import AddRepoButton from './AddRepoButton';
 
 import RepoList from './RepoList';
 
-const Dashboard = () => {
-  const { t } = useTranslation('dashboard');
+const Menu = () => {
+  const { t } = useTranslation('menu');
 
   return (
     <Stack alignItems="center" width="100%">
@@ -19,4 +19,4 @@ const Dashboard = () => {
   );
 };
 
-export default memo(Dashboard);
+export default memo(Menu);

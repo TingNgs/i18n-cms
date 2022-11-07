@@ -43,7 +43,9 @@ const Header = () => {
   }, [isAuth]);
 
   return (
-    <Flex justifyContent="space-between" padding="2">
+    <Flex
+      justifyContent="space-between"
+      padding="var(--chakra-space-3) var(--chakra-space-4)">
       <Link to="/">
         <Flex gap="2" alignItems="center" p="4px 0">
           <LogoIcon w="8" h="8" />
@@ -53,8 +55,8 @@ const Header = () => {
 
       {isDesktop ? (
         <ButtonGroup flexWrap="wrap" alignItems="center">
-          {isAuth && location.pathname !== '/dashboard' && (
-            <ChakraLink as={Link} variant="link" to="/dashboard">
+          {isAuth && location.pathname !== '/menu' && (
+            <ChakraLink as={Link} variant="link" to="/menu">
               {t('Get Started')}
             </ChakraLink>
           )}
@@ -97,9 +99,9 @@ const Header = () => {
                 <ChakraLink
                   as={Link}
                   variant="link"
-                  to="/dashboard"
+                  to="/menu"
                   onClick={onClose}>
-                  {t('Dashboard')}
+                  {t('Menu')}
                 </ChakraLink>
               )}
               <ChakraLink

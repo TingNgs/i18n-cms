@@ -35,7 +35,7 @@ import { useUpdateExistingRepoMutation } from '../../../redux/services/firestore
 const CreateNewRepoForm = () => {
   const history = useHistory();
   const toast = useToast();
-  const { t: dashboardT } = useTranslation('dashboard');
+  const { t: menuT } = useTranslation('menu');
   const { t: commonT } = useTranslation('common');
   const dispatch = useAppDispatch();
   const [isLoading, setLoading] = useState(false);
@@ -70,7 +70,7 @@ const CreateNewRepoForm = () => {
       })
         .unwrap()
         .catch((e) => {
-          toast({ title: dashboardT('Create new repo fail'), status: 'error' });
+          toast({ title: menuT('Create new repo fail'), status: 'error' });
           throw e;
         });
 
@@ -87,7 +87,7 @@ const CreateNewRepoForm = () => {
           })
         }
       }).catch((e) => {
-        toast({ title: dashboardT('Setup new repo fail'), status: 'error' });
+        toast({ title: menuT('Setup new repo fail'), status: 'error' });
         throw e;
       });
       await updateExistingRepo({
@@ -119,8 +119,8 @@ const CreateNewRepoForm = () => {
   ]);
 
   const getLoadingTitle = useCallback(() => {
-    if (isCreateRepoLoading) return dashboardT('Creating repository');
-    if (isCommitLoading) return dashboardT('Setting up repository');
+    if (isCreateRepoLoading) return menuT('Creating repository');
+    if (isCommitLoading) return menuT('Setting up repository');
     return undefined;
   }, [isCreateRepoLoading, isCommitLoading]);
 
@@ -128,9 +128,7 @@ const CreateNewRepoForm = () => {
     <>
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
-          <Text fontSize="2xl">
-            {dashboardT('Create new Github repository')}
-          </Text>
+          <Text fontSize="2xl">{menuT('Create new Github repository')}</Text>
 
           <FormLabel>{commonT('Owner')}</FormLabel>
           <Controller

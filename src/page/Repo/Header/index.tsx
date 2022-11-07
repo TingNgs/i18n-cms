@@ -29,8 +29,8 @@ const Header = ({
     <Flex>
       <Flex flex="1" alignItems="center" p="0 8px" gap={2} flexWrap="wrap">
         <IconButton
-          w="56px"
-          h="56px"
+          w="48px"
+          h="48px"
           position="relative"
           right="8px"
           boxShadow="1px 1px 1px var(--chakra-colors-chakra-border-color)"
@@ -53,7 +53,8 @@ const Header = ({
           isAttached
           justifyContent="flex-end"
           order={3}
-          flex={{ base: 1, md: 0 }}>
+          flex={{ base: 1, md: 0 }}
+          size="sm">
           <Button
             disabled={!selectedNamespace}
             colorScheme="green"

@@ -20,13 +20,15 @@ const SearchBar = () => {
 
   return (
     <form onSubmit={onSubmit} style={{ width: '100%' }}>
-      <InputGroup>
-        <Input {...register('search')} />
+      <InputGroup size="sm">
+        <Input {...register('search')} borderRadius="5" />
         <InputRightElement>
           <IconButton
             type="submit"
             icon={<SearchIcon />}
             aria-label="search-button"
+            size="sm"
+            variant="ghost"
           />
         </InputRightElement>
       </InputGroup>

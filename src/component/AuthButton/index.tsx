@@ -22,7 +22,7 @@ const AuthButton = () => {
 
   const onLoginClicked = useCallback(async () => {
     await login(undefined).unwrap();
-    history.push('/dashboard');
+    history.push('/menu');
   }, [login]);
 
   const onLogoutClicked = useCallback(() => {

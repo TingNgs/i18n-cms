@@ -26,7 +26,7 @@ const About = () => {
           {!isAuth && <Text>{homeT('header.start_description')}</Text>}
           <ButtonGroup>
             {isAuth ? (
-              <ChakraLink as={Link} variant="button" to="/dashboard">
+              <ChakraLink as={Link} variant="button" to="/menu">
                 {commonT('Get Started')}
               </ChakraLink>
             ) : (

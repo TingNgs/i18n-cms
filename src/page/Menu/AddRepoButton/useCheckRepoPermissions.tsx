@@ -6,7 +6,7 @@ import { useLazyGetGithubRepoQuery } from '../../../redux/services/octokitApi';
 
 const useCheckRepoPermissions = () => {
   const { t } = useTranslation();
-  const { t: dashboardT } = useTranslation('dashboard');
+  const { t: menuT } = useTranslation('menu');
 
   const [getGithubRepo] = useLazyGetGithubRepoQuery();
 
@@ -27,7 +27,7 @@ const useCheckRepoPermissions = () => {
           owner: owner
         }).unwrap();
         if (!githubRepo.permissions?.push) {
-          return { error: dashboardT('Without push permission in this repo') };
+          return { error: menuT('Without push permission in this repo') };
         }
 
         return {

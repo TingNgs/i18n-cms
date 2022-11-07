@@ -60,13 +60,13 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
     <Stack overflow="scroll" w={`${SIDEBAR_WIDTH}px`} spacing="3" flex="1">
       <Link
         as={RouterLink}
-        to="/dashboard"
+        to="/menu"
         p="4"
         display="flex"
         alignItems="center"
         gap={2}>
         <ArrowBackIcon rotate={180} />
-        {t('Back to dashboard')}
+        {t('Back to menu')}
       </Link>
 
       <Accordion allowMultiple defaultIndex={[1]}>
