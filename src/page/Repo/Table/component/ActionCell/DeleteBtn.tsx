@@ -46,7 +46,11 @@ const DeleteBtn = ({
         />
       }
       onConfirm={onDeleteBtnClicked}>
-      <IconButton aria-label="more" icon={<DeleteIcon />} colorScheme="red" />
+      <IconButton
+        aria-label="more"
+        icon={<DeleteIcon color="error" />}
+        variant="outline"
+      />
     </PopoverDeleteBtn>
   );
 };

@@ -69,11 +69,12 @@ const RepoCard = ({ repo, refetch }: IProps) => {
       onClick={onRepoClick}
       cursor="pointer"
       borderWidth={1}
+      borderRadius={5}
       p={3}
       alignItems="center"
       justifyContent="space-between"
       gap={2}>
-      <Text color="blue.500">{repo.fullName}</Text>
+      <Text>{repo.fullName}</Text>
       <PopoverDeleteBtn
         onConfirm={onDeleteClicked}
         title={t(`Remove existing repository`)}
@@ -88,6 +89,8 @@ const RepoCard = ({ repo, refetch }: IProps) => {
         }>
         <IconButton
           icon={<DeleteIcon />}
+          variant="ghost"
+          colorScheme="red"
           aria-label="repo-remove-btn"
           onClick={(e) => e.stopPropagation()}
         />

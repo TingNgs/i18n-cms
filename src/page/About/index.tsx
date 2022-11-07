@@ -20,11 +20,7 @@ const About = () => {
   return (
     <Stack>
       <Flex p="5" alignSelf={'center'} w={{ lg: '70%' }}>
-        <Stack
-          w={{ lg: '50%' }}
-          fontWeight="semibold"
-          color="blue.500"
-          spacing={5}>
+        <Stack w={{ lg: '50%' }} fontWeight="semibold" spacing={5}>
           <Text fontSize="3xl">{homeT('header.title')}</Text>
           <Text fontSize="1xl">{homeT('header.description')}</Text>
           {!isAuth && <Text>{homeT('header.start_description')}</Text>}

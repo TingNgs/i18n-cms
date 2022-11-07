@@ -32,12 +32,12 @@ const LoadingModal = ({ title }: IProps) => {
             h="100%"
             alignItems="center"
             justifyContent="center"
-            backgroundColor="blue.800"
+            backgroundColor="var(--chakra-colors-chakra-body-bg)"
             flexDir="column">
-            <Spinner size="xl" />
+            <Spinner />
             {title && (
               <SlideFade key={title} in={showTitle} offsetY="20" unmountOnExit>
-                <Text color="blue.300">{title}</Text>
+                <Text color="gray.500">{title}</Text>
               </SlideFade>
             )}
           </Stack>

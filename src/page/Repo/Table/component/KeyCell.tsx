@@ -50,8 +50,8 @@ const TableCell = ({
       </Editable>
 
       {isDuplicated && (
-        <Tooltip hasArrow label={t('Duplicated key')} background="red.500">
-          <WarningIcon w="4" h="4" color="red.500" />
+        <Tooltip hasArrow label={t('Duplicated key')} background="error">
+          <WarningIcon w="4" h="4" color="error" />
         </Tooltip>
       )}
     </>

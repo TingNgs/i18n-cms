@@ -45,7 +45,7 @@ const Repo = () => {
       transition="all 0.3s"
       paddingLeft={isSidebarOpen ? `${SIDEBAR_WIDTH}px` : 0}>
       <Flex
-        boxShadow="1px 1px 1px rgb(0,0,0,0.2)"
+        boxShadow="1px 1px 1px var(--chakra-colors-chakra-border-color)"
         position="absolute"
         h="100%"
         flexDir="column"

@@ -97,7 +97,7 @@ const TableRow = ({
         <IconButton
           onClick={onAddButtonClicked}
           isRound
-          colorScheme={'green'}
+          colorScheme="green"
           size="xs"
           aria-label="add"
           position="absolute"

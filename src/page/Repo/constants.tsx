@@ -4,7 +4,7 @@ export const CELL_PROPS = {
   flex: 1,
   padding: '0 12px',
   minWidth: '300px',
-  backgroundColor: 'white',
+  backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
   alignItems: 'center',
   height: '100%',
   borderBottomWidth: 1,
@@ -13,7 +13,7 @@ export const CELL_PROPS = {
 
 export const ROW_PROPS = {
   height: `${CELL_HEIGHT}px`,
-  backgroundColor: 'white',
+  backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
   alignItems: 'center',
   width: '100%',
   minWidth: 'fit-content'

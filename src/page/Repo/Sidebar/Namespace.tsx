@@ -31,18 +31,32 @@ const Namespaces = ({
     <Flex
       onClick={onClick}
       p={'8px 16px'}
-      backgroundColor={isSelected ? 'blue.500' : undefined}
+      fontWeight={isSelected ? 'semibold' : undefined}
       cursor="pointer"
-      alignItems={'center'}>
-      <Text color={isSelected ? 'white' : 'blue.500'} flex="1">
+      alignItems={'center'}
+      position="relative"
+      _before={{
+        content: '""',
+        display: isSelected ? 'block' : 'none',
+        position: 'absolute',
+        w: '100%',
+        h: '100%',
+        bg: 'var(--chakra-colors-chakra-body-text)',
+        opacity: '0.1',
+        left: 0,
+        top: 0,
+        zIndex: -1
+      }}
+      _hover={{ _before: { display: 'block' } }}>
+      <Text opacity={isSelected ? 1 : 0.7} flex="1">
         {namespace}
       </Text>
       {isNsContainsDuplicatedKeys && (
         <Tooltip
           hasArrow
           label={t('With duplicated keys')}
-          backgroundColor={'red.500'}>
-          <WarningIcon w="4" h="4" color={isSelected ? 'white' : 'red.500'} />
+          backgroundColor="error">
+          <WarningIcon w="4" h="4" color="error" />
         </Tooltip>
       )}
     </Flex>

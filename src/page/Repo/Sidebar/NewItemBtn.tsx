@@ -110,7 +110,7 @@ const NewItemBtn = ({
                 <FormLabel>{title}</FormLabel>
                 <Input ref={popoverInputRef} {...itemRest} isRequired />
                 {errors.item?.message && (
-                  <Text color="red.500">{errors.item?.message}</Text>
+                  <Text color="error">{errors.item?.message}</Text>
                 )}
               </Stack>
             </PopoverBody>
@@ -133,7 +133,7 @@ const NewItemBtn = ({
                 <FormLabel>{itemName}</FormLabel>
                 <Input {...register('item')} isRequired autoFocus />
                 {errors.item?.message && (
-                  <Text color="red.500">{errors.item?.message}</Text>
+                  <Text color="error">{errors.item?.message}</Text>
                 )}
 
                 <Button type="submit">{t('Create')}</Button>

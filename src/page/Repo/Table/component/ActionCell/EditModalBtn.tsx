@@ -101,11 +101,11 @@ const EditModalBtn = ({ localeId }: IProps) => {
                     defaultValue={localeData.key}
                     {...register('key')}
                     isRequired
-                    borderColor={errors.key ? 'red.500' : undefined}
-                    focusBorderColor={errors.key ? 'red.500' : undefined}
+                    borderColor={errors.key ? 'error' : undefined}
+                    focusBorderColor={errors.key ? 'error' : undefined}
                   />
                   {!!errors.key && (
-                    <Text color="red.500">{errors.key.message}</Text>
+                    <Text color="error">{errors.key.message}</Text>
                   )}
                   {languages.map((language) => (
                     <React.Fragment key={language}>

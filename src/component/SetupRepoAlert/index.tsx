@@ -13,7 +13,7 @@ const SetupRepoAlert = () => {
         <Link
           href={`${process.env.REACT_APP_DOC_URL}add-repository/existing-repo/#setup-your-existing-repository`}
           isExternal>
-          <ExternalLinkIcon _hover={{ color: 'blue.500' }} m={'0 4px'} />
+          <ExternalLinkIcon m={'0 4px'} />
         </Link>
       </Text>
     </Alert>

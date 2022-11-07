@@ -5,7 +5,6 @@ import {
   ButtonGroup,
   Flex,
   Link as ChakraLink,
-  Image,
   Text,
   useBreakpointValue,
   IconButton,
@@ -23,11 +22,13 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 import { AiOutlineGithub } from 'react-icons/ai';
 
+import LanguageSelector from '../../LanguageSelector';
 import AuthButton from '../../AuthButton';
+import ColorModeBtn from '../../ColorModeBtn';
+import LogoIcon from './LogoIcon';
 
 import { useAppSelector } from '../../../redux/store';
 import { isAuthSelector } from '../../../redux/selector';
-import LanguageSelector from '../../LanguageSelector';
 
 const Header = () => {
   const { t } = useTranslation();
@@ -45,10 +46,8 @@ const Header = () => {
     <Flex justifyContent="space-between" padding="2">
       <Link to="/">
         <Flex gap="2" alignItems="center" p="4px 0">
-          <Image w="8" h="8" src="/logo.svg" />
-          <Text color="blue.500" fontWeight="bold">
-            i18n cms
-          </Text>
+          <LogoIcon w="8" h="8" />
+          <Text fontWeight="bold">i18n cms</Text>
         </Flex>
       </Link>
 
@@ -71,8 +70,9 @@ const Header = () => {
             isExternal>
             <Icon as={AiOutlineGithub} w="6" h="6" />
           </ChakraLink>
-          <AuthButton />
           <LanguageSelector />
+          <ColorModeBtn />
+          <AuthButton />
         </ButtonGroup>
       ) : (
         <IconButton
@@ -120,7 +120,10 @@ const Header = () => {
               isExternal>
               <Icon as={AiOutlineGithub} w="6" h="6" />
             </ChakraLink>
-            <LanguageSelector onChange={onClose} />
+            <Flex gap={2}>
+              <LanguageSelector onChange={onClose} />
+              <ColorModeBtn />
+            </Flex>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

@@ -33,8 +33,8 @@ const Header = ({
           h="56px"
           position="relative"
           right="8px"
-          boxShadow="1px 1px 1px rgb(0,0,0,0.2)"
-          bg="white"
+          boxShadow="1px 1px 1px var(--chakra-colors-chakra-border-color)"
+          bg="var(--chakra-colors-chakra-body-bg)"
           zIndex={1}
           aria-label="open sidebar"
           icon={
@@ -44,7 +44,6 @@ const Header = ({
           borderRadius={0}
           border="0"
           onClick={setSidebarOpen.toggle}
-          bgColor="white"
           order={1}
         />
         <Text fontWeight="bold" order={2}>

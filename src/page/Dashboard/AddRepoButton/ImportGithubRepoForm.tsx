@@ -70,11 +70,11 @@ const CreateNewRepoForm = () => {
             {...register('githubUrl')}
             placeholder="https://github.com/owner/repo-name"
             required
-            borderColor={errors.githubUrl?.message ? 'red.500' : undefined}
-            focusBorderColor={errors.githubUrl?.message ? 'red.500' : undefined}
+            borderColor={errors.githubUrl?.message ? 'error' : undefined}
+            focusBorderColor={errors.githubUrl?.message ? 'error' : undefined}
           />
           {errors.githubUrl?.message && (
-            <Text color="red.500">{errors.githubUrl?.message}</Text>
+            <Text color="error">{errors.githubUrl?.message}</Text>
           )}
 
           <Button type="submit">{t('Import')}</Button>

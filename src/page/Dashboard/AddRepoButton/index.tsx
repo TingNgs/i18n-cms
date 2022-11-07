@@ -45,8 +45,7 @@ const AddRepoButton = () => {
             {...(index === 0
               ? {
                   borderRightWidth: { base: '0px', md: '1px' },
-                  borderBottomWidth: { base: '1px', md: '0px' },
-                  borderColor: 'blue.200'
+                  borderBottomWidth: { base: '1px', md: '0px' }
                 }
               : {})}
             onClick={() => setForm(button.id)}>

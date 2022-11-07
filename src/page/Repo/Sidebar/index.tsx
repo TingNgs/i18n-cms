@@ -25,6 +25,7 @@ import {
 import LanguageList from './LanguageList';
 import LanguageSelector from '../../../component/LanguageSelector';
 import { getGithubBranchUrl, getGithubUrl } from '../../../utils';
+import ColorModeBtn from '../../../component/ColorModeBtn';
 
 const TITLE_PROPS = {
   fontWeight: 'bold'
@@ -127,7 +128,8 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      <Flex p="4" flex={1} alignItems="flex-end" flexDir="row">
+      <Flex p="4" gap={2} flex={1} alignItems="flex-end" flexDir="row">
+        <ColorModeBtn />
         <LanguageSelector />
       </Flex>
     </Stack>

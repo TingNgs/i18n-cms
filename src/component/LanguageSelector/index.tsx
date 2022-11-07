@@ -4,7 +4,8 @@ import {
   Menu,
   MenuButton,
   MenuItem,
-  MenuList
+  MenuList,
+  Text
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { IoLanguageOutline } from 'react-icons/io5';
@@ -17,25 +18,33 @@ const LanguageSelector = ({ onChange }: { onChange?: () => void }) => {
       <MenuButton
         as={IconButton}
         aria-label="language-selector"
-        icon={<Icon color="white" as={IoLanguageOutline}></Icon>}
+        icon={<Icon as={IoLanguageOutline}></Icon>}
       />
       <MenuList>
         {['en', 'zh'].map((language) => (
           <MenuItem
-            backgroundColor={
-              language === i18n.language ? 'blue.500' : undefined
-            }
-            color={language === i18n.language ? 'white' : undefined}
+            position="relative"
+            _before={{
+              content: '""',
+              display: language === i18n.language ? 'block' : 'none',
+              position: 'absolute',
+              w: '100%',
+              h: '100%',
+              bg: 'var(--chakra-colors-chakra-body-text)',
+              opacity: '0.1',
+              left: 0,
+              top: 0
+            }}
             _hover={{
-              backgroundColor:
-                language === i18n.language ? 'blue.500' : undefined
+              _before: { display: 'block' },
+              backgroundColor: 'inherit'
             }}
             key={language}
             onClick={() => {
               i18n.changeLanguage(language);
               onChange?.();
             }}>
-            {t(language)}
+            <Text zIndex={1}>{t(language)}</Text>
           </MenuItem>
         ))}
       </MenuList>

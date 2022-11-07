@@ -278,8 +278,10 @@ const BranchFormModal = ({ repo }: IProps) => {
                               existingBranchName: branchName,
                               isRecentBranch: true
                             });
-                          }}>
-                          <Text color="blue.500">{branchName}</Text>
+                          }}
+                          opacity={0.7}
+                          _hover={{ opacity: 1 }}>
+                          <Text>{branchName}</Text>
                         </Flex>
                       ))}
                       <Divider />
@@ -302,13 +304,13 @@ const BranchFormModal = ({ repo }: IProps) => {
                       <Input
                         {...register('baseOn')}
                         placeholder="master"
-                        borderColor={errors.baseOn ? 'red.500' : undefined}
-                        focusBorderColor={errors.baseOn ? 'red.500' : undefined}
+                        borderColor={errors.baseOn ? 'error' : undefined}
+                        focusBorderColor={errors.baseOn ? 'error' : undefined}
                         required
                       />
                       {errors.baseOn && (
                         <>
-                          <Text color="red.500">{errors.baseOn.message}</Text>
+                          <Text color="error">{errors.baseOn.message}</Text>
                           {errors.baseOn.type ===
                             CONFIG_NOT_FOUND_ERROR_TYPE && <SetupRepoAlert />}
                         </>
@@ -317,16 +319,14 @@ const BranchFormModal = ({ repo }: IProps) => {
                       <Input
                         {...register('newBranchName')}
                         placeholder="feature/add-xxx-locales"
-                        borderColor={
-                          errors.newBranchName ? 'red.500' : undefined
-                        }
+                        borderColor={errors.newBranchName ? 'error' : undefined}
                         focusBorderColor={
-                          errors.newBranchName ? 'red.500' : undefined
+                          errors.newBranchName ? 'error' : undefined
                         }
                         required
                       />
                       {errors.newBranchName && (
-                        <Text color="red.500">
+                        <Text color="error">
                           {errors.newBranchName.message}
                         </Text>
                       )}
@@ -338,16 +338,16 @@ const BranchFormModal = ({ repo }: IProps) => {
                         {...register('existingBranchName')}
                         placeholder="feature/add-xxx-locales"
                         borderColor={
-                          errors.existingBranchName ? 'red.500' : undefined
+                          errors.existingBranchName ? 'error' : undefined
                         }
                         focusBorderColor={
-                          errors.existingBranchName ? 'red.500' : undefined
+                          errors.existingBranchName ? 'error' : undefined
                         }
                         required
                       />
                       {errors.existingBranchName && (
                         <>
-                          <Text color="red.500">
+                          <Text color="error">
                             {errors.existingBranchName.message}
                           </Text>
                           {errors.existingBranchName.type ===
