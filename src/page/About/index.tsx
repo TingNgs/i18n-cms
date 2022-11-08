@@ -3,13 +3,18 @@ import {
   ButtonGroup,
   Flex,
   Stack,
-  Text
+  Text,
+  Image,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import AuthButton from '../../component/AuthButton';
 import { isAuthSelector } from '../../redux/selector';
 import { useAppSelector } from '../../redux/store';
+
+import HeaderDarkImage from './image/header-dark.png';
+import HeaderLightImage from './image/header-light.png';
 
 const About = () => {
   const { t: commonT } = useTranslation();
@@ -18,9 +23,18 @@ const About = () => {
   const isAuth = useAppSelector(isAuthSelector);
 
   return (
-    <Stack>
-      <Flex p="5" alignSelf={'center'} w={{ lg: '70%' }}>
-        <Stack w={{ lg: '50%' }} fontWeight="semibold" spacing={5}>
+    <Stack alignItems="center">
+      <Flex
+        p="var(--chakra-space-10) var(--chakra-space-5) "
+        alignItems={'center'}
+        maxWidth="1200px"
+        flexDir={{ base: 'column', lg: 'row' }}
+        gap={5}>
+        <Stack
+          fontWeight="semibold"
+          w={{ lg: '45%' }}
+          flexShrink="0"
+          spacing={5}>
           <Text fontSize="3xl">{homeT('header.title')}</Text>
           <Text fontSize="1xl">{homeT('header.description')}</Text>
           {!isAuth && <Text>{homeT('header.start_subtitle')}</Text>}
@@ -40,6 +54,13 @@ const About = () => {
             </ChakraLink>
           </ButtonGroup>
         </Stack>
+        <Flex flex={1}>
+          <Image
+            src={useColorModeValue(HeaderLightImage, HeaderDarkImage)}
+            w="100%"
+            maxWidth="50rem"
+          />
+        </Flex>
       </Flex>
     </Stack>
   );
