@@ -281,7 +281,7 @@ export const editingRepoSlice = createSlice({
     setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isSaveModalOpen = action.payload;
     },
-    handleSearch: (state, action: PayloadAction<{ text: string }>) => {
+    setSearchText: (state, action: PayloadAction<{ text: string }>) => {
       if (!state.selectedNamespace) return;
       const selectedNamespace = state.selectedNamespace;
       const { text } = action.payload;
@@ -323,7 +323,7 @@ export const {
   removeNamespace,
   removeLanguage,
   closeEditingRepo,
-  handleSearch
+  setSearchText
 } = editingRepoSlice.actions;
 
 export default editingRepoSlice.reducer;

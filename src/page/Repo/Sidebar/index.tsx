@@ -76,15 +76,17 @@ const Sidebar = ({ onClose }: { onClose: () => void }) => {
             <AccordionIcon />
           </AccordionButton>
           <AccordionPanel>
-            <Text {...SUB_TITLE_PROPS}>{t('Repository name')}</Text>
-            <Link isExternal href={githubLink}>
-              <ExternalLinkIcon marginBottom={1} /> {editingRepo?.fullName}
-            </Link>
+            <Stack>
+              <Text {...SUB_TITLE_PROPS}>{t('Repository')}</Text>
+              <Link isExternal href={githubLink}>
+                <ExternalLinkIcon marginBottom={1} /> {editingRepo?.fullName}
+              </Link>
 
-            <Text {...SUB_TITLE_PROPS}>{t('Branch')}</Text>
-            <Link isExternal href={branchLink}>
-              <ExternalLinkIcon marginBottom={1} /> {branch}
-            </Link>
+              <Text {...SUB_TITLE_PROPS}>{t('Branch')}</Text>
+              <Link isExternal href={branchLink}>
+                <ExternalLinkIcon marginBottom={1} /> {branch}
+              </Link>
+            </Stack>
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem>

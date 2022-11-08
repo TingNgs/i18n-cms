@@ -23,7 +23,7 @@ const About = () => {
         <Stack w={{ lg: '50%' }} fontWeight="semibold" spacing={5}>
           <Text fontSize="3xl">{homeT('header.title')}</Text>
           <Text fontSize="1xl">{homeT('header.description')}</Text>
-          {!isAuth && <Text>{homeT('header.start_description')}</Text>}
+          {!isAuth && <Text>{homeT('header.start_subtitle')}</Text>}
           <ButtonGroup>
             {isAuth ? (
               <ChakraLink as={Link} variant="button" to="/menu">

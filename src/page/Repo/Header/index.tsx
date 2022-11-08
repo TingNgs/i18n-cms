@@ -4,10 +4,12 @@ import { ArrowLeftIcon, HamburgerIcon, AddIcon } from '@chakra-ui/icons';
 
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { addLocaleAfterIndex } from '../../../redux/editingRepoSlice';
+import { isSearchResultSelector } from '../../../redux/selector';
 
 import SaveButton from './SaveButton';
 import ActionButton from './ActionButton';
 import SearchBar from './SearchBar';
+import FilterTags from './FilterTags';
 
 const Header = ({
   isSidebarOpen,
@@ -17,16 +19,18 @@ const Header = ({
   setSidebarOpen: { toggle: () => void; on: () => void; off: () => void };
 }) => {
   const dispatch = useAppDispatch();
-  const selectedNamespace = useAppSelector(
-    (state) => state.EditingRepoReducer.selectedNamespace
-  );
+  const { selectedNamespace } = useAppSelector((state) => ({
+    selectedNamespace: state.EditingRepoReducer.selectedNamespace
+  }));
+
+  const isSearchResult = useAppSelector(isSearchResultSelector);
 
   const onAddKeyClicked = useCallback(() => {
     dispatch(addLocaleAfterIndex({}));
   }, []);
 
   return (
-    <Flex>
+    <Flex flexDir="column">
       <Flex flex="1" alignItems="center" p="0 8px" gap={2} flexWrap="wrap">
         <IconButton
           w="48px"
@@ -56,7 +60,7 @@ const Header = ({
           flex={{ base: 1, md: 0 }}
           size="sm">
           <Button
-            disabled={!selectedNamespace}
+            disabled={!selectedNamespace || isSearchResult}
             colorScheme="green"
             leftIcon={<AddIcon w="3" h="3" />}
             onClick={onAddKeyClicked}>
@@ -74,6 +78,7 @@ const Header = ({
           <SearchBar />
         </Flex>
       </Flex>
+      {isSearchResult && <FilterTags />}
     </Flex>
   );
 };
