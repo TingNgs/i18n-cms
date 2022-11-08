@@ -1,4 +1,4 @@
-import { Text, Flex, Tooltip } from '@chakra-ui/react';
+import { Text, Flex, Tooltip, useBreakpointValue } from '@chakra-ui/react';
 import { WarningIcon } from '@chakra-ui/icons';
 import { memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -16,12 +16,13 @@ const Namespaces = ({
   isSelected: boolean;
   onCloseSidebar: () => void;
 }) => {
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const { t } = useTranslation('repo');
   const dispatch = useDispatch();
   const onClick = useCallback(() => {
     dispatch(setSelectedNamespaces(namespace));
-    onCloseSidebar();
-  }, [namespace, onCloseSidebar]);
+    if (isMobile) onCloseSidebar();
+  }, [namespace, onCloseSidebar, isMobile]);
 
   const isNsContainsDuplicatedKeys = useAppSelector(
     (state) => Object.keys(duplicatedKeySelector(state, namespace)).length > 0
