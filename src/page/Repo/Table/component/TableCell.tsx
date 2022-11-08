@@ -1,8 +1,8 @@
 import { memo, useCallback } from 'react';
 import {
   Editable,
-  EditableInput,
   EditablePreview,
+  EditableTextarea,
   Flex
 } from '@chakra-ui/react';
 import { createSelector } from '@reduxjs/toolkit';
@@ -53,7 +53,7 @@ const TableCell = ({
     <Flex {...CELL_PROPS}>
       <Editable value={value} w="100%" onChange={onSubmit}>
         <EditablePreview w="100%" overflow="hidden" noOfLines={2} />
-        <EditableInput />
+        <EditableTextarea />
       </Editable>
     </Flex>
   );
