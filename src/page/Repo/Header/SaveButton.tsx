@@ -42,10 +42,13 @@ const SaveButton = () => {
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = repoT(
+      const confirmationMessage = repoT(
         'Changes you made may not be saved. Ary you sure you want to leave ?'
       );
-      return e;
+      // Gecko + IE
+      (e || window.event).returnValue = confirmationMessage;
+      // Safari, Chrome, and other WebKit-derived browsers
+      return confirmationMessage;
     };
     if (isDataChanged) {
       window.addEventListener('beforeunload', handleBeforeUnload);
