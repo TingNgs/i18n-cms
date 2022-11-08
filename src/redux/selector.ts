@@ -62,3 +62,22 @@ export const isSearchResultSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.searchText,
   (searchText) => !!searchText
 );
+
+export const translateProgressSelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.localeIds,
+  (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
+  (state: RootState) => state.EditingRepoReducer.languages,
+  (state: RootState, namespace: string) => namespace,
+  (localeIds, modifiedLocalesData, languages, namespace) => {
+    if (!localeIds[namespace]) return undefined;
+    const totalTranslateCount = localeIds[namespace].length * languages.length;
+    const validTranslateCount = localeIds[namespace].reduce((acc, cur) => {
+      languages.forEach((language) => {
+        if (modifiedLocalesData[namespace][cur].value[language]) acc++;
+      });
+
+      return acc;
+    }, 0);
+    return Math.floor((validTranslateCount / totalTranslateCount) * 100);
+  }
+);

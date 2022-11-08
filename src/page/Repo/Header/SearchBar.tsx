@@ -43,7 +43,6 @@ const SearchBar = () => {
             icon={<SearchIcon />}
             aria-label="search-button"
             size="sm"
-            variant="ghost"
             disabled={!selectedNamespace}
           />
         </InputRightElement>

@@ -51,8 +51,8 @@ const TableCell = ({
 
   return (
     <Flex {...CELL_PROPS}>
-      <Editable value={value} w="100%" onChange={onSubmit}>
-        <EditablePreview w="100%" overflow="hidden" noOfLines={2} />
+      <Editable value={value} w="100%" minH="32px" onChange={onSubmit}>
+        <EditablePreview w="100%" minH="32px" overflow="hidden" noOfLines={2} />
         <EditableTextarea />
       </Editable>
     </Flex>

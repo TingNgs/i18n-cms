@@ -1,9 +1,19 @@
-import { Text, Flex, Tooltip, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Text,
+  Flex,
+  Tooltip,
+  useBreakpointValue,
+  CircularProgress,
+  CircularProgressLabel
+} from '@chakra-ui/react';
 import { WarningIcon } from '@chakra-ui/icons';
 import { memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSelectedNamespaces } from '../../../redux/editingRepoSlice';
-import { duplicatedKeySelector } from '../../../redux/selector';
+import {
+  duplicatedKeySelector,
+  translateProgressSelector
+} from '../../../redux/selector';
 import { useAppSelector } from '../../../redux/store';
 import { useTranslation } from 'react-i18next';
 
@@ -28,13 +38,18 @@ const Namespaces = ({
     (state) => Object.keys(duplicatedKeySelector(state, namespace)).length > 0
   );
 
+  const namespaceProgress = useAppSelector((state) =>
+    translateProgressSelector(state, namespace)
+  );
+
   return (
     <Flex
       onClick={onClick}
-      p={'8px 16px'}
+      p="4px 16px"
+      minHeight="40px"
       fontWeight={isSelected ? 'semibold' : undefined}
       cursor="pointer"
-      alignItems={'center'}
+      alignItems="center"
       position="relative"
       _before={{
         content: '""',
@@ -52,14 +67,24 @@ const Namespaces = ({
       <Text opacity={isSelected ? 1 : 0.7} flex="1">
         {namespace}
       </Text>
-      {isNsContainsDuplicatedKeys && (
-        <Tooltip
-          hasArrow
-          label={t('With duplicated keys')}
-          backgroundColor="error">
-          <WarningIcon w="4" h="4" color="error" />
-        </Tooltip>
-      )}
+      <Flex gap="2" alignItems="center">
+        {isNsContainsDuplicatedKeys && (
+          <Tooltip
+            hasArrow
+            label={t('With duplicated keys')}
+            backgroundColor="error">
+            <WarningIcon w="4" h="4" color="error" />
+          </Tooltip>
+        )}
+        {namespaceProgress !== undefined && (
+          <CircularProgress
+            size="30px"
+            color="blue.500"
+            value={namespaceProgress}>
+            <CircularProgressLabel>{namespaceProgress}%</CircularProgressLabel>
+          </CircularProgress>
+        )}
+      </Flex>
     </Flex>
   );
 };
