@@ -1,6 +1,9 @@
 
 <div align="center">
-  <img src="public/logo.svg"  width="100" height="100" margin="0 auto">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/logo-dark.svg">
+    <img alt="logo" src="public/logo-light.svg" width="100" height="100">
+  </picture>
   <h1>i18n-cms</h1>
 </div>
 
