@@ -5,7 +5,8 @@ import {
   Stack,
   Text,
   Image,
-  useColorModeValue
+  useColorModeValue,
+  AspectRatio
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -54,12 +55,10 @@ const About = () => {
             </ChakraLink>
           </ButtonGroup>
         </Stack>
-        <Flex flex={1}>
-          <Image
-            src={useColorModeValue(HeaderLightImage, HeaderDarkImage)}
-            w="100%"
-            maxWidth="50rem"
-          />
+        <Flex flex={1} w={{ base: '80%', lg: 'auto' }} justifyContent="center">
+          <AspectRatio maxWidth="40rem" ratio={16 / 9} w="100%">
+            <Image src={useColorModeValue(HeaderLightImage, HeaderDarkImage)} />
+          </AspectRatio>
         </Flex>
       </Flex>
     </Stack>
