@@ -13,7 +13,7 @@ All translations are stored in your GitHub repository for better versioning and 
 
 Any type of contributions are welcome.
 
-Website: https://i18n-cms.pages.dev/
+Website: https://i18n-cms.pages.dev/ <br/>
 Documentation: https://i18n-cms-doc.pages.dev/docs/
 
 
