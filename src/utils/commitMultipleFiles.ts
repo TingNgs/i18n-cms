@@ -228,9 +228,11 @@ export default async function (octokit: Octokit, opts: Options) {
     }
   }
 
+  const createBlobPromise: Promise<void>[] = [];
+
   for (const batch of chunk(Object.keys(change.files), batchSize)) {
-    await Promise.all(
-      batch.map(async (fileName) => {
+    createBlobPromise.push(
+      ...batch.map(async (fileName) => {
         const properties = change.files[fileName] || '';
 
         const contents = properties;
@@ -252,6 +254,8 @@ export default async function (octokit: Octokit, opts: Options) {
       })
     );
   }
+
+  await Promise.all(createBlobPromise);
 
   // no need to issue further requests if there are no updates, creations and deletions
   if (treeItems.length === 0) {

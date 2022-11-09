@@ -22,14 +22,8 @@ const Container = ({
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   return isMobile ? (
-    <Drawer
-      size="xs"
-      placement="left"
-      onClose={onClose}
-      isOpen={isOpen}
-      isFullHeight>
+    <Drawer size="xs" placement="left" onClose={onClose} isOpen={isOpen}>
       <DrawerOverlay />
-
       <DrawerContent overflow="scroll">
         {children}
         <DrawerCloseButton size="md" top="0.8rem" />
