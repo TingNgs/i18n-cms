@@ -7,7 +7,7 @@ import {
   useRef
 } from 'react';
 import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
-
+import { useTranslation } from 'react-i18next';
 import { FixedSizeList, FixedSizeList as List } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import {
@@ -31,8 +31,7 @@ import { LIST_PADDING_BOTTOM } from '../constants';
 import { CELL_HEIGHT } from '../../../constants';
 import reorder from '../../../utils/reorder';
 import EventBus, { CustomEvents } from '../../../utils/eventBus';
-import { useTranslation } from 'react-i18next';
-import { ArrowLeftIcon } from '@chakra-ui/icons';
+
 import { currentLocaleIdsSelector } from '../../../redux/selector';
 
 const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
@@ -144,11 +143,11 @@ const LocaleTable = () => {
         flexGrow={1}
         align="center"
         justifyContent="center"
-        gap="4"
         p="4"
         textAlign="center">
-        <ArrowLeftIcon w="6" h="6" />
-        <Text fontSize="2xl">{repoT('Choose namespace you want to edit')}</Text>
+        <Text fontSize="1xl" fontWeight="semibold">
+          {repoT('Choose namespace you want to edit')}
+        </Text>
       </Flex>
     );
 

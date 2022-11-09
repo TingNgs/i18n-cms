@@ -135,7 +135,7 @@ export const editingRepoSlice = createSlice({
       });
 
       state.localeIds[namespace] = Array.from(keySet).map((key) => {
-        const id = uniqueId(namespace);
+        const id = uniqueId(`${namespace}__key__`);
         state.modifiedLocalesData[namespace][id] = {
           key,
           value: state.originalLanguages.reduce<{ [lng: string]: string }>(
@@ -223,7 +223,7 @@ export const editingRepoSlice = createSlice({
       const namespace = state.selectedNamespace;
       if (!namespace || !state.localeIds[namespace]) return state;
       const { index } = action.payload;
-      const id = uniqueId(namespace);
+      const id = uniqueId(`${namespace}__key__`);
       const newLocaleIndex =
         index === undefined ? state.localeIds[namespace].length : index + 1;
       state.localeIds[namespace].splice(newLocaleIndex, 0, id);
@@ -241,7 +241,7 @@ export const editingRepoSlice = createSlice({
     addNewNamespace: (state, action: PayloadAction<string>) => {
       const namespace = action.payload;
       state.namespaces.push(namespace);
-      const firstLocaleId = uniqueId(namespace);
+      const firstLocaleId = uniqueId(`${namespace}__key__`);
 
       state.localeIds[namespace] = [firstLocaleId];
       state.modifiedLocalesData[namespace] = {

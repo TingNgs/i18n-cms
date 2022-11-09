@@ -17,7 +17,8 @@ import {
   ModalOverlay,
   ModalHeader,
   FormLabel,
-  ModalCloseButton
+  ModalCloseButton,
+  Portal
 } from '@chakra-ui/react';
 import { SmallAddIcon } from '@chakra-ui/icons';
 
@@ -55,6 +56,7 @@ const NewItemBtn = ({
   } = useForm<{
     item: string;
   }>();
+  const isMobile = useBreakpointValue({ base: true, md: false });
   const { t } = useTranslation();
   const { isOpen, onToggle, onClose } = useDisclosure();
 
@@ -77,16 +79,17 @@ const NewItemBtn = ({
       addItemHandler(item);
       setValue('item', '');
       onClose();
-      onCloseSidebar?.();
+      if (isMobile) {
+        onCloseSidebar?.();
+      }
     }),
-    [items, setError, onClose, onCloseSidebar]
+    [items, isMobile, setError, onClose, onCloseSidebar]
   );
 
   return (
     <>
       <Popover
         isLazy
-        placement="left"
         isOpen={isLg && isOpen}
         onClose={onClose}
         initialFocusRef={inputRef}>
@@ -101,28 +104,33 @@ const NewItemBtn = ({
             {title}
           </Button>
         </PopoverTrigger>
-
-        <PopoverContent>
-          <form onSubmit={onSubmit}>
-            <PopoverArrow />
-            <PopoverBody>
-              <Stack>
-                <FormLabel>{title}</FormLabel>
-                <Input ref={popoverInputRef} {...itemRest} isRequired />
-                {errors.item?.message && (
-                  <Text color="error">{errors.item?.message}</Text>
-                )}
-              </Stack>
-            </PopoverBody>
-            <PopoverFooter>
-              <Button size="sm" type="submit">
-                {t('Create')}
-              </Button>
-            </PopoverFooter>
-          </form>
-        </PopoverContent>
+        <Portal>
+          <PopoverContent>
+            <form onSubmit={onSubmit}>
+              <PopoverArrow />
+              <PopoverBody>
+                <Stack>
+                  <FormLabel>{title}</FormLabel>
+                  <Input ref={popoverInputRef} {...itemRest} isRequired />
+                  {errors.item?.message && (
+                    <Text color="error">{errors.item?.message}</Text>
+                  )}
+                </Stack>
+              </PopoverBody>
+              <PopoverFooter>
+                <Button size="sm" type="submit">
+                  {t('Create')}
+                </Button>
+              </PopoverFooter>
+            </form>
+          </PopoverContent>
+        </Portal>
       </Popover>
-      <Modal isOpen={!isLg && isOpen} onClose={onClose}>
+      <Modal
+        isOpen={!isLg && isOpen}
+        onClose={onClose}
+        motionPreset="none"
+        blockScrollOnMount={false}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
