@@ -1,4 +1,4 @@
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import { REPOSITORY_VISIBILITY } from '../../constants';
@@ -10,6 +10,7 @@ import { Owner } from '../../component/OwnerSelect';
 
 const auth = getSessionStorage('github_access_token');
 let octokit = new Octokit({ auth });
+
 let withAuth = !!auth;
 
 export type RepoListForAuthenticatedUser =

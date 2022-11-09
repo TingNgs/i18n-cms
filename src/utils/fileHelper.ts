@@ -1,5 +1,5 @@
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
-import { Octokit } from 'octokit/dist-types';
+import { Octokit } from '@octokit/rest';
 import YAML from 'yaml';
 
 import { CONFIG_PATH } from '../constants';

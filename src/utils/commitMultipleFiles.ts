@@ -1,5 +1,5 @@
 import isBase64 from 'is-base64';
-import { Octokit } from 'octokit';
+import { Octokit } from '@octokit/rest';
 import { Buffer } from 'buffer';
 
 export interface Options {
@@ -7,7 +7,6 @@ export interface Options {
   repo: string;
   branch: string;
   base?: string;
-  batchSize?: number;
   createBranch?: boolean;
   committer?: {
     name?: string;
@@ -105,27 +104,11 @@ async function loadRef(
   }
 }
 
-const chunk = (input: string[], size: number) => {
-  return input.reduce<string[][]>((acc, item, idx) => {
-    return idx % size === 0
-      ? [...acc, [item]]
-      : [...acc.slice(0, -1), [...acc.slice(-1)[0], item]];
-  }, []);
-};
-
 export default async function (octokit: Octokit, opts: Options) {
   for (const req of ['owner', 'repo', 'branch'] as const) {
     if (!opts[req]) {
       throw new Error(`'${req}' is a required parameter`);
     }
-  }
-
-  if (!opts.batchSize) {
-    opts.batchSize = 1;
-  }
-
-  if (typeof opts.batchSize !== 'number') {
-    throw new Error(`batchSize must be a number`);
   }
 
   // Destructuring for easier access later
@@ -136,8 +119,7 @@ export default async function (octokit: Octokit, opts: Options) {
     createBranch = true,
     committer,
     author,
-    change,
-    batchSize
+    change
   } = opts;
   let { base } = opts;
 
@@ -194,68 +176,60 @@ export default async function (octokit: Octokit, opts: Options) {
   const treeItems: TreeItem[] = [];
   // Handle file deletions
   if (hasFilesToDelete) {
-    for (const batch of chunk(change.filesToDelete || [], batchSize)) {
-      await Promise.all(
-        batch.map(async (fileName) => {
-          if (!baseTree) throw new Error('base tree undefined');
-          const exists = await fileExistsInRepo(
-            octokit,
-            owner,
-            repo,
-            fileName,
-            baseTree
+    await Promise.all(
+      (change.filesToDelete || []).map(async (fileName) => {
+        if (!baseTree) throw new Error('base tree undefined');
+        const exists = await fileExistsInRepo(
+          octokit,
+          owner,
+          repo,
+          fileName,
+          baseTree
+        );
+
+        // If it doesn't exist, and we're not ignoring missing files
+        // reject the promise
+        if (!exists && !change.ignoreDeletionFailures) {
+          throw new Error(
+            `The file ${fileName} could not be found in the repo`
           );
-
-          // If it doesn't exist, and we're not ignoring missing files
-          // reject the promise
-          if (!exists && !change.ignoreDeletionFailures) {
-            throw new Error(
-              `The file ${fileName} could not be found in the repo`
-            );
-          }
-
-          // At this point it either exists, or we're ignoring failures
-          if (exists) {
-            treeItems.push({
-              path: fileName,
-              sha: null, // sha as null implies that the file should be deleted
-              mode: '100644',
-              type: 'blob'
-            });
-          }
-        })
-      );
-    }
-  }
-
-  const createBlobPromise: Promise<void>[] = [];
-
-  for (const batch of chunk(Object.keys(change.files), batchSize)) {
-    createBlobPromise.push(
-      ...batch.map(async (fileName) => {
-        const properties = change.files[fileName] || '';
-
-        const contents = properties;
-        const mode = '100644';
-        const type = 'blob';
-
-        if (!contents) {
-          throw new Error(`No file contents provided for ${fileName}`);
         }
 
-        const fileSha = await createBlob(octokit, owner, repo, contents, type);
-
-        treeItems.push({
-          path: fileName,
-          sha: fileSha,
-          mode: mode,
-          type: type
-        });
+        // At this point it either exists, or we're ignoring failures
+        if (exists) {
+          treeItems.push({
+            path: fileName,
+            sha: null, // sha as null implies that the file should be deleted
+            mode: '100644',
+            type: 'blob'
+          });
+        }
       })
     );
   }
 
-  await Promise.all(createBlobPromise);
+  await Promise.all(
+    Object.keys(change.files).map(async (fileName) => {
+      const properties = change.files[fileName] || '';
+
+      const contents = properties;
+      const mode = '100644';
+      const type = 'blob';
+
+      if (!contents) {
+        throw new Error(`No file contents provided for ${fileName}`);
+      }
+
+      const fileSha = await createBlob(octokit, owner, repo, contents, type);
+
+      treeItems.push({
+        path: fileName,
+        sha: fileSha,
+        mode: mode,
+        type: type
+      });
+    })
+  );
 
   // no need to issue further requests if there are no updates, creations and deletions
   if (treeItems.length === 0) {

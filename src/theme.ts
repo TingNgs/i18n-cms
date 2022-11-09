@@ -13,6 +13,7 @@ const colors = {
 };
 const theme = extendTheme(
   {
+    config: { initialColorMode: 'system' },
     colors,
     styles: {
       global: (props: GlobalStyleProps) => ({
