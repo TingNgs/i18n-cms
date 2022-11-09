@@ -1,13 +1,12 @@
-import { ReactNode } from 'react';
+import { ReactNode, useRef } from 'react';
 import {
-  ModalHeader,
-  Modal,
-  ModalContent,
-  ModalBody,
-  ButtonGroup,
   Button,
-  Stack,
-  ModalOverlay
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
@@ -29,30 +28,27 @@ const DeleteModal = ({
   isLoading
 }: IProps) => {
   const { t } = useTranslation();
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} motionPreset="none">
-      <ModalOverlay />
-      <ModalContent>
-        {title && <ModalHeader>{title}</ModalHeader>}
-        <ModalBody>
-          <Stack spacing={4}>
-            {content}
-            <ButtonGroup>
-              <Button variant="outline" onClick={onClose}>
-                {t('Cancel')}
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={onConfirm}
-                isLoading={isLoading}>
-                {t('Delete')}
-              </Button>
-            </ButtonGroup>
-          </Stack>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+    <AlertDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      leastDestructiveRef={cancelRef}>
+      <AlertDialogOverlay />
+      <AlertDialogContent>
+        {title && <AlertDialogHeader>{title}</AlertDialogHeader>}
+        <AlertDialogBody> {content}</AlertDialogBody>
+        <AlertDialogFooter gap={4}>
+          <Button variant="outline" onClick={onClose} ref={cancelRef}>
+            {t('Cancel')}
+          </Button>
+          <Button colorScheme="red" onClick={onConfirm} isLoading={isLoading}>
+            {t('Delete')}
+          </Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

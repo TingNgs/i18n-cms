@@ -3,11 +3,12 @@ import { PropsWithChildren } from 'react';
 import { Flex } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 
+import { useAppSelector } from '../../redux/store';
 import useAuth from '../../hooks/useAuth';
 
+import CookiesPolicyPopup from '../CookiesPolicyPopup';
 import LoadingModal from '../LoadingModal';
 import Header from './Header';
-import { useAppSelector } from '../../redux/store';
 
 const AppLayout = ({ children }: PropsWithChildren) => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const AppLayout = ({ children }: PropsWithChildren) => {
     <Flex direction="column" h="100%">
       {location.pathname !== '/repo' && <Header />}
       {children}
+      <CookiesPolicyPopup />
     </Flex>
   );
 };
