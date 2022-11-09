@@ -1,11 +1,29 @@
 import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import { Octokit } from 'octokit/dist-types';
+import YAML from 'yaml';
 
 import { CONFIG_PATH } from '../constants';
 import { RepoConfig } from '../redux/editingRepoSlice';
 
 const dataToJson = (data: Record<string, unknown>) => {
   return JSON.stringify(data, null, 2);
+};
+
+const dataToYaml = (data: Record<string, unknown>) => {
+  return YAML.stringify(data);
+};
+
+const jsonToData = (json: string) => JSON.parse(json);
+const yamlToData = (yaml: string) => YAML.parse(yaml);
+
+export const dataStringifyByType = {
+  json: dataToJson,
+  yaml: dataToYaml
+};
+
+export const fileParseByType = {
+  json: jsonToData,
+  yaml: yamlToData
 };
 
 export const getLocalePath = ({
@@ -54,7 +72,7 @@ export const dataToFiles = ({
       if (!translation) return;
 
       files[getLocalePath({ language, namespace, repoConfig })] =
-        dataToJson(translation);
+        dataStringifyByType[repoConfig.fileType](translation);
     });
   });
   return files;

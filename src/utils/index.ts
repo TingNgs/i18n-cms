@@ -4,4 +4,4 @@ export const getGithubUrl = (repo: Repo) =>
   `https://github.com/${repo.fullName}`;
 
 export const getGithubBranchUrl = (repo: Repo, branch: string) =>
-  `${getGithubUrl}/tree/${branch}`;
+  `${getGithubUrl(repo)}/tree/${branch}`;

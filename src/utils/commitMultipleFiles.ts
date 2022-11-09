@@ -49,7 +49,8 @@ async function fileExistsInRepo(
       owner,
       repo,
       path,
-      ref: branch
+      ref: branch,
+      headers: { 'If-None-Match': '' }
     });
     return true;
   } catch (e) {
@@ -95,7 +96,8 @@ async function loadRef(
     const x = await octokit.rest.git.getRef({
       owner,
       repo,
-      ref: `heads/${ref}`
+      ref: `heads/${ref}`,
+      headers: { 'If-None-Match': '' }
     });
     return x.data.object.sha;
   } catch (e) {
@@ -160,7 +162,8 @@ export default async function (octokit: Octokit, opts: Options) {
       base = (
         await octokit.rest.repos.get({
           owner,
-          repo
+          repo,
+          headers: { 'If-None-Match': '' }
         })
       ).data.default_branch;
     }
