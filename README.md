@@ -13,6 +13,10 @@ All translations are stored in your GitHub repository for better versioning and 
 
 Any type of contributions are welcome.
 
+Website: https://i18n-cms.pages.dev/
+Documentation: https://i18n-cms-doc.pages.dev/docs/
+
+
 ## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
