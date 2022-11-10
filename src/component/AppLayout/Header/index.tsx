@@ -67,6 +67,7 @@ const Header = () => {
             {t('Documentation')}
           </ChakraLink>
           <ChakraLink
+            aria-label="18n-cms github repository"
             variant="link"
             href={process.env.REACT_APP_GITHUB_URL}
             isExternal>
@@ -118,6 +119,7 @@ const Header = () => {
           <DrawerFooter justifyContent={'space-between'} alignItems="center">
             <ChakraLink
               variant="link"
+              aria-label="18n-cms github repository"
               href={process.env.REACT_APP_GITHUB_URL}
               isExternal>
               <Icon as={AiOutlineGithub} w="6" h="6" />

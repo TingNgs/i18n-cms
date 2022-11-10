@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { AuthApi } from './services/authApi';
+import { getSessionStorage } from '../utils/storage';
 
 export interface AppState {
   authState: 'initial' | 'signOff' | 'signIn';
@@ -13,7 +14,10 @@ const initialState: AppState = {
 
 export const appSlice = createSlice({
   name: 'app',
-  initialState,
+  initialState: {
+    ...initialState,
+    authState: getSessionStorage('github_access_token') ? 'initial' : 'signOff'
+  },
   reducers: {
     setAuthState: (
       state,
