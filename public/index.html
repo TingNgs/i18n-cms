@@ -19,6 +19,14 @@
       name="description"
       content="i18n (Localization) management platform"
     />
+
+    <% if (process.env.NODE_ENV === 'production') { %>
+    <meta
+      name="google-site-verification"
+      content="%REACT_APP_GOOGLE_SITE_VERIFICATION%"
+    />
+    <% } %>
+
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
