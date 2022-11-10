@@ -112,6 +112,15 @@ export const editingRepoSlice = createSlice({
       const { language, value } = action.payload;
       state.selectedLanguagesMap[language] = value;
     },
+    setAllLanguageSelected: (
+      state,
+      action: PayloadAction<{ value: boolean }>
+    ) => {
+      const { value } = action.payload;
+      state.languages.forEach((language) => {
+        state.selectedLanguagesMap[language] = value;
+      });
+    },
     setLocalesDataByNamespace: (
       state,
       action: PayloadAction<{
@@ -309,6 +318,7 @@ export const {
   setSelectedNamespaces,
   setLanguages,
   setLanguageSelected,
+  setAllLanguageSelected,
   setLocalesDataByNamespace,
   setLocaleDataById,
   handleLocaleOnChange,

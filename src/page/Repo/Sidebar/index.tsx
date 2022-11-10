@@ -1,5 +1,6 @@
-import { useCallback } from 'react';
+import { MouseEventHandler, useCallback, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { pickBy } from 'lodash-es';
 import {
   Stack,
   Link,
@@ -9,33 +10,54 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  Flex
+  Flex,
+  IconButton,
+  useBreakpointValue
 } from '@chakra-ui/react';
+import {
+  ArrowBackIcon,
+  ExternalLinkIcon,
+  ViewIcon,
+  ViewOffIcon
+} from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '../../../redux/store';
 
-import Namespace from './Namespace';
-import { ArrowBackIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-import NewItemBtn from './NewItemBtn';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import {
   addNewNamespace,
-  addNewLanguage
+  addNewLanguage,
+  setAllLanguageSelected
 } from '../../../redux/editingRepoSlice';
 
+import Namespace from './Namespace';
+import NewItemBtn from './NewItemBtn';
 import LanguageList from './LanguageList';
 import LanguageSelector from '../../../component/LanguageSelector';
-import { getGithubBranchUrl, getGithubUrl } from '../../../utils';
 import ColorModeBtn from '../../../component/ColorModeBtn';
 import Container from './Container';
 
+import { getGithubBranchUrl, getGithubUrl } from '../../../utils';
+
 const TITLE_PROPS = {
-  fontWeight: 'bold'
-};
+  fontWeight: 'bold',
+  flex: 1,
+  textAlign: 'left'
+} as const;
 
 const SUB_TITLE_PROPS = {
   fontWeight: 'bold',
   fontSize: '0.8rem'
-};
+} as const;
+
+const ACCORDION_ICON_PROPS = {
+  w: '8',
+  h: '8',
+  p: '1.5'
+} as const;
+
+const ACCORDION_BTN_PROPS = {
+  paddingRight: '0'
+} as const;
 
 const Sidebar = ({
   isOpen,
@@ -47,8 +69,28 @@ const Sidebar = ({
   const { t } = useTranslation();
   const { t: repoT } = useTranslation('repo');
   const dispatch = useAppDispatch();
-  const { namespaces, selectedNamespace, editingRepo, branch, languages } =
-    useAppSelector((state) => state.EditingRepoReducer);
+  const {
+    namespaces,
+    selectedNamespace,
+    editingRepo,
+    branch,
+    languages,
+    selectedLanguagesMap
+  } = useAppSelector((state) => state.EditingRepoReducer);
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isAnyLanguageSelected = useMemo(
+    () => Object.keys(pickBy(selectedLanguagesMap)).length > 0,
+    [selectedLanguagesMap]
+  );
+
+  const onShowAllLanguageClicked: MouseEventHandler<HTMLButtonElement> =
+    useCallback(
+      (event) => {
+        event.stopPropagation();
+        dispatch(setAllLanguageSelected({ value: !isAnyLanguageSelected }));
+      },
+      [isAnyLanguageSelected]
+    );
 
   const onAddNewNamespace = useCallback((value: string) => {
     dispatch(addNewNamespace(value));
@@ -81,9 +123,9 @@ const Sidebar = ({
 
         <Accordion allowMultiple defaultIndex={[1]}>
           <AccordionItem>
-            <AccordionButton justifyContent="space-between">
+            <AccordionButton {...ACCORDION_BTN_PROPS}>
               <Text {...TITLE_PROPS}>{t('Repository')}</Text>
-              <AccordionIcon />
+              <AccordionIcon {...ACCORDION_ICON_PROPS} />
             </AccordionButton>
             <AccordionPanel>
               <Stack>
@@ -100,9 +142,9 @@ const Sidebar = ({
             </AccordionPanel>
           </AccordionItem>
           <AccordionItem>
-            <AccordionButton justifyContent="space-between">
+            <AccordionButton {...ACCORDION_BTN_PROPS}>
               <Text {...TITLE_PROPS}>{t('Namespaces')}</Text>
-              <AccordionIcon />
+              <AccordionIcon {...ACCORDION_ICON_PROPS} />
             </AccordionButton>
             <AccordionPanel padding={0}>
               {namespaces.map((namespace) => (
@@ -123,10 +165,22 @@ const Sidebar = ({
               />
             </AccordionPanel>
           </AccordionItem>
-          <AccordionItem>
-            <AccordionButton justifyContent="space-between">
+          <AccordionItem position="relative">
+            {!isMobile && (
+              <IconButton
+                position="absolute"
+                right="8"
+                top="2"
+                variant="ghost"
+                aria-label="show-all-language"
+                size="sm"
+                icon={isAnyLanguageSelected ? <ViewIcon /> : <ViewOffIcon />}
+                onClick={onShowAllLanguageClicked}
+              />
+            )}
+            <AccordionButton {...ACCORDION_BTN_PROPS}>
               <Text {...TITLE_PROPS}>{t('Languages')}</Text>
-              <AccordionIcon />
+              <AccordionIcon {...ACCORDION_ICON_PROPS} />
             </AccordionButton>
             <AccordionPanel padding={0}>
               <LanguageList />
