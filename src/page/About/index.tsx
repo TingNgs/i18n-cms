@@ -57,7 +57,10 @@ const About = () => {
         </Stack>
         <Flex flex={1} w={{ base: '80%', lg: 'auto' }} justifyContent="center">
           <AspectRatio maxWidth="40rem" ratio={16 / 9} w="100%">
-            <Image src={useColorModeValue(HeaderLightImage, HeaderDarkImage)} />
+            <Image
+              src={useColorModeValue(HeaderLightImage, HeaderDarkImage)}
+              alt="app screenshot"
+            />
           </AspectRatio>
         </Flex>
       </Flex>

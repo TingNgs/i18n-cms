@@ -39,12 +39,14 @@ const SaveButton = () => {
     dispatch(setSaveModalOpen(true));
   }, []);
 
+  const confirmationMessage = repoT(
+    'Changes you made may not be saved. Ary you sure you want to leave ?'
+  );
+
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      const confirmationMessage = repoT(
-        'Changes you made may not be saved. Ary you sure you want to leave ?'
-      );
+
       // Gecko + IE
       (e || window.event).returnValue = confirmationMessage;
       // Safari, Chrome, and other WebKit-derived browsers
@@ -56,19 +58,14 @@ const SaveButton = () => {
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [isDataChanged]);
+  }, [isDataChanged, confirmationMessage]);
 
   return (
     <>
       <Button disabled={!isDataChanged} onClick={openSaveModal} size="sm">
         {t('Save')}
       </Button>
-      <Prompt
-        when={isDataChanged}
-        message={repoT(
-          'Changes you made may not be saved. Ary you sure you want to leave ?'
-        )}
-      />
+      <Prompt when={isDataChanged} message={confirmationMessage} />
     </>
   );
 };
