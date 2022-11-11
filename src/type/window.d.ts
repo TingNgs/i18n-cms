@@ -6,6 +6,6 @@ declare global {
       namespace: string;
       language: string;
       repoConfig: RepoConfig;
-    }) => void;
+    }) => string;
   }
 }

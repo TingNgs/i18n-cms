@@ -1,4 +1,3 @@
-export const LOCALES_FILE_STRUCTURE = ['{lng}/{ns}', '{ns}/{lng}'] as const;
 export const LOCALES_FILE_TYPE = ['json', 'yaml'] as const;
 export const REPOSITORY_VISIBILITY = ['public', 'private'] as const;
 

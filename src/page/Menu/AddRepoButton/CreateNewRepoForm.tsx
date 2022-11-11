@@ -14,11 +14,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
-import {
-  LOCALES_FILE_STRUCTURE,
-  LOCALES_FILE_TYPE,
-  REPOSITORY_VISIBILITY
-} from '../../../constants';
+import { LOCALES_FILE_TYPE, REPOSITORY_VISIBILITY } from '../../../constants';
 import {
   useCreateGithubRepoMutation,
   useCommitGithubFilesMutation
@@ -49,8 +45,7 @@ const CreateNewRepoForm = () => {
   const { handleSubmit, register, control, watch } = useForm<{
     owner: Owner;
     name: string;
-    basePath: string;
-    fileStructure: typeof LOCALES_FILE_STRUCTURE[number];
+    pattern: string;
     fileType: typeof LOCALES_FILE_TYPE[number];
     visibility: typeof REPOSITORY_VISIBILITY[number];
     languages: string[];
@@ -60,8 +55,14 @@ const CreateNewRepoForm = () => {
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const { name, visibility, languages, namespaces, owner, ...repoConfig } =
-        values;
+      const { name, visibility, namespaces, owner, ...repoConfig } = values;
+      if (
+        !repoConfig.defaultLanguage ||
+        !repoConfig.languages.includes(repoConfig.defaultLanguage)
+      ) {
+        repoConfig.defaultLanguage = repoConfig.languages[0];
+      }
+
       setLoading(true);
       const repo = await createGithubRepo({
         name,
@@ -81,7 +82,6 @@ const CreateNewRepoForm = () => {
         change: {
           message: 'Initial locales',
           files: dataToFiles({
-            languages,
             namespaces,
             repoConfig
           })
@@ -111,12 +111,7 @@ const CreateNewRepoForm = () => {
     }
   });
 
-  const [owner, basePath, languages, fileType] = watch([
-    'owner',
-    'basePath',
-    'languages',
-    'fileType'
-  ]);
+  const [owner, languages] = watch(['owner', 'languages']);
 
   const getLoadingTitle = useCallback(() => {
     if (isCreateRepoLoading) return menuT('Creating repository');
@@ -158,24 +153,6 @@ const CreateNewRepoForm = () => {
             </HStack>
           </RadioGroup>
 
-          <FormLabel>{commonT('Base path')}</FormLabel>
-          <Input {...register('basePath')} placeholder="/" name="basePath" />
-
-          <FormLabel>{commonT('File structure')}</FormLabel>
-          <RadioGroup defaultValue={LOCALES_FILE_STRUCTURE[0]}>
-            <Stack flexWrap="wrap">
-              {LOCALES_FILE_STRUCTURE.map((value) => (
-                <Radio
-                  {...register('fileStructure')}
-                  key={value}
-                  value={value}
-                  maxW="100%">
-                  {basePath}/{value}.{fileType}
-                </Radio>
-              ))}
-            </Stack>
-          </RadioGroup>
-
           <FormLabel>{commonT('File type')}</FormLabel>
           <RadioGroup defaultValue={LOCALES_FILE_TYPE[0]}>
             <HStack spacing={4}>
@@ -186,6 +163,14 @@ const CreateNewRepoForm = () => {
               ))}
             </HStack>
           </RadioGroup>
+
+          <FormLabel>{commonT('File path pattern')}</FormLabel>
+          <Input
+            {...register('pattern')}
+            placeholder=":lng/:ns"
+            defaultValue=":lng/:ns"
+            name="pattern"
+          />
 
           <FormLabel>{commonT('Languages')}</FormLabel>
           <Controller

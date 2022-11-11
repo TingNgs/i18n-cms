@@ -175,13 +175,12 @@ const useSaveEditing = () => {
             ignoreDeletionFailures: true,
             files: dataToFiles({
               data,
-              languages,
               namespaces: Object.keys(data),
               repoConfig: {
                 ...editingRepoConfig,
+                languages,
                 ...(editingRepoConfig.useCustomPath
                   ? {
-                      languages,
                       namespaces
                     }
                   : {})

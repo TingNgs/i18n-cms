@@ -227,6 +227,7 @@ const BranchFormModal = ({ repo }: IProps) => {
           message: t('Branch already exists')
         });
       } else {
+        console.log(e);
         toast({ title: commonT('Something went wrong'), status: 'error' });
       }
     } finally {

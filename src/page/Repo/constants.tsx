@@ -20,4 +20,4 @@ export const ROW_PROPS = {
 } as const;
 
 export const LIST_PADDING_BOTTOM = 24;
-export const SIDEBAR_WIDTH = 240;
+export const SIDEBAR_WIDTH = 280;

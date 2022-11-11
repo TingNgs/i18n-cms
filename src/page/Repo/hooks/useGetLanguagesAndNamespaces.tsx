@@ -1,22 +1,21 @@
-import path from 'path-browserify';
+import { compact, map } from 'lodash-es';
+
 import { useState } from 'react';
-import { CONFIG_FOLDER } from '../../../constants';
+import multimatch from 'multimatch';
+import UrlPattern from 'url-pattern';
+
 import { Repo, RepoConfig } from '../../../redux/editingRepoSlice';
-import {
-  useLazyGetGithubContentQuery,
-  useLazyGetGithubTreeQuery
-} from '../../../redux/services/octokitApi';
+
+import { useLazyGetGithubTreeQuery } from '../../../redux/services/octokitApi';
 
 const useGetLanguagesAndNamespaces = () => {
   const [isLoading, setLoading] = useState(false);
 
-  const [getGithubContent] = useLazyGetGithubContentQuery();
   const [getGithubTree] = useLazyGetGithubTreeQuery();
 
   const getLanguagesAndNamespaces = async ({
     repo,
     repoConfig,
-    branch,
     rootSha
   }: {
     repo: Repo;
@@ -26,64 +25,40 @@ const useGetLanguagesAndNamespaces = () => {
   }) => {
     try {
       setLoading(true);
-      let treeSha = rootSha;
-      const localesPath = repoConfig.basePath
-        .split('/')
-        .filter((path) => !!path);
-
-      if (localesPath.length > 0) {
-        const localesFolderName = localesPath.pop();
-        const folder = await getGithubContent({
-          repo: repo.repo,
-          owner: repo.owner,
-          ref: branch,
-          path: localesPath.join('/')
-        }).unwrap();
-
-        const localesFolder =
-          Array.isArray(folder) &&
-          folder.find(
-            (item) => item.type === 'dir' && item.name === localesFolderName
-          );
-
-        if (!localesFolder) {
-          throw new Error('localesFolderNotFound');
-        }
-        treeSha = localesFolder.sha;
-      }
-
+      const treeSha = rootSha;
       const treeData = await getGithubTree({
         repo: repo.repo,
         owner: repo.owner,
         treeSha
       }).unwrap();
-      const { namespacesSet, languagesSet } = treeData.tree
-        .filter((tree) => tree.type === 'blob')
-        .reduce<{ namespacesSet: Set<string>; languagesSet: Set<string> }>(
-          (acc, cur) => {
-            if (!cur.path) return acc;
-            const { dir, name } = path.parse(cur.path);
-            if (
-              repoConfig.basePath === '' &&
-              (dir === CONFIG_FOLDER || !dir || dir.startsWith('.'))
-            ) {
-              return acc;
-            }
-            if (repoConfig.fileStructure === '{lng}/{ns}') {
-              acc.namespacesSet.add(name);
-              acc.languagesSet.add(dir);
-            }
-            if (repoConfig.fileStructure === '{ns}/{lng}') {
-              acc.namespacesSet.add(dir);
-              acc.languagesSet.add(name);
-            }
-            return acc;
-          },
-          {
-            namespacesSet: new Set(),
-            languagesSet: new Set()
+
+      const pathList = multimatch(
+        compact(map(treeData.tree, 'path')),
+        repoConfig.pattern
+          .replace(':ns', '**')
+          .replace(':lng', `{${repoConfig.languages.join(',')}}`)
+          .concat(`.${repoConfig.fileType}`)
+      );
+      const pattern = new UrlPattern(
+        repoConfig.pattern.replace(':ns', '*').concat(`.${repoConfig.fileType}`)
+      );
+      const { namespacesSet, languagesSet } = pathList.reduce<{
+        namespacesSet: Set<string>;
+        languagesSet: Set<string>;
+      }>(
+        (acc, cur) => {
+          const match = pattern.match(cur);
+          if (match.lng && match._) {
+            acc.languagesSet.add(match.lng);
+            acc.namespacesSet.add(match._);
           }
-        );
+          return acc;
+        },
+        {
+          namespacesSet: new Set(),
+          languagesSet: new Set()
+        }
+      );
       return {
         namespaces: Array.from(namespacesSet),
         languages: Array.from(languagesSet)

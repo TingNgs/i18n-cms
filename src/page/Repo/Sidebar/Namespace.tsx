@@ -1,19 +1,9 @@
-import {
-  Text,
-  Flex,
-  Tooltip,
-  useBreakpointValue,
-  CircularProgress,
-  CircularProgressLabel
-} from '@chakra-ui/react';
+import { Text, Flex, Tooltip, useBreakpointValue } from '@chakra-ui/react';
 import { WarningIcon } from '@chakra-ui/icons';
 import { memo, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSelectedNamespaces } from '../../../redux/editingRepoSlice';
-import {
-  duplicatedKeySelector,
-  translateProgressSelector
-} from '../../../redux/selector';
+import { duplicatedKeySelector } from '../../../redux/selector';
 import { useAppSelector } from '../../../redux/store';
 import { useTranslation } from 'react-i18next';
 
@@ -36,10 +26,6 @@ const Namespaces = ({
 
   const isNsContainsDuplicatedKeys = useAppSelector(
     (state) => Object.keys(duplicatedKeySelector(state, namespace)).length > 0
-  );
-
-  const namespaceProgress = useAppSelector((state) =>
-    translateProgressSelector(state, namespace)
   );
 
   return (
@@ -75,14 +61,6 @@ const Namespaces = ({
             backgroundColor="error">
             <WarningIcon w="4" h="4" color="error" />
           </Tooltip>
-        )}
-        {namespaceProgress !== undefined && (
-          <CircularProgress
-            size="30px"
-            color="blue.500"
-            value={namespaceProgress}>
-            <CircularProgressLabel>{namespaceProgress}%</CircularProgressLabel>
-          </CircularProgress>
         )}
       </Flex>
     </Flex>

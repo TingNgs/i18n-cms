@@ -2,17 +2,16 @@ import { uniqueId } from 'lodash-es';
 import { createSlice, current } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { LOCALES_FILE_STRUCTURE, LOCALES_FILE_TYPE } from '../constants';
+import { LOCALES_FILE_TYPE } from '../constants';
 import EventBus from '../utils/eventBus';
 
 export interface RepoConfig {
-  fileStructure: typeof LOCALES_FILE_STRUCTURE[number];
   fileType: typeof LOCALES_FILE_TYPE[number];
-  basePath: string;
+  pattern: string;
   defaultLanguage: string;
+  languages: string[];
   useCustomPath?: boolean;
   namespaces?: string[];
-  languages?: string[];
 }
 
 export interface Repo {

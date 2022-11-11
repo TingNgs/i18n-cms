@@ -35,27 +35,24 @@ export const getLocalePath = ({
   namespace: string;
   repoConfig: RepoConfig;
 }) => {
-  const { fileStructure, fileType, basePath, useCustomPath } = repoConfig;
+  const { fileType, pattern, useCustomPath } = repoConfig;
 
-  const filePath =
+  const fullPath =
     useCustomPath && window.getCustomPath
       ? window.getCustomPath({ namespace, language, repoConfig })
-      : fileStructure
-          .replace('{lng}', language)
-          .replace('{ns}', namespace)
+      : pattern
+          .replace(':lng', language)
+          .replace(':ns', namespace)
           .concat(`.${fileType}`);
 
-  const fullPath = `${basePath ? `${basePath}/` : ''}${filePath}`;
   return fullPath;
 };
 
 export const dataToFiles = ({
-  languages,
   namespaces,
   data,
   repoConfig
 }: {
-  languages: string[];
   namespaces: string[];
   data?: {
     [namespace: string]: { [language: string]: { [key: string]: string } };
@@ -67,7 +64,7 @@ export const dataToFiles = ({
   };
 
   namespaces.forEach((namespace) => {
-    languages.forEach((language) => {
+    repoConfig.languages.forEach((language) => {
       const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
       if (!translation) return;
 
