@@ -114,9 +114,7 @@ export const OctokitApi = createApi({
       }
     }),
     getGithubContent: builder.query<
-      GetResponseDataTypeFromEndpointMethod<
-        typeof octokit.rest.repos.getContent
-      >,
+      string,
       { repo: string; owner: string; path: string; ref?: string }
     >({
       queryFn: async ({ repo, owner, path, ref }) => {
@@ -125,9 +123,10 @@ export const OctokitApi = createApi({
           repo,
           owner,
           path,
-          ref
+          ref,
+          mediaType: { format: 'raw' }
         });
-        return { data: result?.data };
+        return { data: result?.data as unknown as string };
       }
     }),
     getGithubTree: builder.query<

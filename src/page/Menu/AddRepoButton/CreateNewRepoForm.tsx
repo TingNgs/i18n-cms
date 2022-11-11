@@ -14,7 +14,11 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
-import { LOCALES_FILE_TYPE, REPOSITORY_VISIBILITY } from '../../../constants';
+import {
+  LOCALES_FILE_TYPE,
+  LOCALES_FILE_TYPE_MAP,
+  REPOSITORY_VISIBILITY
+} from '../../../constants';
 import {
   useCreateGithubRepoMutation,
   useCommitGithubFilesMutation
@@ -154,15 +158,13 @@ const CreateNewRepoForm = () => {
           </RadioGroup>
 
           <FormLabel>{commonT('File type')}</FormLabel>
-          <RadioGroup defaultValue={LOCALES_FILE_TYPE[0]}>
-            <HStack spacing={4}>
-              {LOCALES_FILE_TYPE.map((value) => (
-                <Radio {...register('fileType')} key={value} value={value}>
-                  {value}
-                </Radio>
-              ))}
-            </HStack>
-          </RadioGroup>
+          <Select {...register('fileType')} defaultValue={LOCALES_FILE_TYPE[0]}>
+            {LOCALES_FILE_TYPE.map((value) => (
+              <option value={value} key={value}>
+                {LOCALES_FILE_TYPE_MAP[value].label}
+              </option>
+            ))}
+          </Select>
 
           <FormLabel>{commonT('File path pattern')}</FormLabel>
           <Input

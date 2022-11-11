@@ -4,7 +4,6 @@ import { useAppStore } from '../../../redux/store';
 import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
 import {
   dataStringifyByType,
-  decodeGithubFileContent,
   fileParseByType,
   getLocalePath
 } from '../../../utils/fileHelper';
@@ -37,9 +36,7 @@ const useGetEditingRepoLocalByNs = () => {
     const files = await Promise.all(filesPromise);
     return files.reduce<{ [language: string]: { [key: string]: string } }>(
       (acc, cur, index) => {
-        const file = cur
-          ? decodeGithubFileContent(cur)
-          : dataStringifyByType[repoConfig.fileType]({});
+        const file = cur || dataStringifyByType[repoConfig.fileType]({});
         acc[languages[index]] = flatten(
           fileParseByType[repoConfig.fileType](file)
         );

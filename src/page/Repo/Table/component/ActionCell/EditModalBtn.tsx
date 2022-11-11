@@ -21,15 +21,28 @@ import {
   useAppSelector,
   useAppStore
 } from '../../../../../redux/store';
-import { setLocaleDataById } from '../../../../../redux/editingRepoSlice';
+import {
+  RepoConfig,
+  setLocaleDataById
+} from '../../../../../redux/editingRepoSlice';
 import { flatten, unflatten } from 'flat';
+import { includes } from 'lodash-es';
+import { FLATTEN_LOCALES_FILE_TYPE } from '../../../../../constants';
 
 interface IProps {
   localeId?: string;
 }
 
-const isDuplicatedKey = (key1: string, key2: string) =>
-  Object.keys(flatten(unflatten({ [key1]: true, [key2]: true }))).length !== 2;
+const isDuplicatedKey = (
+  key1: string,
+  key2: string,
+  fileType: RepoConfig['fileType']
+) =>
+  Object.keys(
+    includes(FLATTEN_LOCALES_FILE_TYPE, fileType)
+      ? { [key1]: true, [key2]: true }
+      : flatten(unflatten({ [key1]: true, [key2]: true }))
+  ).length !== 2;
 
 const EditModalBtn = ({ localeId }: IProps) => {
   const dispatch = useAppDispatch();
@@ -59,17 +72,23 @@ const EditModalBtn = ({ localeId }: IProps) => {
   } = useForm<{ key: string; value: { [language: string]: string } }>();
 
   const onSubmit = handleSubmit((data) => {
-    if (!localeId) return null;
     const {
       localeIds,
       modifiedLocalesData,
-      selectedNamespace: namespace
+      selectedNamespace: namespace,
+      editingRepoConfig
     } = getState().EditingRepoReducer;
-    if (!namespace) return;
+    if (!namespace || !localeId || !editingRepoConfig) return;
 
     for (const id of localeIds[namespace]) {
       if (id === localeId) continue;
-      if (isDuplicatedKey(modifiedLocalesData[namespace][id].key, data.key)) {
+      if (
+        isDuplicatedKey(
+          modifiedLocalesData[namespace][id].key,
+          data.key,
+          editingRepoConfig.fileType
+        )
+      ) {
         setError('key', { message: repoT('Duplicated key') });
         setFocus('key');
         return;

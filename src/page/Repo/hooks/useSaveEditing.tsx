@@ -3,16 +3,20 @@ import { useToast, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { createSelector } from '@reduxjs/toolkit';
 import { without } from 'lodash-es';
-import { unflatten } from 'flat';
 
 import { useCommitGithubFilesMutation } from '../../../redux/services/octokitApi';
 import { RootState, useAppDispatch, useAppStore } from '../../../redux/store';
-import { dataToFiles, getLocalePath } from '../../../utils/fileHelper';
+import {
+  dataStringifyByType,
+  dataToFiles,
+  getLocalePath
+} from '../../../utils/fileHelper';
 import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
 
 export const isDataChangedSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer,
   ({
+    editingRepoConfig,
     originalLocalesData,
     modifiedLocalesData,
     languages,
@@ -20,6 +24,8 @@ export const isDataChangedSelector = createSelector(
     namespaces,
     originalLanguages
   }) => {
+    if (!editingRepoConfig) return false;
+
     // Removed namespace
     if (without(Object.keys(originalLocalesData), ...namespaces).length)
       return true;
@@ -41,11 +47,16 @@ export const isDataChangedSelector = createSelector(
         for (const localeId of localeIds[namespace]) {
           const localeData = modifiedLocalesData[namespace][localeId];
           const locale = localeData['value'][language];
-          if (locale) data[namespace][language][localeData['key']] = locale;
+          if (locale !== undefined)
+            data[namespace][language][localeData['key']] = locale;
         }
         if (
-          JSON.stringify(unflatten(data[namespace]?.[language])) ===
-          JSON.stringify(unflatten(originalLocalesData[namespace]?.[language]))
+          dataStringifyByType[editingRepoConfig.fileType](
+            data[namespace]?.[language]
+          ) ===
+          dataStringifyByType[editingRepoConfig.fileType](
+            originalLocalesData[namespace]?.[language]
+          )
         ) {
           delete data[namespace][language];
         } else {
@@ -88,6 +99,7 @@ const useSaveEditing = () => {
           originalLocalesData,
           modifiedLocalesData
         } = getState().EditingRepoReducer;
+        if (!editingRepoConfig) return;
 
         const modifiedNamespaces = Object.keys(modifiedLocalesData);
 
@@ -103,13 +115,16 @@ const useSaveEditing = () => {
             for (const localeId of localeIds[namespace]) {
               const localeData = modifiedLocalesData[namespace][localeId];
               const locale = localeData['value'][language];
-              if (locale) data[namespace][language][localeData['key']] = locale;
+              if (locale !== undefined)
+                data[namespace][language][localeData['key']] = locale;
             }
-            data[namespace][language] = unflatten(data[namespace][language]);
+
             if (
-              JSON.stringify(data[namespace][language]) ===
-              JSON.stringify(
-                unflatten(originalLocalesData[namespace]?.[language])
+              dataStringifyByType[editingRepoConfig.fileType](
+                data[namespace][language]
+              ) ===
+              dataStringifyByType[editingRepoConfig.fileType](
+                originalLocalesData[namespace]?.[language]
               )
             ) {
               delete data[namespace][language];

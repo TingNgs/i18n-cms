@@ -1,5 +1,24 @@
-export const LOCALES_FILE_TYPE = ['json', 'yaml'] as const;
+export const FLATTEN_LOCALES_FILE_TYPE = [
+  'json_flatten',
+  'yaml_flatten'
+] as const;
+
+export const LOCALES_FILE_TYPE = [
+  'json',
+  'yaml',
+  ...FLATTEN_LOCALES_FILE_TYPE
+] as const;
+
 export const REPOSITORY_VISIBILITY = ['public', 'private'] as const;
+
+export const LOCALES_FILE_TYPE_MAP: {
+  [key in typeof LOCALES_FILE_TYPE[number]]: { ext: string; label: string };
+} = {
+  json: { ext: 'json', label: 'JSON' },
+  yaml: { ext: 'yaml', label: 'YAML' },
+  json_flatten: { ext: 'json', label: 'JSON (flatten)' },
+  yaml_flatten: { ext: 'yaml', label: 'YAML (flatten)' }
+};
 
 export const CONFIG_FOLDER = '.i18n-cms' as const;
 export const CONFIG_PATH = `${CONFIG_FOLDER}/config.json` as const;

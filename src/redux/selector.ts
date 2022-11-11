@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { groupBy, pickBy, mapValues } from 'lodash-es';
+import { groupBy, pickBy, mapValues, includes } from 'lodash-es';
+import { FLATTEN_LOCALES_FILE_TYPE } from '../constants';
 import { RootState } from './store';
 
 export const isAuthSelector = createSelector(
@@ -8,12 +9,14 @@ export const isAuthSelector = createSelector(
 );
 
 export const duplicatedKeySelector = createSelector(
+  (state: RootState) => state.EditingRepoReducer.editingRepoConfig,
   (state: RootState) => state.EditingRepoReducer.localeIds,
   (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
   (state: RootState, namespace?: string) =>
     namespace || state.EditingRepoReducer.selectedNamespace,
-  (localeIds, modifiedLocalesData, namespace) => {
-    if (!namespace || !modifiedLocalesData[namespace]) return {};
+  (editingRepoConfig, localeIds, modifiedLocalesData, namespace) => {
+    if (!namespace || !modifiedLocalesData[namespace] || !editingRepoConfig)
+      return {};
     const nestedKeyList: string[] = [];
     const keys = localeIds[namespace].map((localeId) => {
       const data = modifiedLocalesData[namespace][localeId];
@@ -25,18 +28,19 @@ export const duplicatedKeySelector = createSelector(
     });
 
     const keyCountMap = mapValues(groupBy(keys), (value) => value.length);
-
-    nestedKeyList.forEach((nestedKey) => {
-      const keyArray = nestedKey.split('.');
-      keyArray.forEach((n, index) => {
-        const key = keyArray.slice(0, index + 1).join('.');
-        if (index === keyArray.length - 1) return;
-        if (keyCountMap[key]) {
-          keyCountMap[key]++;
-          keyCountMap[nestedKey]++;
-        }
+    if (!includes(FLATTEN_LOCALES_FILE_TYPE, editingRepoConfig.fileType)) {
+      nestedKeyList.forEach((nestedKey) => {
+        const keyArray = nestedKey.split('.');
+        keyArray.forEach((n, index) => {
+          const key = keyArray.slice(0, index + 1).join('.');
+          if (index === keyArray.length - 1) return;
+          if (keyCountMap[key]) {
+            keyCountMap[key]++;
+            keyCountMap[nestedKey]++;
+          }
+        });
       });
-    });
+    }
 
     return pickBy(keyCountMap, (value) => value > 1);
   }

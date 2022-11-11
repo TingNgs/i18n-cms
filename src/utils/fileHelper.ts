@@ -2,8 +2,9 @@ import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import { Octokit } from '@octokit/rest';
 import YAML from 'yaml';
 
-import { CONFIG_PATH } from '../constants';
+import { CONFIG_PATH, LOCALES_FILE_TYPE_MAP } from '../constants';
 import { RepoConfig } from '../redux/editingRepoSlice';
+import { unflatten } from 'flat';
 
 const dataToJson = (data: Record<string, unknown>) => {
   return JSON.stringify(data, null, 2);
@@ -17,13 +18,17 @@ const jsonToData = (json: string) => JSON.parse(json);
 const yamlToData = (yaml: string) => YAML.parse(yaml);
 
 export const dataStringifyByType = {
-  json: dataToJson,
-  yaml: dataToYaml
+  json: (data: Record<string, unknown>) => dataToJson(unflatten(data)),
+  yaml: (data: Record<string, unknown>) => dataToYaml(unflatten(data)),
+  json_flatten: dataToJson,
+  yaml_flatten: dataToYaml
 };
 
 export const fileParseByType = {
   json: jsonToData,
-  yaml: yamlToData
+  yaml: yamlToData,
+  json_flatten: jsonToData,
+  yaml_flatten: yamlToData
 };
 
 export const getLocalePath = ({
@@ -43,7 +48,7 @@ export const getLocalePath = ({
       : pattern
           .replace(':lng', language)
           .replace(':ns', namespace)
-          .concat(`.${fileType}`);
+          .concat(`.${LOCALES_FILE_TYPE_MAP[fileType].ext}`);
 
   return fullPath;
 };
@@ -86,15 +91,9 @@ export const decodeGithubFileContent = (
   throw new Error('not file');
 };
 
-export const decodeConfigFile = (
-  file: GetResponseDataTypeFromEndpointMethod<
-    Octokit['rest']['repos']['getContent']
-  >
-) => {
+export const decodeConfigFile = (data: string) => {
   try {
-    const decodedString = decodeGithubFileContent(file);
-    const config = JSON.parse(decodedString);
-
+    const config = JSON.parse(data);
     return config;
   } catch {
     return false;
