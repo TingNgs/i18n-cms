@@ -1,4 +1,10 @@
-import { memo, forwardRef, useMemo } from 'react';
+import {
+  memo,
+  forwardRef,
+  useMemo,
+  useCallback,
+  FocusEventHandler
+} from 'react';
 import { escape } from 'lodash-es';
 import { useEditableControls, Flex, Text, FlexProps } from '@chakra-ui/react';
 import { useAppSelector } from '../../../../redux/store';
@@ -20,9 +26,13 @@ const CellPreview = forwardRef<HTMLDivElement, FlexProps & { value?: string }>(
           : escape(value),
       [value, matchText]
     );
+    const onFocus: FocusEventHandler<HTMLDivElement> = useCallback((e) => {
+      e.currentTarget.click();
+    }, []);
 
     const { isEditing, getEditButtonProps } = useEditableControls();
     if (isEditing) return null;
+    const buttonProps = getEditButtonProps();
     return (
       <Flex
         w="100%"
@@ -30,9 +40,11 @@ const CellPreview = forwardRef<HTMLDivElement, FlexProps & { value?: string }>(
         paddingBottom="var(--chakra-space-1)"
         position="relative"
         cursor="text"
-        {...getEditButtonProps()}
+        {...buttonProps}
         {...rest}
-        ref={ref}>
+        ref={ref}
+        tabIndex={0}
+        onFocus={onFocus}>
         <Text
           w="100%"
           overflow="hidden"
