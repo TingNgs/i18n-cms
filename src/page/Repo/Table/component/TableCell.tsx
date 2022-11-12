@@ -1,27 +1,12 @@
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { Editable, EditableTextarea, Flex } from '@chakra-ui/react';
-import { createSelector } from '@reduxjs/toolkit';
+
 import { get } from 'lodash-es';
 
 import { CELL_PROPS } from '../../constants';
-import {
-  RootState,
-  useAppDispatch,
-  useAppSelector
-} from '../../../../redux/store';
+import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { handleLocaleOnChange } from '../../../../redux/editingRepoSlice';
 import CellPreview from './CellPreview';
-
-const localeSelector = createSelector(
-  (state: RootState) =>
-    state.EditingRepoReducer.modifiedLocalesData[
-      state.EditingRepoReducer.selectedNamespace || ''
-    ],
-  (state: RootState, language: string) => language,
-  (state: RootState, language: string, localeId: string) => localeId,
-  (localesData, language, localeId) =>
-    get(localesData, [localeId, 'value', language], '')
-);
 
 const TEXTAREA_MIN_HEIGHT = 32;
 const TEXTAREA_MAX_HEIGHT = 56;
@@ -36,9 +21,13 @@ const TableCell = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
-  const value = useAppSelector((state) =>
-    localeSelector(state, language, localeId)
-  );
+  const value = useAppSelector((state) => {
+    const localesData =
+      state.EditingRepoReducer.modifiedLocalesData[
+        state.EditingRepoReducer.selectedNamespace || ''
+      ];
+    return get(localesData, [localeId, 'value', language], '');
+  });
 
   const onSubmit = useCallback(
     (value: string) => {

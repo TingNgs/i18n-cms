@@ -48,7 +48,6 @@ const useFindMatches = () => {
 
   useEffect(() => {
     if (!localesData || !localeIds || !findText) {
-      dispatch(setFindMatches({ findMatches: [] }));
       return () => {
         noop();
       };

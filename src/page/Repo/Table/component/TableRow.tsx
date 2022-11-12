@@ -26,13 +26,15 @@ const TableRow = ({
   provided,
   isDragging,
   localeId,
-  index
+  index,
+  duplicatedKeys
 }: {
   style: CSSProperties;
   provided: DraggableProvided;
   isDragging: boolean;
   localeId: string;
   index: number;
+  duplicatedKeys?: { [id: string]: number };
 }) => {
   const isMobile = useBreakpointValue({ base: true, md: false });
   const dispatch = useAppDispatch();
@@ -101,7 +103,7 @@ const TableRow = ({
         <KeyCell
           isMobile={!!isMobile}
           localeId={localeId}
-          isDuplicated={false}
+          isDuplicated={!!duplicatedKeys?.[localeKey]}
           localeKey={localeKey}
         />
       </Flex>

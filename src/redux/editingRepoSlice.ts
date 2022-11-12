@@ -300,7 +300,12 @@ export const editingRepoSlice = createSlice({
       state.isSaveModalOpen = action.payload;
     },
     setFindText: (state, action: PayloadAction<{ text: string }>) => {
-      state.findText = action.payload.text;
+      const text = action.payload.text;
+      state.findText = text;
+      if (!text) {
+        state.findMatches = [];
+        state.selectedMatch = null;
+      }
     },
     onNextMatch: (state, action: PayloadAction<{ step: -1 | 1 }>) => {
       let index = (state.selectedMatch?.index || 0) + action.payload.step;

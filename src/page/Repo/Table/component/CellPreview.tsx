@@ -1,20 +1,14 @@
 import { memo, forwardRef, useMemo } from 'react';
 import { escape } from 'lodash-es';
 import { useEditableControls, Flex, Text, FlexProps } from '@chakra-ui/react';
-import { RootState, useAppSelector } from '../../../../redux/store';
-import { createSelector } from '@reduxjs/toolkit';
-
-const matchTextSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.findText,
-  (state: RootState, value?: string) => value,
-  (findText, value) => (!!value && value.includes(findText) ? findText : null)
-);
+import { useAppSelector } from '../../../../redux/store';
 
 const CellPreview = forwardRef<HTMLDivElement, FlexProps & { value?: string }>(
   function Preview({ value, ...rest }, ref) {
-    const matchText = useAppSelector((state) =>
-      matchTextSelector(state, value)
-    );
+    const matchText = useAppSelector((state) => {
+      const { findText } = state.EditingRepoReducer;
+      return !!value && value.includes(findText) ? findText : null;
+    });
 
     const html = useMemo(
       () =>

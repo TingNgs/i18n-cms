@@ -1,13 +1,16 @@
 import { Text, Flex, Tooltip, useBreakpointValue } from '@chakra-ui/react';
 import { WarningIcon } from '@chakra-ui/icons';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { setSelectedNamespaces } from '../../../redux/editingRepoSlice';
-import { duplicatedKeySelector } from '../../../redux/selector';
+import {
+  duplicatedKeysSelectorFactory,
+  duplicatedKeysSelectorMap
+} from '../../../redux/selector';
 import { useAppSelector } from '../../../redux/store';
-import { useTranslation } from 'react-i18next';
 
-const Namespaces = ({
+const Namespace = ({
   namespace,
   isSelected,
   onCloseSidebar
@@ -24,8 +27,15 @@ const Namespaces = ({
     if (isMobile) onCloseSidebar();
   }, [namespace, onCloseSidebar, isMobile]);
 
-  const isNsContainsDuplicatedKeys = useAppSelector(
-    (state) => Object.keys(duplicatedKeySelector(state, namespace)).length > 0
+  const duplicatedKeysSelector = useMemo(() => {
+    if (!duplicatedKeysSelectorMap[namespace])
+      duplicatedKeysSelectorMap[namespace] =
+        duplicatedKeysSelectorFactory(namespace);
+    return duplicatedKeysSelectorMap[namespace];
+  }, [namespace]);
+
+  const duplicatedKeys = useAppSelector((state) =>
+    duplicatedKeysSelector(state)
   );
 
   return (
@@ -54,7 +64,7 @@ const Namespaces = ({
         {namespace}
       </Text>
       <Flex gap="2" alignItems="center">
-        {isNsContainsDuplicatedKeys && (
+        {Object.keys(duplicatedKeys).length > 0 && (
           <Tooltip
             hasArrow
             label={t('With duplicated keys')}
@@ -67,4 +77,4 @@ const Namespaces = ({
   );
 };
 
-export default memo(Namespaces);
+export default memo(Namespace);

@@ -4,7 +4,8 @@ import {
   HTMLProps,
   forwardRef,
   useCallback,
-  useRef
+  useRef,
+  useMemo
 } from 'react';
 import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +33,11 @@ import { CELL_HEIGHT } from '../../../constants';
 import reorder from '../../../utils/reorder';
 import EventBus, { CustomEvents } from '../../../utils/eventBus';
 
-import { currentLocaleIdsSelector } from '../../../redux/selector';
+import {
+  currentLocaleIdsSelector,
+  duplicatedKeysSelectorMap,
+  duplicatedKeysSelectorFactory
+} from '../../../redux/selector';
 
 const Inner = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
   function Inner({ children, style, ...rest }, ref) {
@@ -72,19 +77,30 @@ const Outer = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
 
 const LocaleTable = () => {
   const { t: repoT } = useTranslation('repo');
+
   const localeIds = useAppSelector(
     (state) => state.EditingRepoReducer.localeIds
   );
   const namespace = useAppSelector(
-    (state) => state.EditingRepoReducer.selectedNamespace
+    (state) => state.EditingRepoReducer.selectedNamespace || ''
   );
   const currentLocaleIds = useAppSelector(currentLocaleIdsSelector);
+
+  const duplicatedKeysSelector = useMemo(() => {
+    if (!duplicatedKeysSelectorMap[namespace])
+      duplicatedKeysSelectorMap[namespace] =
+        duplicatedKeysSelectorFactory(namespace);
+    return duplicatedKeysSelectorMap[namespace];
+  }, [namespace]);
+
+  const duplicatedKeys = useAppSelector(duplicatedKeysSelector);
   const listSize = currentLocaleIds.length;
 
   const dispatch = useAppDispatch();
   const getEditingRepoLocalByNs = useGetEditingRepoLocalByNs();
 
   const listRef = useRef<FixedSizeList>(null);
+  const itemData = useMemo(() => ({ duplicatedKeys }), [duplicatedKeys]);
 
   useEffect(() => {
     const handleTableScrollEvent = (
@@ -182,6 +198,7 @@ const LocaleTable = () => {
                     width={width}
                     innerElementType={Inner}
                     outerElementType={Outer}
+                    itemData={itemData}
                     outerRef={provided.innerRef}>
                     {Row}
                   </List>

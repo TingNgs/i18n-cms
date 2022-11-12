@@ -7,22 +7,15 @@ import {
   ViewOffIcon
 } from '@chakra-ui/icons';
 import { useDispatch } from 'react-redux';
-import { createSelector } from '@reduxjs/toolkit';
-
-import { RootState, useAppSelector } from '../../../redux/store';
 import { useTranslation } from 'react-i18next';
+import { DraggableProvided } from 'react-beautiful-dnd';
+
+import { useAppSelector } from '../../../redux/store';
 import {
   removeLanguage,
   setLanguageSelected
 } from '../../../redux/editingRepoSlice';
 import PopoverDeleteBtn from '../../../component/PopoverDeleteBtn';
-import { DraggableProvided } from 'react-beautiful-dnd';
-
-const isLanguageSelectedSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.selectedLanguagesMap,
-  (state: RootState, language: string) => language,
-  (selectedLanguagesMap, language) => selectedLanguagesMap[language]
-);
 
 const Language = ({
   language,
@@ -35,8 +28,8 @@ const Language = ({
   const isMd = useBreakpointValue({ base: false, md: true });
   const dispatch = useDispatch();
 
-  const isSelected = useAppSelector((state) =>
-    isLanguageSelectedSelector(state, language)
+  const isSelected = useAppSelector(
+    (state) => state.EditingRepoReducer.selectedLanguagesMap[language]
   );
 
   const onViewClicked = useCallback(() => {

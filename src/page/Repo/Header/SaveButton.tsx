@@ -12,7 +12,7 @@ import {
 import { isDataChangedSelector } from '../hooks/useSaveEditing';
 
 import { setSaveModalOpen } from '../../../redux/editingRepoSlice';
-import { duplicatedKeySelector } from '../../../redux/selector';
+import { duplicatedKeysSelectorFactory } from '../../../redux/selector';
 
 const SaveButton = () => {
   const { t } = useTranslation();
@@ -27,7 +27,8 @@ const SaveButton = () => {
     const state = getState();
     const { namespaces } = state.EditingRepoReducer;
     for (const namespace of namespaces) {
-      if (Object.keys(duplicatedKeySelector(state, namespace)).length > 0) {
+      const duplicatedKeysSelector = duplicatedKeysSelectorFactory(namespace);
+      if (Object.keys(duplicatedKeysSelector(state)).length > 0) {
         toast({
           title: repoT('Please remove all duplicated key'),
           status: 'error'

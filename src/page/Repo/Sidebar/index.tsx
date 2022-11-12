@@ -1,4 +1,4 @@
-import { MouseEventHandler, useCallback, useMemo } from 'react';
+import { memo, MouseEventHandler, useCallback, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { pickBy } from 'lodash-es';
 import {
@@ -203,4 +203,4 @@ const Sidebar = ({
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

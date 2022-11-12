@@ -1,21 +1,23 @@
 import { CSSProperties, memo } from 'react';
-import { createSelector } from '@reduxjs/toolkit';
 import { Draggable } from 'react-beautiful-dnd';
 
-import { RootState, useAppSelector } from '../../../redux/store';
+import { useAppSelector } from '../../../redux/store';
 import TableRow from './component/TableRow';
 import { currentLocaleIdsSelector } from '../../../redux/selector';
 
-const idSelector = createSelector(
-  (state: RootState) => currentLocaleIdsSelector(state),
-  (state: RootState, index: number) => index,
-  (currentLocaleId, index) =>
-    index >= 0 && index < currentLocaleId.length ? currentLocaleId[index] : null
-);
-
-const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
+const Row = ({
+  index,
+  style,
+  data
+}: {
+  index: number;
+  style: CSSProperties;
+  data: { duplicatedKeys: { [id: string]: number } };
+}) => {
   const realIndex = index - 1;
-  const id = useAppSelector((state) => idSelector(state, realIndex));
+  const id = useAppSelector(
+    (state) => currentLocaleIdsSelector(state)[realIndex]
+  );
   if (index === 0 || !id) return null;
 
   return (
@@ -27,6 +29,7 @@ const Row = ({ index, style }: { index: number; style: CSSProperties }) => {
           style={style}
           localeId={id}
           index={realIndex}
+          duplicatedKeys={data.duplicatedKeys}
         />
       )}
     </Draggable>
