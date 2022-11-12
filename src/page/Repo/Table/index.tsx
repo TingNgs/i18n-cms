@@ -107,10 +107,7 @@ const LocaleTable = () => {
       e: CustomEvent<CustomEvents['table_scroll_to_index']>
     ) => {
       requestAnimationFrame(() => {
-        listRef.current?.scrollToItem(
-          e.detail.index + 1,
-          e.detail.align || 'auto'
-        );
+        listRef.current?.scrollToItem(e.detail.index + 1, e.detail.align);
       });
     };
 

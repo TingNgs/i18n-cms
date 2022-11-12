@@ -327,7 +327,7 @@ export const editingRepoSlice = createSlice({
         };
         EventBus.dispatch('table_scroll_to_index', {
           index: state.findMatches[index].row,
-          align: 'center'
+          align: 'smart'
         });
       }
     },
@@ -344,7 +344,7 @@ export const editingRepoSlice = createSlice({
         if (state.selectedMatch?.matchText !== state.findText) {
           EventBus.dispatch('table_scroll_to_index', {
             index: findMatches[index].row,
-            align: 'center'
+            align: 'smart'
           });
         } else if (state.selectedMatch) {
           if (

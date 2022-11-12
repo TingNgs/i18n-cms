@@ -40,7 +40,7 @@ const useFindMatches = () => {
         });
         return worker;
       },
-      300,
+      200,
       { leading: true }
     ),
     []

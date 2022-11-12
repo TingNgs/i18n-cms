@@ -1,5 +1,7 @@
+import { Align } from 'react-window';
+
 export interface CustomEvents {
-  table_scroll_to_index: { index: number; align?: 'auto' | 'center' };
+  table_scroll_to_index: { index: number; align?: Align };
 }
 
 const EventBus = {
