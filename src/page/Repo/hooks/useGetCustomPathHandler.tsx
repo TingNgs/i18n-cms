@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { get } from 'lodash-es';
 import { CUSTOM_PATH_HANDLER_PATH } from '../../../constants';
 import { Repo } from '../../../redux/editingRepoSlice';
 import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
@@ -19,17 +18,14 @@ const useGetCustomPathHandler = () => {
     try {
       setLoading(true);
 
-      const file = await getGithubContent({
+      const getCustomPath = await getGithubContent({
         repo: repo.repo,
         owner: repo.owner,
         ref: branch,
         path: CUSTOM_PATH_HANDLER_PATH
       }).unwrap();
       const module = await import(
-        /* webpackIgnore: true */ `data:text/javascript;base64,${get(
-          file,
-          'content'
-        )}`
+        /* webpackIgnore: true */ `data:text/javascript,${getCustomPath}`
       );
       window.getCustomPath = module.default;
     } catch (e) {
