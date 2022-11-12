@@ -1,10 +1,5 @@
 import { memo, useCallback, useEffect, useRef } from 'react';
-import {
-  Editable,
-  EditablePreview,
-  EditableTextarea,
-  Flex
-} from '@chakra-ui/react';
+import { Editable, EditableTextarea, Flex } from '@chakra-ui/react';
 import { createSelector } from '@reduxjs/toolkit';
 import { get } from 'lodash-es';
 
@@ -15,19 +10,17 @@ import {
   useAppSelector
 } from '../../../../redux/store';
 import { handleLocaleOnChange } from '../../../../redux/editingRepoSlice';
+import CellPreview from './CellPreview';
 
 const localeSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.selectedNamespace,
-  (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
+  (state: RootState) =>
+    state.EditingRepoReducer.modifiedLocalesData[
+      state.EditingRepoReducer.selectedNamespace || ''
+    ],
   (state: RootState, language: string) => language,
   (state: RootState, language: string, localeId: string) => localeId,
-  (selectedNamespace, modifiedLocalesData, language, localeId) =>
-    selectedNamespace &&
-    get(
-      modifiedLocalesData,
-      [selectedNamespace, localeId, 'value', language],
-      ''
-    )
+  (localesData, language, localeId) =>
+    get(localesData, [localeId, 'value', language], '')
 );
 
 const TEXTAREA_MIN_HEIGHT = 32;
@@ -41,7 +34,7 @@ const TableCell = ({
   localeId: string;
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const previewRef = useRef<HTMLElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const dispatch = useAppDispatch();
   const value = useAppSelector((state) =>
     localeSelector(state, language, localeId)
@@ -73,17 +66,11 @@ const TableCell = ({
 
   return (
     <Flex {...CELL_PROPS}>
-      <Editable
-        value={value}
-        w="100%"
-        minH={`${TEXTAREA_MIN_HEIGHT}px`}
-        onChange={onChange}>
-        <EditablePreview
+      <Editable w="100%" onChange={onChange} value={value}>
+        <CellPreview
           ref={previewRef}
-          w="100%"
+          value={value}
           minH={`${TEXTAREA_MIN_HEIGHT}px`}
-          overflow="hidden"
-          noOfLines={2}
         />
         <EditableTextarea ref={textareaRef} />
       </Editable>

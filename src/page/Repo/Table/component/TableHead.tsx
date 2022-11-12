@@ -12,7 +12,7 @@ const TableHead = () => {
   const isMd = useBreakpointValue({ base: false, md: true });
   const languages = useAppSelector(selectedLanguagesSelector);
   return (
-    <Flex {...ROW_PROPS} position="sticky" top="0" zIndex={2}>
+    <Flex {...ROW_PROPS} position="sticky" top="0" zIndex={3}>
       <Flex {...CELL_PROPS} position="sticky" left="0" zIndex={1} gap="1">
         <Flex marginRight="2" visibility="hidden">
           <DragHandleIcon w="3" h="3" />

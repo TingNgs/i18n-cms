@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { groupBy, pickBy, mapValues, includes } from 'lodash-es';
+import { groupBy, pickBy, mapValues, includes, map } from 'lodash-es';
 import { FLATTEN_LOCALES_FILE_TYPE } from '../constants';
 import { RootState } from './store';
 
@@ -10,16 +10,19 @@ export const isAuthSelector = createSelector(
 
 export const duplicatedKeySelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.editingRepoConfig,
-  (state: RootState) => state.EditingRepoReducer.localeIds,
-  (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
   (state: RootState, namespace?: string) =>
-    namespace || state.EditingRepoReducer.selectedNamespace,
-  (editingRepoConfig, localeIds, modifiedLocalesData, namespace) => {
-    if (!namespace || !modifiedLocalesData[namespace] || !editingRepoConfig)
-      return {};
+    state.EditingRepoReducer.localeIds[
+      namespace || state.EditingRepoReducer.selectedNamespace || ''
+    ],
+  (state: RootState, namespace?: string) =>
+    state.EditingRepoReducer.modifiedLocalesData[
+      namespace || state.EditingRepoReducer.selectedNamespace || ''
+    ],
+  (editingRepoConfig, localeIds, localesData) => {
+    if (!localeIds || !localesData || !editingRepoConfig) return {};
     const nestedKeyList: string[] = [];
-    const keys = localeIds[namespace].map((localeId) => {
-      const data = modifiedLocalesData[namespace][localeId];
+    const keys = map(localeIds, (localeId) => {
+      const data = localesData[localeId];
       const { key } = data;
       if (key.split('.').length > 1) {
         nestedKeyList.push(data.key);
@@ -53,18 +56,15 @@ export const selectedLanguagesSelector = createSelector(
     languages.filter((language) => selectedLanguagesMap[language])
 );
 
+export const isSearchResultSelector = () => false;
+
 export const currentLocaleIdsSelector = createSelector(
   (state: RootState) => state.EditingRepoReducer.selectedNamespace,
   (state: RootState) => state.EditingRepoReducer.localeIds,
-  (state: RootState) => state.EditingRepoReducer.searchText,
+  () => isSearchResultSelector(),
   (state: RootState) => state.EditingRepoReducer.filteredIds,
-  (selectedNamespace, localeIds, searchText, filteredIds) =>
-    searchText ? filteredIds : localeIds[selectedNamespace || ''] || []
-);
-
-export const isSearchResultSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer.searchText,
-  (searchText) => !!searchText
+  (selectedNamespace, localeIds, isSearchResult, filteredIds) =>
+    isSearchResult ? filteredIds : localeIds[selectedNamespace || ''] || []
 );
 
 export const translateProgressSelector = createSelector(

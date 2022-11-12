@@ -16,7 +16,10 @@ export const store = configureStore({
     [FirestoreApi.reducerPath]: FirestoreApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([
+    getDefaultMiddleware({
+      serializableCheck: false,
+      immutableCheck: false
+    }).concat([
       AuthApi.middleware,
       OctokitApi.middleware,
       FirestoreApi.middleware

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useToast, Text } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { createSelector } from '@reduxjs/toolkit';
-import { without } from 'lodash-es';
+import { get, without } from 'lodash-es';
 
 import { useCommitGithubFilesMutation } from '../../../redux/services/octokitApi';
 import { RootState, useAppDispatch, useAppStore } from '../../../redux/store';
@@ -14,8 +14,14 @@ import {
 import { saveLocaleSuccess } from '../../../redux/editingRepoSlice';
 
 export const isDataChangedSelector = createSelector(
-  (state: RootState) => state.EditingRepoReducer,
-  ({
+  (state: RootState) => state.EditingRepoReducer.editingRepoConfig,
+  (state: RootState) => state.EditingRepoReducer.originalLocalesData,
+  (state: RootState) => state.EditingRepoReducer.modifiedLocalesData,
+  (state: RootState) => state.EditingRepoReducer.languages,
+  (state: RootState) => state.EditingRepoReducer.localeIds,
+  (state: RootState) => state.EditingRepoReducer.namespaces,
+  (state: RootState) => state.EditingRepoReducer.originalLanguages,
+  (
     editingRepoConfig,
     originalLocalesData,
     modifiedLocalesData,
@@ -23,7 +29,7 @@ export const isDataChangedSelector = createSelector(
     localeIds,
     namespaces,
     originalLanguages
-  }) => {
+  ) => {
     if (!editingRepoConfig) return false;
 
     // Removed namespace
@@ -46,9 +52,19 @@ export const isDataChangedSelector = createSelector(
         data[namespace][language] = {};
         for (const localeId of localeIds[namespace]) {
           const localeData = modifiedLocalesData[namespace][localeId];
-          const locale = localeData['value'][language];
+          const localeKey = localeData['key'];
+          const locale = get(localeData, ['value', language]);
+          const oldLocale = get(originalLocalesData, [
+            namespace,
+            language,
+            localeKey
+          ]);
+          if ((locale || oldLocale) && locale !== oldLocale) {
+            return true;
+          }
+
           if (locale !== undefined)
-            data[namespace][language][localeData['key']] = locale;
+            data[namespace][language][localeKey] = locale;
         }
         if (
           dataStringifyByType[editingRepoConfig.fileType](

@@ -1,5 +1,5 @@
 export interface CustomEvents {
-  table_scroll_to_index: { index: number };
+  table_scroll_to_index: { index: number; align?: 'auto' | 'center' };
 }
 
 const EventBus = {

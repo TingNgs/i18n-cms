@@ -10,7 +10,6 @@ import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
 
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import {
-  duplicatedKeySelector,
   isSearchResultSelector,
   selectedLanguagesSelector
 } from '../../../../redux/selector';
@@ -39,7 +38,10 @@ const TableRow = ({
   const dispatch = useAppDispatch();
   const isSearchResult = useAppSelector(isSearchResultSelector);
   const languages = useAppSelector(selectedLanguagesSelector);
-  const duplicatedKeys = useAppSelector(duplicatedKeySelector);
+
+  const isSelectedRow = useAppSelector(
+    (state) => state.EditingRepoReducer.selectedMatch?.row === index
+  );
   const localeKey = useAppSelector(
     (state) =>
       state.EditingRepoReducer.modifiedLocalesData[
@@ -60,6 +62,22 @@ const TableRow = ({
       onMouseLeave={setRowHover.off}
       {...provided.draggableProps}
       ref={provided.innerRef}
+      {...(isSelectedRow
+        ? {
+            _before: {
+              content: '""',
+              position: 'absolute',
+              w: '100%',
+              h: '100%',
+              bg: 'var(--chakra-colors-chakra-body-text)',
+              opacity: '0.1',
+              left: 0,
+              top: 0,
+              pointerEvents: 'none',
+              zIndex: 2
+            }
+          }
+        : {})}
       style={{
         ...style,
         ...provided.draggableProps.style,
@@ -83,7 +101,7 @@ const TableRow = ({
         <KeyCell
           isMobile={!!isMobile}
           localeId={localeId}
-          isDuplicated={!!duplicatedKeys[localeKey]}
+          isDuplicated={false}
           localeKey={localeKey}
         />
       </Flex>

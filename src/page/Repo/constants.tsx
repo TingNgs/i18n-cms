@@ -3,7 +3,8 @@ import { CELL_HEIGHT } from '../../constants';
 export const CELL_PROPS = {
   flex: 1,
   padding: '0 12px',
-  minWidth: '300px',
+  minWidth: '400px',
+  maxWidth: '100%',
   backgroundColor: 'var(--chakra-colors-chakra-body-bg)',
   alignItems: 'center',
   height: '100%',

@@ -1,5 +1,5 @@
-import { uniqueId } from 'lodash-es';
-import { createSlice, current } from '@reduxjs/toolkit';
+import { findIndex, uniqueId } from 'lodash-es';
+import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { LOCALES_FILE_TYPE } from '../constants';
@@ -27,7 +27,7 @@ export interface ModifiedLocalesData {
   value: { [lng: string]: string };
 }
 
-export interface EdiotingRepoState {
+export interface EditingRepoState {
   editingRepo?: Repo;
   editingRepoConfig?: RepoConfig;
   branch?: string;
@@ -51,11 +51,19 @@ export interface EdiotingRepoState {
   };
 
   isSaveModalOpen: boolean;
-  searchText: string;
   filteredIds: string[];
+
+  findText: string;
+  selectedMatch: {
+    index: number;
+    id: string;
+    row: number;
+    matchText: string;
+  } | null;
+  findMatches: { id: string; row: number }[];
 }
 
-const initialState: EdiotingRepoState = {
+const initialState: EditingRepoState = {
   originalNamespaces: [],
   originalLanguages: [],
   originalLocalesData: {},
@@ -65,8 +73,10 @@ const initialState: EdiotingRepoState = {
   modifiedLocalesData: {},
   localeIds: {},
   isSaveModalOpen: false,
-  searchText: '',
-  filteredIds: []
+  filteredIds: [],
+  findText: '',
+  findMatches: [],
+  selectedMatch: null
 };
 
 export const editingRepoSlice = createSlice({
@@ -98,7 +108,7 @@ export const editingRepoSlice = createSlice({
     },
     setSelectedNamespaces: (state, action: PayloadAction<string>) => {
       state.selectedNamespace = action.payload;
-      state.searchText = '';
+      state.findText = '';
       state.filteredIds = [];
     },
     setLanguages: (state, action: PayloadAction<string[]>) => {
@@ -256,7 +266,7 @@ export const editingRepoSlice = createSlice({
         [firstLocaleId]: { key: firstLocaleId, value: {} }
       };
       state.selectedNamespace = namespace;
-      state.searchText = '';
+      state.findText = '';
       state.filteredIds = [];
     },
     removeNamespace: (state, action: PayloadAction<string>) => {
@@ -269,7 +279,7 @@ export const editingRepoSlice = createSlice({
       delete state.modifiedLocalesData[removeNamespace];
       if (state.selectedNamespace === removeNamespace) {
         state.selectedNamespace = undefined;
-        state.searchText = '';
+        state.findText = '';
         state.filteredIds = [];
       }
     },
@@ -289,22 +299,69 @@ export const editingRepoSlice = createSlice({
     setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
       state.isSaveModalOpen = action.payload;
     },
-    setSearchText: (state, action: PayloadAction<{ text: string }>) => {
-      if (!state.selectedNamespace) return;
-      const selectedNamespace = state.selectedNamespace;
-      const { text } = action.payload;
-      state.searchText = text;
-      state.filteredIds = state.localeIds[selectedNamespace].filter((id) => {
-        const locale = current(
-          state.modifiedLocalesData[selectedNamespace][id]
-        );
-        return (
-          locale.key.includes(text) ||
-          state.languages.some((language) =>
-            locale.value[language]?.includes(text)
-          )
-        );
-      });
+    setFindText: (state, action: PayloadAction<{ text: string }>) => {
+      state.findText = action.payload.text;
+    },
+    onNextMatch: (state, action: PayloadAction<{ step: -1 | 1 }>) => {
+      let index = (state.selectedMatch?.index || 0) + action.payload.step;
+      if (index >= state.findMatches.length) {
+        index = 0;
+      }
+      if (index < 0) {
+        index = Math.max(0, state.findMatches.length - 1);
+      }
+      if (state.findMatches[index]) {
+        state.selectedMatch = {
+          index,
+          matchText: state.findText,
+          ...state.findMatches[index]
+        };
+        EventBus.dispatch('table_scroll_to_index', {
+          index: state.findMatches[index].row,
+          align: 'center'
+        });
+      }
+    },
+
+    setFindMatches: (
+      state,
+      action: PayloadAction<{ findMatches: EditingRepoState['findMatches'] }>
+    ) => {
+      const { findMatches } = action.payload;
+      state.findMatches = findMatches;
+
+      if (findMatches.length) {
+        let index = 0;
+        if (state.selectedMatch?.matchText !== state.findText) {
+          EventBus.dispatch('table_scroll_to_index', {
+            index: findMatches[index].row,
+            align: 'center'
+          });
+        } else if (state.selectedMatch) {
+          if (
+            state.selectedMatch.id ===
+            findMatches[state.selectedMatch.index]?.id
+          ) {
+            index = state.selectedMatch.index;
+          } else {
+            const newIndex = findIndex(findMatches, {
+              id: state.selectedMatch.id
+            });
+            index =
+              newIndex === -1
+                ? Math.max(0, state.selectedMatch.index - 1)
+                : newIndex;
+          }
+        }
+
+        state.selectedMatch = {
+          index,
+          matchText: state.findText,
+          ...findMatches[index]
+        };
+      } else {
+        state.selectedMatch = null;
+      }
     },
     closeEditingRepo: () => initialState
   }
@@ -332,7 +389,9 @@ export const {
   removeNamespace,
   removeLanguage,
   closeEditingRepo,
-  setSearchText
+  setFindText,
+  setFindMatches,
+  onNextMatch
 } = editingRepoSlice.actions;
 
 export default editingRepoSlice.reducer;

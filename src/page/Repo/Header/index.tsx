@@ -50,7 +50,11 @@ const Header = ({
           onClick={setSidebarOpen.toggle}
           order={1}
         />
-        <Text fontWeight="bold" order={2}>
+        <Text
+          fontWeight="bold"
+          order={2}
+          noOfLines={1}
+          flex={{ base: '1', md: 'unset' }}>
           {selectedNamespace}
         </Text>
         <ButtonGroup

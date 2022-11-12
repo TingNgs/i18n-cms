@@ -1,17 +1,14 @@
 import { memo, useCallback } from 'react';
-import {
-  Editable,
-  EditableInput,
-  EditablePreview,
-  Tooltip
-} from '@chakra-ui/react';
+import { Editable, EditableInput, Tooltip } from '@chakra-ui/react';
 import { WarningIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '../../../../redux/store';
 import { handleLocaleKeyOnChange } from '../../../../redux/editingRepoSlice';
 
-const TableCell = ({
+import CellPreview from './CellPreview';
+
+const KeyCell = ({
   isMobile,
   localeId,
   localeKey,
@@ -36,16 +33,11 @@ const TableCell = ({
   return (
     <>
       <Editable
-        value={localeKey}
         w="100%"
         onChange={onSubmit}
-        isDisabled={isMobile}>
-        <EditablePreview
-          w="100%"
-          overflow="hidden"
-          fontWeight="bold"
-          noOfLines={2}
-        />
+        isDisabled={isMobile}
+        value={localeKey}>
+        <CellPreview value={localeKey} fontWeight="bold" />
         <EditableInput />
       </Editable>
 
@@ -58,4 +50,4 @@ const TableCell = ({
   );
 };
 
-export default memo(TableCell);
+export default memo(KeyCell);
