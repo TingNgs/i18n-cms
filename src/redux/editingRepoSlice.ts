@@ -98,7 +98,11 @@ export const editingRepoSlice = createSlice({
       const { namespaces, languages, repoConfig, branch } = action.payload;
       state.editingRepoConfig = repoConfig;
       state.branch = branch;
-      state.languages = languages;
+      state.languages = languages.reduce<string[]>((acc, cur) => {
+        if (cur === repoConfig.defaultLanguage) acc.unshift(cur);
+        else acc.push(cur);
+        return acc;
+      }, []);
       state.originalLanguages = languages;
       state.namespaces = namespaces;
       state.originalNamespaces = namespaces;
