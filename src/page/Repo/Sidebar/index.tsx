@@ -56,7 +56,20 @@ const ACCORDION_ICON_PROPS = {
 } as const;
 
 const ACCORDION_BTN_PROPS = {
-  paddingRight: '0'
+  paddingRight: '0',
+  position: 'sticky',
+  top: 0,
+  zIndex: 1,
+  backgroundColor: {
+    base: 'var(--drawer-bg)',
+    md: 'var(--chakra-colors-chakra-body-bg)'
+  },
+  _hover: {
+    backgroundColor: {
+      base: 'var(--drawer-bg)',
+      md: 'var(--chakra-colors-chakra-body-bg)'
+    }
+  }
 } as const;
 
 const Sidebar = ({
@@ -121,7 +134,7 @@ const Sidebar = ({
           {t('Back to menu')}
         </Link>
 
-        <Accordion allowMultiple defaultIndex={[1]}>
+        <Accordion allowMultiple defaultIndex={[1]} flex={1}>
           <AccordionItem>
             <AccordionButton {...ACCORDION_BTN_PROPS}>
               <Text {...TITLE_PROPS}>{t('Repository')}</Text>
@@ -166,22 +179,26 @@ const Sidebar = ({
             </AccordionPanel>
           </AccordionItem>
           <AccordionItem position="relative">
-            {!isMobile && (
-              <IconButton
-                position="absolute"
-                right="8"
-                top="2"
-                variant="ghost"
-                aria-label="show-all-language"
-                size="sm"
-                icon={isAnyLanguageSelected ? <ViewIcon /> : <ViewOffIcon />}
-                onClick={onShowAllLanguageClicked}
-              />
-            )}
-            <AccordionButton {...ACCORDION_BTN_PROPS}>
-              <Text {...TITLE_PROPS}>{t('Languages')}</Text>
-              <AccordionIcon {...ACCORDION_ICON_PROPS} />
-            </AccordionButton>
+            <Flex {...ACCORDION_BTN_PROPS}>
+              <AccordionButton {...ACCORDION_BTN_PROPS}>
+                <Text {...TITLE_PROPS}>{t('Languages')}</Text>
+                <AccordionIcon {...ACCORDION_ICON_PROPS} />
+              </AccordionButton>
+              {!isMobile && (
+                <IconButton
+                  position="absolute"
+                  right="8"
+                  top="2"
+                  variant="ghost"
+                  aria-label="show-all-language"
+                  size="sm"
+                  zIndex={1}
+                  icon={isAnyLanguageSelected ? <ViewIcon /> : <ViewOffIcon />}
+                  onClick={onShowAllLanguageClicked}
+                />
+              )}
+            </Flex>
+
             <AccordionPanel padding={0}>
               <LanguageList />
               <NewItemBtn
@@ -194,7 +211,7 @@ const Sidebar = ({
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
-        <Flex p="4" gap={2} flex={1} alignItems="flex-end" flexDir="row">
+        <Flex p="4" gap={2} alignItems="flex-end" flexDir="row">
           <ColorModeBtn />
           <LanguageSelector />
         </Flex>
