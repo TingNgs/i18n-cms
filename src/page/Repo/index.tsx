@@ -5,7 +5,7 @@ import { Flex, useBoolean, useBreakpointValue } from '@chakra-ui/react';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { closeEditingRepo } from '../../redux/editingRepoSlice';
 
-import BranchFormModal from './BranchFormModal';
+import Setup from './Setup';
 import Sidebar from './Sidebar';
 import Table from './Table';
 import SaveEditingModal from './SaveEditingModal';
@@ -38,6 +38,8 @@ const Repo = () => {
     return null;
   }
 
+  if (!branch) return <Setup repo={editingRepo} />;
+
   return (
     <Flex
       overflow="hidden"
@@ -50,8 +52,6 @@ const Repo = () => {
         <Table />
       </Flex>
       <SaveEditingModal />
-
-      {!branch && <BranchFormModal repo={editingRepo} />}
     </Flex>
   );
 };

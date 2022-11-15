@@ -11,7 +11,7 @@ import {
 
 import { isDataChangedSelector } from '../hooks/useSaveEditing';
 
-import { setSaveModalOpen } from '../../../redux/editingRepoSlice';
+import { setSaveModalProps } from '../../../redux/editingRepoSlice';
 import { duplicatedKeysSelectorFactory } from '../../../redux/selector';
 
 const SaveButton = () => {
@@ -37,7 +37,7 @@ const SaveButton = () => {
       }
     }
 
-    dispatch(setSaveModalOpen(true));
+    dispatch(setSaveModalProps({}));
   }, []);
 
   const confirmationMessage = repoT(

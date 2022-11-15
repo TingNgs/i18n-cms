@@ -19,7 +19,7 @@ import {
   Stack,
   Icon
 } from '@chakra-ui/react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AiOutlineGithub } from 'react-icons/ai';
 
 import LanguageSelector from '../../LanguageSelector';
@@ -33,7 +33,6 @@ import { isAuthSelector } from '../../../redux/selector';
 const Header = () => {
   const { t } = useTranslation();
   const isDesktop = useBreakpointValue({ base: false, md: true });
-  const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const isAuth = useAppSelector(isAuthSelector);
@@ -55,9 +54,9 @@ const Header = () => {
 
       {isDesktop ? (
         <ButtonGroup flexWrap="wrap" alignItems="center">
-          {isAuth && location.pathname !== '/menu' && (
+          {isAuth && (
             <ChakraLink as={Link} variant="link" to="/menu">
-              {t('Get Started')}
+              {t('Menu')}
             </ChakraLink>
           )}
           <ChakraLink

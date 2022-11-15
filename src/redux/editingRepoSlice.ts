@@ -50,7 +50,11 @@ export interface EditingRepoState {
     [namespace: string]: string[];
   };
 
-  isSaveModalOpen: boolean;
+  saveModalProps: {
+    title?: string;
+    commitMessage?: string;
+    description?: string;
+  } | null;
   filteredIds: string[];
 
   findText: string;
@@ -72,7 +76,7 @@ const initialState: EditingRepoState = {
   selectedLanguagesMap: {},
   modifiedLocalesData: {},
   localeIds: {},
-  isSaveModalOpen: false,
+  saveModalProps: null,
   filteredIds: [],
   findText: '',
   findMatches: [],
@@ -223,7 +227,7 @@ export const editingRepoSlice = createSlice({
       }>
     ) => {
       const data = action.payload;
-      state.isSaveModalOpen = false;
+      state.saveModalProps = null;
       Object.keys(state.originalLocalesData).forEach((namespace) => {
         if (!state.namespaces.includes(namespace))
           delete state.originalLocalesData[namespace];
@@ -300,8 +304,11 @@ export const editingRepoSlice = createSlice({
       state.languages.push(language);
       state.selectedLanguagesMap[language] = true;
     },
-    setSaveModalOpen: (state, action: PayloadAction<boolean>) => {
-      state.isSaveModalOpen = action.payload;
+    setSaveModalProps: (
+      state,
+      action: PayloadAction<EditingRepoState['saveModalProps']>
+    ) => {
+      state.saveModalProps = action.payload;
     },
     setFindText: (state, action: PayloadAction<{ text: string }>) => {
       const text = action.payload.text;
@@ -389,7 +396,7 @@ export const {
   handleLocaleOnChange,
   handleLocaleKeyOnChange,
   saveLocaleSuccess,
-  setSaveModalOpen,
+  setSaveModalProps,
   reorderNamespaceIds,
   addLocaleAfterIndex,
   removeLocaleOnIndex,

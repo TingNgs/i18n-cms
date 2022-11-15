@@ -9,7 +9,8 @@ import { mode, GlobalStyleProps } from '@chakra-ui/theme-tools';
 const colors = {
   error: 'var(--error)',
   'primary-background': 'var(--primary-background)',
-  'primary-background--hover': 'var(--primary-background--hover)'
+  'primary-background--hover': 'var(--primary-background--hover)',
+  'text--selected': 'var(--text--selected)'
 };
 const theme = extendTheme(
   {
@@ -29,6 +30,10 @@ const theme = extendTheme(
           '--primary-background--hover': mode(
             baseTheme.colors.gray['200'],
             baseTheme.colors.whiteAlpha['300']
+          )(props),
+          '--text--selected': mode(
+            'rgba(26, 32, 44, 10%)',
+            'rgba(225, 225, 225, 10%)'
           )(props)
         },
         'html, body, #root': {

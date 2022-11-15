@@ -9,19 +9,18 @@ import { Repo, RepoConfig } from '../../../redux/editingRepoSlice';
 import { useLazyGetGithubTreeQuery } from '../../../redux/services/octokitApi';
 import { LOCALES_FILE_TYPE_MAP } from '../../../constants';
 
-const useGetLanguagesAndNamespaces = () => {
+const useGetNamespaces = () => {
   const [isLoading, setLoading] = useState(false);
 
   const [getGithubTree] = useLazyGetGithubTreeQuery();
 
-  const getLanguagesAndNamespaces = async ({
+  const getNamespaces = async ({
     repo,
     repoConfig,
     rootSha
   }: {
     repo: Repo;
     repoConfig: RepoConfig;
-    branch: string;
     rootSha: string;
   }) => {
     try {
@@ -37,7 +36,12 @@ const useGetLanguagesAndNamespaces = () => {
         compact(map(treeData.tree, 'path')),
         repoConfig.pattern
           .replace(':ns', '**')
-          .replace(':lng', `{${repoConfig.languages.join(',')}}`)
+          .replace(
+            ':lng',
+            repoConfig.languages.length > 1
+              ? `{${repoConfig.languages.join(',')}}`
+              : repoConfig.languages[0]
+          )
           .concat(`.${LOCALES_FILE_TYPE_MAP[repoConfig.fileType].ext}`)
       );
       const pattern = new UrlPattern(
@@ -45,33 +49,20 @@ const useGetLanguagesAndNamespaces = () => {
           .replace(':ns', '*')
           .concat(`.${LOCALES_FILE_TYPE_MAP[repoConfig.fileType].ext}`)
       );
-      const { namespacesSet, languagesSet } = pathList.reduce<{
-        namespacesSet: Set<string>;
-        languagesSet: Set<string>;
-      }>(
-        (acc, cur) => {
-          const match = pattern.match(cur);
-          if (match.lng && match._) {
-            acc.languagesSet.add(match.lng);
-            acc.namespacesSet.add(match._);
-          }
-          return acc;
-        },
-        {
-          namespacesSet: new Set(),
-          languagesSet: new Set()
+      const namespacesSet = pathList.reduce<Set<string>>((acc, cur) => {
+        const match = pattern.match(cur);
+        if (match.lng && match._) {
+          acc.add(match._);
         }
-      );
-      return {
-        namespaces: Array.from(namespacesSet),
-        languages: Array.from(languagesSet)
-      };
+        return acc;
+      }, new Set());
+      return Array.from(namespacesSet);
     } finally {
       setLoading(false);
     }
   };
 
-  return [getLanguagesAndNamespaces, { isLoading }] as const;
+  return [getNamespaces, { isLoading }] as const;
 };
 
-export default useGetLanguagesAndNamespaces;
+export default useGetNamespaces;

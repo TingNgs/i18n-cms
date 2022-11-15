@@ -13,6 +13,7 @@ import Header from './Header';
 const AppLayout = ({ children }: PropsWithChildren) => {
   const location = useLocation();
   const authState = useAppSelector((state) => state.AppReducer.authState);
+  const branch = useAppSelector((state) => state.EditingRepoReducer.branch);
   useAuth();
 
   if (authState === 'initial') {
@@ -21,7 +22,7 @@ const AppLayout = ({ children }: PropsWithChildren) => {
 
   return (
     <Flex direction="column" h="100%">
-      {location.pathname !== '/repo' && <Header />}
+      {(location.pathname !== '/repo' || !branch) && <Header />}
       {children}
       <CookiesPolicyPopup />
     </Flex>

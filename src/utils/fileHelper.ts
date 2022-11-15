@@ -92,10 +92,6 @@ export const decodeGithubFileContent = (
 };
 
 export const decodeConfigFile = (data: string) => {
-  try {
-    const config = JSON.parse(data);
-    return config;
-  } catch {
-    return false;
-  }
+  const config = JSON.parse(data);
+  return config;
 };

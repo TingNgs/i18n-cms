@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Text,
@@ -46,26 +46,21 @@ const CreateNewRepoForm = () => {
     useCommitGithubFilesMutation();
   const [updateExistingRepo] = useUpdateExistingRepoMutation();
 
-  const { handleSubmit, register, control, watch } = useForm<{
-    owner: Owner;
-    name: string;
-    pattern: string;
-    fileType: typeof LOCALES_FILE_TYPE[number];
-    visibility: typeof REPOSITORY_VISIBILITY[number];
-    languages: string[];
-    namespaces: string[];
-    defaultLanguage: string;
-  }>();
+  const { handleSubmit, register, control, watch, getValues, setValue } =
+    useForm<{
+      owner: Owner;
+      name: string;
+      pattern: string;
+      fileType: typeof LOCALES_FILE_TYPE[number];
+      visibility: typeof REPOSITORY_VISIBILITY[number];
+      languages: string[];
+      namespaces: string[];
+      defaultLanguage: string;
+    }>({ defaultValues: { languages: ['en', 'zh'] } });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
       const { name, visibility, namespaces, owner, ...repoConfig } = values;
-      if (
-        !repoConfig.defaultLanguage ||
-        !repoConfig.languages.includes(repoConfig.defaultLanguage)
-      ) {
-        repoConfig.defaultLanguage = repoConfig.languages[0];
-      }
 
       setLoading(true);
       const repo = await createGithubRepo({
@@ -116,6 +111,13 @@ const CreateNewRepoForm = () => {
   });
 
   const [owner, languages] = watch(['owner', 'languages']);
+
+  useEffect(() => {
+    const defaultLanguage = getValues('defaultLanguage');
+    if (!languages || (defaultLanguage && languages.includes(defaultLanguage)))
+      return;
+    setValue('defaultLanguage', languages[0]);
+  }, [languages, getValues, setValue]);
 
   const getLoadingTitle = useCallback(() => {
     if (isCreateRepoLoading) return menuT('Creating repository');
@@ -179,7 +181,6 @@ const CreateNewRepoForm = () => {
             name="languages"
             control={control}
             rules={{ required: true }}
-            defaultValue={['en', 'zh']}
             render={({ field: { value, onChange } }) => (
               <TagInput value={value} onChange={onChange} />
             )}
