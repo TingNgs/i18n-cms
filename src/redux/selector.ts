@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { groupBy, pickBy, mapValues, includes, isEqual } from 'lodash-es';
 
-import { FLATTEN_LOCALES_FILE_TYPE } from '../constants';
+import { FLATTEN_FILE_TYPE } from '../constants';
 import { RootState } from './store';
 
 export const isAuthSelector = createSelector(
@@ -36,7 +36,7 @@ export const duplicatedKeysSelectorFactory = (namespace?: string) => {
       if (!editingRepoConfig) return {};
 
       const keyCountMap = mapValues(groupBy(keys), (value) => value.length);
-      if (!includes(FLATTEN_LOCALES_FILE_TYPE, editingRepoConfig.fileType)) {
+      if (!includes(FLATTEN_FILE_TYPE, editingRepoConfig.fileType)) {
         const nestedKeyList = keys.filter((key) => key.split('.').length > 1);
         nestedKeyList.forEach((nestedKey) => {
           const keyArray = nestedKey.split('.');

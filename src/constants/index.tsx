@@ -1,18 +1,11 @@
-export const FLATTEN_LOCALES_FILE_TYPE = [
-  'json_flatten',
-  'yaml_flatten'
-] as const;
+export const FLATTEN_FILE_TYPE = ['json_flatten', 'yaml_flatten'] as const;
 
-export const LOCALES_FILE_TYPE = [
-  'json',
-  'yaml',
-  ...FLATTEN_LOCALES_FILE_TYPE
-] as const;
+export const FILE_TYPE = ['json', 'yaml', ...FLATTEN_FILE_TYPE] as const;
 
 export const REPOSITORY_VISIBILITY = ['public', 'private'] as const;
 
-export const LOCALES_FILE_TYPE_MAP: {
-  [key in typeof LOCALES_FILE_TYPE[number]]: { ext: string; label: string };
+export const FILE_TYPE_MAP_DATA: {
+  [key in typeof FILE_TYPE[number]]: { ext: string; label: string };
 } = {
   json: { ext: 'json', label: 'JSON' },
   yaml: { ext: 'yaml', label: 'YAML' },

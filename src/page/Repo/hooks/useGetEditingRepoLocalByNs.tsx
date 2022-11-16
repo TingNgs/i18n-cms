@@ -23,12 +23,12 @@ const useGetEditingRepoLocalByNs = () => {
     const { repo, owner } = editingRepo || {};
 
     if (!repo || !owner || !repoConfig) return;
-    const filesPromise = languages.map((language) =>
+    const filesPromise = languages.map(async (language) =>
       getGithubContent({
         repo: repo,
         owner: owner,
         ref: branch,
-        path: getLocalePath({ language, namespace, repoConfig })
+        path: await getLocalePath({ language, namespace, repoConfig })
       })
         .unwrap()
         .catch(() => null)

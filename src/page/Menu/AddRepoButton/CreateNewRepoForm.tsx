@@ -15,8 +15,8 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import {
-  LOCALES_FILE_TYPE,
-  LOCALES_FILE_TYPE_MAP,
+  FILE_TYPE,
+  FILE_TYPE_MAP_DATA,
   REPOSITORY_VISIBILITY
 } from '../../../constants';
 import {
@@ -51,7 +51,7 @@ const CreateNewRepoForm = () => {
       owner: Owner;
       name: string;
       pattern: string;
-      fileType: typeof LOCALES_FILE_TYPE[number];
+      fileType: typeof FILE_TYPE[number];
       visibility: typeof REPOSITORY_VISIBILITY[number];
       languages: string[];
       namespaces: string[];
@@ -160,10 +160,10 @@ const CreateNewRepoForm = () => {
           </RadioGroup>
 
           <FormLabel>{commonT('File type')}</FormLabel>
-          <Select {...register('fileType')} defaultValue={LOCALES_FILE_TYPE[0]}>
-            {LOCALES_FILE_TYPE.map((value) => (
+          <Select {...register('fileType')} defaultValue={FILE_TYPE[0]}>
+            {FILE_TYPE.map((value) => (
               <option value={value} key={value}>
-                {LOCALES_FILE_TYPE_MAP[value].label}
+                {FILE_TYPE_MAP_DATA[value].label}
               </option>
             ))}
           </Select>

@@ -8,13 +8,15 @@ import {
   Button,
   Select,
   Flex,
-  Tag
+  Tag,
+  Link,
+  Tooltip
 } from '@chakra-ui/react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeftIcon } from '@chakra-ui/icons';
+import { ChevronLeftIcon, QuestionOutlineIcon } from '@chakra-ui/icons';
 
-import { LOCALES_FILE_TYPE, LOCALES_FILE_TYPE_MAP } from '../../../constants';
+import { FILE_TYPE, FILE_TYPE_MAP_DATA } from '../../../constants';
 import useGetNamespaces from '../hooks/getNamespaces';
 import TagInput from '../../../component/TagInput';
 import { FormValues } from './interface';
@@ -47,7 +49,6 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
     setLoading(true);
     setNamespaces([]);
     if (!config) return;
-    console.log(config);
     try {
       const branch = await getGithubBranch({
         repo: repo.repo,
@@ -77,21 +78,37 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
       </Button>
       <Text fontSize="2xl" fontWeight="semibold">
         {t('Setup config')}
+        <Link
+          href={`${process.env.REACT_APP_DOC_URL}configuration`}
+          isExternal
+          marginLeft={2}>
+          <Tooltip label={commonT('Learn more')} hasArrow>
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Link>
       </Text>
       <BranchInput showConfigForm={showConfigForm} />
       <Divider />
       <FormLabel>{commonT('File type')}</FormLabel>
-      <Select
-        {...register('config.fileType')}
-        defaultValue={LOCALES_FILE_TYPE[0]}>
-        {LOCALES_FILE_TYPE.map((value) => (
+      <Select {...register('config.fileType')} defaultValue={FILE_TYPE[0]}>
+        {FILE_TYPE.map((value) => (
           <option value={value} key={value}>
-            {LOCALES_FILE_TYPE_MAP[value].label}
+            {FILE_TYPE_MAP_DATA[value].label}
           </option>
         ))}
       </Select>
 
-      <FormLabel>{commonT('File path pattern')}</FormLabel>
+      <FormLabel>
+        {commonT('File path pattern')}
+        <Link
+          href={`${process.env.REACT_APP_DOC_URL}configuration#pattern`}
+          isExternal
+          marginLeft={2}>
+          <Tooltip label={commonT('Learn more')} hasArrow>
+            <QuestionOutlineIcon />
+          </Tooltip>
+        </Link>
+      </FormLabel>
       <Input
         {...register('config.pattern')}
         placeholder=":lng/:ns"
@@ -121,7 +138,7 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
         colorScheme="green"
         onClick={onTestConfigClick}
         isLoading={isLoading}>
-        {t('Test Config')}
+        {t('Test config')}
       </Button>
       {namespaces !== null && (
         <Flex gap={2}>

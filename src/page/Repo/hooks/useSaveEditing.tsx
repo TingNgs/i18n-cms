@@ -174,8 +174,8 @@ const useSaveEditing = () => {
         const filesToDeleteSet = new Set<string>();
         // Removed languages
         removedLanguages.forEach((language) => {
-          originalNamespaces.forEach((namespace) => {
-            const path = getLocalePath({
+          originalNamespaces.forEach(async (namespace) => {
+            const path = await getLocalePath({
               language,
               namespace,
               repoConfig: editingRepoConfig
@@ -186,8 +186,8 @@ const useSaveEditing = () => {
 
         // Removed namespaces
         removedNamespaces.forEach((namespace) => {
-          originalLanguages.forEach((language) => {
-            const path = getLocalePath({
+          originalLanguages.forEach(async (language) => {
+            const path = await getLocalePath({
               language,
               namespace,
               repoConfig: editingRepoConfig

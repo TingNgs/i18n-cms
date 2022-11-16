@@ -11,8 +11,6 @@ import { useAppDispatch } from '../../../redux/store';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import useCheckRepoPermissions from './useCheckRepoPermissions';
 
-import SetupRepoAlert from '../../../component/SetupRepoAlert';
-
 const CreateNewRepoForm = () => {
   const history = useHistory();
   const { t } = useTranslation('menu');
@@ -63,7 +61,6 @@ const CreateNewRepoForm = () => {
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
           <Text fontSize="2xl">{t('Import existing Github repository')}</Text>
-          <SetupRepoAlert />
 
           <FormLabel>{t('Github repository url')}</FormLabel>
           <Input

@@ -4,8 +4,11 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import useGetNamespaces from '../hooks/getNamespaces';
-import useGetCustomPathHandler from '../hooks/useGetCustomPathHandler';
-import { CONFIG_PATH, RECENT_BRANCHES_SIZE } from '../../../constants';
+import {
+  CONFIG_PATH,
+  CUSTOM_PATH_HANDLER_PATH,
+  RECENT_BRANCHES_SIZE
+} from '../../../constants';
 
 import {
   Repo,
@@ -52,16 +55,13 @@ const BranchFormModal = ({ repo }: IProps) => {
     useUpdateExistingRepoMutation();
   const [getNamespaces, { isLoading: isFetchingNamespaces }] =
     useGetNamespaces();
-  const [getCustomPathHandler, { isLoading: isFetchingCustomPathHandler }] =
-    useGetCustomPathHandler();
 
   const getLoadingTitle = () => {
     if (isFetchingBranch) return t('Fetching branch');
     if (isFetchingConfig) return t('Fetching config');
     if (isCreatingRef) return t('Creating branch');
     if (isUpdatingRepo) return t('Updating record');
-    if (isFetchingNamespaces || isFetchingCustomPathHandler)
-      return t('Fetching namespaces');
+    if (isFetchingNamespaces) return t('Fetching namespaces');
     return undefined;
   };
   const form = useForm<FormValues>({
@@ -149,7 +149,7 @@ const BranchFormModal = ({ repo }: IProps) => {
         }).unwrap();
         dispatch(setEditingRepo(updatedRepo));
       }
-      const initRepoData = {
+      const initRepoData: Parameters<typeof setInitialRepoData>[0] = {
         namespaces: [''],
         languages: repoConfig.languages,
         repoConfig,
@@ -158,7 +158,12 @@ const BranchFormModal = ({ repo }: IProps) => {
 
       if (repoConfig.useCustomPath && repoConfig.namespaces !== undefined) {
         initRepoData.namespaces = repoConfig.namespaces;
-        await getCustomPathHandler({ repo, branch: branchName });
+        initRepoData.customPathHandlerScript = await getGithubContent({
+          repo: repo.repo,
+          owner: repo.owner,
+          ref: branchName,
+          path: CUSTOM_PATH_HANDLER_PATH
+        }).unwrap();
       } else {
         const namespaces = await getNamespaces({
           repo,

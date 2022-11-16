@@ -12,6 +12,7 @@ import SaveEditingModal from './SaveEditingModal';
 import Header from './Header';
 
 import { SIDEBAR_WIDTH } from './constants';
+import SandboxIframe from '../../component/SandboxIframe';
 
 const Repo = () => {
   const isMobile = useBreakpointValue({ base: true, md: false });
@@ -19,10 +20,16 @@ const Repo = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
-  const { editingRepo, branch } = useAppSelector((state) => ({
-    editingRepo: state.EditingRepoReducer.editingRepo,
-    branch: state.EditingRepoReducer.branch
-  }));
+  const { editingRepo, showSandboxIframe, branch } = useAppSelector(
+    (state) => ({
+      editingRepo: state.EditingRepoReducer.editingRepo,
+      branch: state.EditingRepoReducer.branch,
+      showSandboxIframe: !!(
+        state.EditingRepoReducer.editingRepoConfig?.useCustomPath &&
+        state.EditingRepoReducer.customPathHandlerScript
+      )
+    })
+  );
 
   useEffect(() => {
     if (!editingRepo) history.push('/menu');
@@ -52,6 +59,7 @@ const Repo = () => {
         <Table />
       </Flex>
       <SaveEditingModal />
+      {showSandboxIframe && <SandboxIframe />}
     </Flex>
   );
 };

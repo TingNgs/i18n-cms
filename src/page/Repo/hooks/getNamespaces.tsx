@@ -7,7 +7,7 @@ import UrlPattern from 'url-pattern';
 import { Repo, RepoConfig } from '../../../redux/editingRepoSlice';
 
 import { useLazyGetGithubTreeQuery } from '../../../redux/services/octokitApi';
-import { LOCALES_FILE_TYPE_MAP } from '../../../constants';
+import { FILE_TYPE_MAP_DATA } from '../../../constants';
 
 const useGetNamespaces = () => {
   const [isLoading, setLoading] = useState(false);
@@ -42,12 +42,12 @@ const useGetNamespaces = () => {
               ? `{${repoConfig.languages.join(',')}}`
               : repoConfig.languages[0]
           )
-          .concat(`.${LOCALES_FILE_TYPE_MAP[repoConfig.fileType].ext}`)
+          .concat(`.${FILE_TYPE_MAP_DATA[repoConfig.fileType].ext}`)
       );
       const pattern = new UrlPattern(
         repoConfig.pattern
           .replace(':ns', '*')
-          .concat(`.${LOCALES_FILE_TYPE_MAP[repoConfig.fileType].ext}`)
+          .concat(`.${FILE_TYPE_MAP_DATA[repoConfig.fileType].ext}`)
       );
       const namespacesSet = pathList.reduce<Set<string>>((acc, cur) => {
         const match = pattern.match(cur);

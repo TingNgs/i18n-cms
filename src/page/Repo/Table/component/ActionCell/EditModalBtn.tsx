@@ -27,7 +27,7 @@ import {
 } from '../../../../../redux/editingRepoSlice';
 import { flatten, unflatten } from 'flat';
 import { includes } from 'lodash-es';
-import { FLATTEN_LOCALES_FILE_TYPE } from '../../../../../constants';
+import { FLATTEN_FILE_TYPE } from '../../../../../constants';
 
 interface IProps {
   localeId?: string;
@@ -39,7 +39,7 @@ const isDuplicatedKey = (
   fileType: RepoConfig['fileType']
 ) =>
   Object.keys(
-    includes(FLATTEN_LOCALES_FILE_TYPE, fileType)
+    includes(FLATTEN_FILE_TYPE, fileType)
       ? { [key1]: true, [key2]: true }
       : flatten(unflatten({ [key1]: true, [key2]: true }))
   ).length !== 2;

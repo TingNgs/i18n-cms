@@ -2,7 +2,7 @@ import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import { Octokit } from '@octokit/rest';
 import YAML from 'yaml';
 
-import { CONFIG_PATH, LOCALES_FILE_TYPE_MAP } from '../constants';
+import { CONFIG_PATH, FILE_TYPE_MAP_DATA } from '../constants';
 import { RepoConfig } from '../redux/editingRepoSlice';
 import { unflatten } from 'flat';
 
@@ -31,7 +31,7 @@ export const fileParseByType = {
   yaml_flatten: yamlToData
 };
 
-export const getLocalePath = ({
+export const getLocalePath = async ({
   language,
   namespace,
   repoConfig
@@ -44,11 +44,11 @@ export const getLocalePath = ({
 
   const fullPath =
     useCustomPath && window.getCustomPath
-      ? window.getCustomPath({ namespace, language, repoConfig })
+      ? await window.getCustomPath({ namespace, language, repoConfig })
       : pattern
           .replace(':lng', language)
           .replace(':ns', namespace)
-          .concat(`.${LOCALES_FILE_TYPE_MAP[fileType].ext}`);
+          .concat(`.${FILE_TYPE_MAP_DATA[fileType].ext}`);
 
   return fullPath;
 };
@@ -69,12 +69,11 @@ export const dataToFiles = ({
   };
 
   namespaces.forEach((namespace) => {
-    repoConfig.languages.forEach((language) => {
+    repoConfig.languages.forEach(async (language) => {
       const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
       if (!translation) return;
-
-      files[getLocalePath({ language, namespace, repoConfig })] =
-        dataStringifyByType[repoConfig.fileType](translation);
+      const path = await getLocalePath({ language, namespace, repoConfig });
+      files[path] = dataStringifyByType[repoConfig.fileType](translation);
     });
   });
   return files;

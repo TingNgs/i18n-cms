@@ -2,11 +2,11 @@ import { findIndex, uniqueId } from 'lodash-es';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { LOCALES_FILE_TYPE } from '../constants';
+import { FILE_TYPE } from '../constants';
 import EventBus from '../utils/eventBus';
 
 export interface RepoConfig {
-  fileType: typeof LOCALES_FILE_TYPE[number];
+  fileType: typeof FILE_TYPE[number];
   pattern: string;
   defaultLanguage: string;
   languages: string[];
@@ -30,6 +30,7 @@ export interface ModifiedLocalesData {
 export interface EditingRepoState {
   editingRepo?: Repo;
   editingRepoConfig?: RepoConfig;
+  customPathHandlerScript?: string;
   branch?: string;
   namespaces: string[];
   languages: string[];
@@ -97,10 +98,18 @@ export const editingRepoSlice = createSlice({
         languages: string[];
         repoConfig: RepoConfig;
         branch: string;
+        customPathHandlerScript?: string;
       }>
     ) => {
-      const { namespaces, languages, repoConfig, branch } = action.payload;
+      const {
+        namespaces,
+        languages,
+        repoConfig,
+        branch,
+        customPathHandlerScript
+      } = action.payload;
       state.editingRepoConfig = repoConfig;
+      state.customPathHandlerScript = customPathHandlerScript;
       state.branch = branch;
       state.languages = languages.reduce<string[]>((acc, cur) => {
         if (cur === repoConfig.defaultLanguage) acc.unshift(cur);
