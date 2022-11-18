@@ -49,6 +49,7 @@ const Repo = () => {
 
   return (
     <Flex
+      data-e2e-id="repo"
       overflow="hidden"
       flex={1}
       transition="all 0.3s"

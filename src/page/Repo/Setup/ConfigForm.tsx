@@ -10,7 +10,8 @@ import {
   Flex,
   Tag,
   Link,
-  Tooltip
+  Tooltip,
+  FormControl
 } from '@chakra-ui/react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -27,10 +28,9 @@ import { useLazyGetGithubBranchQuery } from '../../../redux/services/octokitApi'
 interface IProps {
   repo: Repo;
   onCancel: () => void;
-  showConfigForm: boolean;
 }
 
-const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
+const ConfigForm = ({ repo, onCancel }: IProps) => {
   const { t } = useTranslation('repo');
   const { t: commonT } = useTranslation();
 
@@ -67,7 +67,7 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
   }, [repo, getNamespaces, getValues]);
 
   return (
-    <Stack display={showConfigForm ? 'flex' : 'none'}>
+    <Stack data-e2e-id="repo_setup_config">
       <Button
         size="sm"
         variant="link"
@@ -87,7 +87,7 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
           </Tooltip>
         </Link>
       </Text>
-      <BranchInput showConfigForm={showConfigForm} />
+      <BranchInput isConfigForm />
       <Divider />
       <FormLabel>{commonT('File type')}</FormLabel>
       <Select {...register('config.fileType')} defaultValue={FILE_TYPE[0]}>
@@ -98,32 +98,40 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
         ))}
       </Select>
 
-      <FormLabel>
-        {commonT('File path pattern')}
-        <Link
-          href={`${process.env.REACT_APP_DOC_URL}configuration#pattern`}
-          isExternal
-          marginLeft={2}>
-          <Tooltip label={commonT('Learn more')} hasArrow>
-            <QuestionOutlineIcon />
-          </Tooltip>
-        </Link>
-      </FormLabel>
-      <Input
-        {...register('config.pattern')}
-        placeholder=":lng/:ns"
-        defaultValue=":lng/:ns"
-      />
+      <FormControl isRequired>
+        <FormLabel>
+          {commonT('File path pattern')}
+          <Link
+            href={`${process.env.REACT_APP_DOC_URL}configuration#pattern`}
+            isExternal
+            marginLeft={2}>
+            <Tooltip label={commonT('Learn more')} hasArrow>
+              <QuestionOutlineIcon />
+            </Tooltip>
+          </Link>
+        </FormLabel>
+        <Input
+          {...register('config.pattern')}
+          placeholder=":lng/:ns"
+          defaultValue=":lng/:ns"
+        />
+      </FormControl>
 
-      <FormLabel>{commonT('Languages')}</FormLabel>
-      <Controller
-        name="config.languages"
-        control={control}
-        rules={{ required: true }}
-        render={({ field: { value, onChange } }) => (
-          <TagInput value={value} onChange={onChange} />
-        )}
-      />
+      <FormControl isRequired>
+        <FormLabel>{commonT('Languages')}</FormLabel>
+        <Controller
+          name="config.languages"
+          control={control}
+          rules={{ required: true }}
+          render={({ field: { value, onChange } }) => (
+            <TagInput
+              e2eTitle="config.languages"
+              value={value}
+              onChange={onChange}
+            />
+          )}
+        />
+      </FormControl>
 
       <FormLabel>{commonT('Default language')}</FormLabel>
       <Select {...register('config.defaultLanguage')}>
@@ -135,6 +143,7 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
       </Select>
 
       <Button
+        data-e2e-id="test_config_button"
         colorScheme="green"
         onClick={onTestConfigClick}
         isLoading={isLoading}>
@@ -144,10 +153,14 @@ const ConfigForm = ({ repo, onCancel, showConfigForm }: IProps) => {
         <Flex gap={2}>
           <Text>{commonT('Namespaces')} : </Text>
           {namespaces.map((namespace, index) => (
-            <Tag key={index}>{namespace}</Tag>
+            <Tag data-e2e-id="test_config_namespace" key={index}>
+              {namespace}
+            </Tag>
           ))}
           {!isLoading && namespaces.length === 0 && (
-            <Text>{t('Namespaces not found')}</Text>
+            <Text data-e2e-id="test_config_not_found">
+              {t('Namespaces not found')}
+            </Text>
           )}
         </Flex>
       )}

@@ -40,10 +40,18 @@ const DeleteModal = ({
         {title && <AlertDialogHeader>{title}</AlertDialogHeader>}
         <AlertDialogBody> {content}</AlertDialogBody>
         <AlertDialogFooter gap={4}>
-          <Button variant="outline" onClick={onClose} ref={cancelRef}>
+          <Button
+            data-e2e-id="popover_delete_cancel"
+            variant="outline"
+            onClick={onClose}
+            ref={cancelRef}>
             {t('Cancel')}
           </Button>
-          <Button colorScheme="red" onClick={onConfirm} isLoading={isLoading}>
+          <Button
+            data-e2e-id="popover_delete_confirm"
+            colorScheme="red"
+            onClick={onConfirm}
+            isLoading={isLoading}>
             {t('Delete')}
           </Button>
         </AlertDialogFooter>

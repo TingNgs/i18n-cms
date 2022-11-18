@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Button, Text, Input, FormLabel, Stack } from '@chakra-ui/react';
+import {
+  Button,
+  Text,
+  Input,
+  FormLabel,
+  Stack,
+  FormControl,
+  FormErrorMessage
+} from '@chakra-ui/react';
+import { ErrorMessage } from '@hookform/error-message';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import gh from 'parse-github-url';
@@ -61,18 +70,18 @@ const CreateNewRepoForm = () => {
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
           <Text fontSize="2xl">{t('Import existing Github repository')}</Text>
-
-          <FormLabel>{t('Github repository url')}</FormLabel>
-          <Input
-            {...register('githubUrl')}
-            placeholder="https://github.com/owner/repo-name"
-            required
-            borderColor={errors.githubUrl?.message ? 'error' : undefined}
-            focusBorderColor={errors.githubUrl?.message ? 'error' : undefined}
-          />
-          {errors.githubUrl?.message && (
-            <Text color="error">{errors.githubUrl?.message}</Text>
-          )}
+          <FormControl isRequired isInvalid={!!errors.githubUrl}>
+            <FormLabel>{t('Github repository url')}</FormLabel>
+            <Input
+              {...register('githubUrl')}
+              placeholder="https://github.com/owner/repo-name"
+            />
+            <ErrorMessage
+              errors={errors}
+              name="githubUrl"
+              as={FormErrorMessage}
+            />
+          </FormControl>
 
           <Button type="submit">{t('Import')}</Button>
         </Stack>

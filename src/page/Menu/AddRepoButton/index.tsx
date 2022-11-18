@@ -18,8 +18,16 @@ import CreateNewRepoForm from './CreateNewRepoForm';
 import ImportGithubRepoForm from './ImportGithubRepoForm';
 
 const FORM_BUTTON_LIST = [
-  { title: 'Create new Github repository', id: 'new' },
-  { title: 'Import existing Github repository', id: 'import' }
+  {
+    title: 'Create new Github repository',
+    id: 'new',
+    e2eId: 'add_repo_create'
+  },
+  {
+    title: 'Import existing Github repository',
+    id: 'import',
+    e2eId: 'add_repo_import'
+  }
 ] as const;
 
 const AddRepoButton = () => {
@@ -36,6 +44,7 @@ const AddRepoButton = () => {
       default:
         return FORM_BUTTON_LIST.map((button, index) => (
           <Box
+            data-e2e-id={button.e2eId}
             key={button.id}
             cursor="pointer"
             alignItems="flex-start"
@@ -69,7 +78,9 @@ const AddRepoButton = () => {
 
   return (
     <>
-      <Button onClick={onOpen}>{t('Add repository')}</Button>
+      <Button onClick={onOpen} data-e2e-id="add_repo_button">
+        {t('Add repository')}
+      </Button>
       <Modal
         isOpen={isOpen}
         onClose={() => {

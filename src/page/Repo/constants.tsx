@@ -22,3 +22,5 @@ export const ROW_PROPS = {
 
 export const LIST_PADDING_BOTTOM = 24;
 export const SIDEBAR_WIDTH = 280;
+
+export const SETUP_CONFIG_COMMIT_MESSAGE = 'Setup i18n-cms config';

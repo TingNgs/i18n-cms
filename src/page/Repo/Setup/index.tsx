@@ -30,6 +30,7 @@ import { FormValues } from './interface';
 import LoadingModal from '../../../component/LoadingModal';
 import BranchForm from './BranchForm';
 import ConfigForm from './ConfigForm';
+import { SETUP_CONFIG_COMMIT_MESSAGE } from '../constants';
 
 interface IProps {
   repo: Repo;
@@ -41,7 +42,6 @@ const BranchFormModal = ({ repo }: IProps) => {
   const { t: commonT } = useTranslation();
   const toast = useToast();
 
-  const [showConfigForm, setShowConfigForm] = useState(false);
   const [isNewConfig, setIsNewConfig] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
@@ -65,7 +65,7 @@ const BranchFormModal = ({ repo }: IProps) => {
     return undefined;
   };
   const form = useForm<FormValues>({
-    defaultValues: { config: { languages: ['en'] } }
+    defaultValues: { config: { languages: ['en'] }, action: 'existing' }
   });
   const { watch, handleSubmit, setError, setValue, getValues } = form;
 
@@ -87,6 +87,7 @@ const BranchFormModal = ({ repo }: IProps) => {
       isRecentBranch = false,
       config
     } = values;
+
     try {
       setLoading(true);
       const branch = await getGithubBranch({
@@ -123,7 +124,6 @@ const BranchFormModal = ({ repo }: IProps) => {
                   status: 'error'
                 });
               } else {
-                setShowConfigForm(true);
                 setIsNewConfig(true);
               }
               return null;
@@ -177,7 +177,7 @@ const BranchFormModal = ({ repo }: IProps) => {
         dispatch(
           setSaveModalProps({
             title: t('Save config'),
-            commitMessage: 'Setup i18n-cms config',
+            commitMessage: SETUP_CONFIG_COMMIT_MESSAGE,
             description: t('Save config description', {
               path: `<code style='background-color: var(--chakra-colors-text--selected)'>${CONFIG_PATH}</code>`
             })
@@ -240,24 +240,16 @@ const BranchFormModal = ({ repo }: IProps) => {
 
   const onCancelConfigForm = useCallback(() => {
     setIsNewConfig(false);
-    setShowConfigForm(false);
   }, []);
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form data-e2e-id="repo_setup" onSubmit={handleSubmit(onSubmit)}>
         <Stack p={5} maxW="50rem" m="0 auto">
-          <BranchForm
-            repo={repo}
-            onSubmit={onSubmit}
-            showConfigForm={showConfigForm}
-          />
-          {isNewConfig && (
-            <ConfigForm
-              repo={repo}
-              showConfigForm={showConfigForm}
-              onCancel={onCancelConfigForm}
-            />
+          {isNewConfig ? (
+            <ConfigForm repo={repo} onCancel={onCancelConfigForm} />
+          ) : (
+            <BranchForm repo={repo} onSubmit={onSubmit} />
           )}
           <Button isLoading={isLoading} type="submit">
             {commonT('Submit')}

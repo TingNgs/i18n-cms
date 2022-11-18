@@ -5,7 +5,6 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverArrow,
-  Text,
   PopoverBody,
   PopoverFooter,
   useDisclosure,
@@ -18,13 +17,16 @@ import {
   ModalHeader,
   FormLabel,
   ModalCloseButton,
-  Portal
+  Portal,
+  FormControl,
+  FormErrorMessage
 } from '@chakra-ui/react';
 import { SmallAddIcon } from '@chakra-ui/icons';
 
 import { useForm } from 'react-hook-form';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ErrorMessage } from '@hookform/error-message';
 
 const NewItemBtn = ({
   addItemHandler,
@@ -110,11 +112,15 @@ const NewItemBtn = ({
               <PopoverArrow />
               <PopoverBody>
                 <Stack>
-                  <FormLabel>{title}</FormLabel>
-                  <Input ref={popoverInputRef} {...itemRest} isRequired />
-                  {errors.item?.message && (
-                    <Text color="error">{errors.item?.message}</Text>
-                  )}
+                  <FormControl isRequired isInvalid={!!errors.item}>
+                    <FormLabel>{title}</FormLabel>
+                    <Input ref={popoverInputRef} {...itemRest} />
+                    <ErrorMessage
+                      errors={errors}
+                      name="item"
+                      as={FormErrorMessage}
+                    />
+                  </FormControl>
                 </Stack>
               </PopoverBody>
               <PopoverFooter>
@@ -138,11 +144,15 @@ const NewItemBtn = ({
           <ModalBody>
             <form onSubmit={onSubmit}>
               <Stack>
-                <FormLabel>{itemName}</FormLabel>
-                <Input {...register('item')} isRequired autoFocus />
-                {errors.item?.message && (
-                  <Text color="error">{errors.item?.message}</Text>
-                )}
+                <FormControl isRequired isInvalid={!!errors.item}>
+                  <FormLabel>{itemName}</FormLabel>
+                  <Input {...register('item')} autoFocus />
+                  <ErrorMessage
+                    errors={errors}
+                    name="item"
+                    as={FormErrorMessage}
+                  />
+                </FormControl>
 
                 <Button type="submit">{t('Create')}</Button>
               </Stack>

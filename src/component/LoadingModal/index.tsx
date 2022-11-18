@@ -25,6 +25,7 @@ const LoadingModal = ({ title }: IProps) => {
       <ModalContent>
         <ModalBody>
           <Stack
+            data-e2e-id="loading_modal"
             position="fixed"
             top="0"
             left="0"

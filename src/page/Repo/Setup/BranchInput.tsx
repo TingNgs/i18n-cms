@@ -1,11 +1,17 @@
 import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { FormLabel, Text, Input } from '@chakra-ui/react';
+import {
+  FormLabel,
+  Input,
+  FormControl,
+  FormErrorMessage
+} from '@chakra-ui/react';
+import { ErrorMessage } from '@hookform/error-message';
 
 import { FormValues } from './interface';
 
-const BranchInput = ({ showConfigForm }: { showConfigForm: boolean }) => {
+const BranchInput = ({ isConfigForm }: { isConfigForm?: boolean }) => {
   const { t } = useTranslation('repo');
 
   const {
@@ -27,43 +33,42 @@ const BranchInput = ({ showConfigForm }: { showConfigForm: boolean }) => {
 
   return action === 'create' ? (
     <>
-      <FormLabel>{t('Base on')}</FormLabel>
-      <Input
-        {...register('baseOn')}
-        placeholder="master"
-        borderColor={errors.baseOn ? 'error' : undefined}
-        focusBorderColor={errors.baseOn ? 'error' : undefined}
-        disabled={showConfigForm}
-        required
-      />
-      {errors.baseOn && <Text color="error">{errors.baseOn.message}</Text>}
-      <FormLabel>{t('New branch name')}</FormLabel>
-      <Input
-        {...register('newBranchName')}
-        placeholder="feature/add-xxx-locales"
-        borderColor={errors.newBranchName ? 'error' : undefined}
-        focusBorderColor={errors.newBranchName ? 'error' : undefined}
-        required
-      />
-      {errors.newBranchName && (
-        <Text color="error">{errors.newBranchName.message}</Text>
-      )}
+      <FormControl isRequired isInvalid={!!errors.baseOn}>
+        <FormLabel>{t('Base on')}</FormLabel>
+        <Input
+          {...register('baseOn')}
+          placeholder="master"
+          disabled={isConfigForm}
+        />
+        <ErrorMessage errors={errors} name="baseOn" as={FormErrorMessage} />
+      </FormControl>
+      <FormControl isRequired isInvalid={!!errors.newBranchName}>
+        <FormLabel>{t('New branch name')}</FormLabel>
+        <Input
+          {...register('newBranchName')}
+          placeholder="feature/add-xxx-locales"
+        />
+        <ErrorMessage
+          errors={errors}
+          name="newBranchName"
+          as={FormErrorMessage}
+        />
+      </FormControl>
     </>
   ) : (
-    <>
+    <FormControl isRequired isInvalid={!!errors.existingBranchName}>
       <FormLabel>{t('Existing branch name')}</FormLabel>
       <Input
         {...register('existingBranchName')}
         placeholder="feature/add-xxx-locales"
-        borderColor={errors.existingBranchName ? 'error' : undefined}
-        focusBorderColor={errors.existingBranchName ? 'error' : undefined}
-        disabled={showConfigForm}
-        required
+        disabled={isConfigForm}
       />
-      {errors.existingBranchName && (
-        <Text color="error">{errors.existingBranchName.message}</Text>
-      )}
-    </>
+      <ErrorMessage
+        errors={errors}
+        name="existingBranchName"
+        as={FormErrorMessage}
+      />
+    </FormControl>
   );
 };
 

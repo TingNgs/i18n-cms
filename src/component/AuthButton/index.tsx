@@ -31,11 +31,17 @@ const AuthButton = () => {
   }, [logout]);
 
   return isAuth ? (
-    <Button onClick={onLogoutClicked} variant="outline">
+    <Button
+      data-e2e-id="logout_button"
+      onClick={onLogoutClicked}
+      variant="outline">
       {t('Logout')}
     </Button>
   ) : (
-    <Button onClick={onLoginClicked} leftIcon={<AiOutlineGithub />}>
+    <Button
+      data-e2e-id="github_login_button"
+      onClick={onLoginClicked}
+      leftIcon={<AiOutlineGithub />}>
       {t('Login with GitHub')}
     </Button>
   );

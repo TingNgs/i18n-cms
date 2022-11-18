@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import {
   Button,
+  FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
   Modal,
@@ -10,12 +12,12 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Text,
   Textarea,
   useBoolean
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { ErrorMessage } from '@hookform/error-message';
 import {
   useAppDispatch,
   useAppSelector,
@@ -115,17 +117,16 @@ const EditModalBtn = ({ localeId }: IProps) => {
             {isOpen && (
               <form onSubmit={onSubmit}>
                 <Stack>
-                  <FormLabel>Key</FormLabel>
-                  <Input
-                    defaultValue={localeData.key}
-                    {...register('key')}
-                    isRequired
-                    borderColor={errors.key ? 'error' : undefined}
-                    focusBorderColor={errors.key ? 'error' : undefined}
-                  />
-                  {!!errors.key && (
-                    <Text color="error">{errors.key.message}</Text>
-                  )}
+                  <FormControl isRequired isInvalid={!!errors.key}>
+                    <FormLabel>Key</FormLabel>
+                    <Input defaultValue={localeData.key} {...register('key')} />
+                    <ErrorMessage
+                      errors={errors}
+                      name="key"
+                      as={FormErrorMessage}
+                    />
+                  </FormControl>
+
                   {languages.map((language) => (
                     <React.Fragment key={language}>
                       <FormLabel>{language}</FormLabel>

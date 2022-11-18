@@ -55,7 +55,7 @@ const SaveEditingModal = () => {
   return (
     <Modal isOpen={!!saveModalProps} onClose={isLoading ? noop : onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent data-e2e-id="save_editing_modal">
         <ModalHeader>{saveModalProps?.title}</ModalHeader>
         {!isLoading && <ModalCloseButton />}
         <ModalBody display="flex" flexDir={{ base: 'column', md: 'row' }}>

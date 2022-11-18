@@ -9,7 +9,7 @@ import {
   AlertIcon,
   Link
 } from '@chakra-ui/react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 
@@ -21,18 +21,19 @@ import BranchInput from './BranchInput';
 
 interface IProps {
   repo: Repo;
-  showConfigForm: boolean;
   onSubmit: (values: FormValues & { isRecentBranch: boolean }) => void;
 }
 
-const BranchForm = ({ repo, showConfigForm, onSubmit }: IProps) => {
+const BranchForm = ({ repo, onSubmit }: IProps) => {
   const { t } = useTranslation('repo');
   const { t: commonT } = useTranslation();
 
-  const { register } = useFormContext<FormValues>();
+  const { register, control } = useFormContext<FormValues>();
+
+  const action = useWatch({ control, name: 'action' });
 
   return (
-    <Stack display={showConfigForm ? 'none' : 'flex'}>
+    <Stack>
       <Text fontSize="2xl" fontWeight="semibold">
         {t('Choose branch')}
       </Text>
@@ -50,6 +51,7 @@ const BranchForm = ({ repo, showConfigForm, onSubmit }: IProps) => {
           <Text fontWeight="semibold">{t('Recent branches')}</Text>
           {repo.recentBranches?.map((branchName) => (
             <Flex
+              data-e2e-id="recent_branch"
               key={branchName}
               cursor="pointer"
               onClick={() => {
@@ -69,18 +71,24 @@ const BranchForm = ({ repo, showConfigForm, onSubmit }: IProps) => {
           <Divider />
         </>
       )}
-      <RadioGroup defaultValue="existing">
+      <RadioGroup defaultValue={action}>
         <Stack>
-          <Radio {...register('action')} value="existing">
+          <Radio
+            {...register('action')}
+            data-e2e-id="branch_action_existing"
+            value="existing">
             {t('Use existing branch')}
           </Radio>
-          <Radio {...register('action')} value="create">
+          <Radio
+            {...register('action')}
+            data-e2e-id="branch_action_create"
+            value="create">
             {t('Create new branch')}
           </Radio>
         </Stack>
       </RadioGroup>
       <Divider />
-      <BranchInput showConfigForm={showConfigForm} />
+      <BranchInput />
     </Stack>
   );
 };

@@ -65,6 +65,7 @@ const RepoCard = ({ repo, refetch }: IProps) => {
 
   return (
     <Flex
+      data-e2e-id="menu_repo_card"
       key={repo.fullName}
       onClick={onRepoClick}
       cursor="pointer"

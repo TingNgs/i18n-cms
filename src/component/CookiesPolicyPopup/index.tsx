@@ -36,6 +36,7 @@ const CookiesPolicyPopup = () => {
   return isOpen ? (
     <Portal>
       <Flex
+        data-e2e-id="cookies_banner"
         position="fixed"
         bottom="0"
         m="0"
@@ -81,13 +82,16 @@ const CookiesPolicyPopup = () => {
             justifyContent="space-between"
             flexDirection={{ base: 'column-reverse', md: 'row' }}
             gap="4">
-            <Button onClick={onConfirm}>{t('Accept')}</Button>
+            <Button onClick={onConfirm} data-e2e-id="cookies_accept_button">
+              {t('Accept')}
+            </Button>
             <IconButton
               variant="ghost"
               size="xs"
               onClick={onClose}
               icon={<CloseIcon />}
               aria-label="close cookies policy button"
+              data-e2e-id="cookies_cancel_button"
             />
           </ButtonGroup>
         </Flex>

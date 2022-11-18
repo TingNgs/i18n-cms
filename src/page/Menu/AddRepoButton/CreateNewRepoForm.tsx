@@ -9,11 +9,14 @@ import {
   Radio,
   RadioGroup,
   useToast,
-  Select
+  Select,
+  FormControl,
+  FormErrorMessage
 } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
 import {
   FILE_TYPE,
   FILE_TYPE_MAP_DATA,
@@ -46,17 +49,25 @@ const CreateNewRepoForm = () => {
     useCommitGithubFilesMutation();
   const [updateExistingRepo] = useUpdateExistingRepoMutation();
 
-  const { handleSubmit, register, control, watch, getValues, setValue } =
-    useForm<{
-      owner: Owner;
-      name: string;
-      pattern: string;
-      fileType: typeof FILE_TYPE[number];
-      visibility: typeof REPOSITORY_VISIBILITY[number];
-      languages: string[];
-      namespaces: string[];
-      defaultLanguage: string;
-    }>({ defaultValues: { languages: ['en', 'zh'] } });
+  const {
+    handleSubmit,
+    register,
+    control,
+    watch,
+    getValues,
+    setValue,
+    setError,
+    formState: { errors }
+  } = useForm<{
+    owner: Owner;
+    name: string;
+    pattern: string;
+    fileType: typeof FILE_TYPE[number];
+    visibility: typeof REPOSITORY_VISIBILITY[number];
+    languages: string[];
+    namespaces: string[];
+    defaultLanguage: string;
+  }>({ defaultValues: { languages: ['en', 'zh'] } });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -69,9 +80,9 @@ const CreateNewRepoForm = () => {
         owner
       })
         .unwrap()
-        .catch((e) => {
+        .catch((err) => {
           toast({ title: menuT('Create new repo fail'), status: 'error' });
-          throw e;
+          throw err;
         });
 
       await commitGithubFiles({
@@ -105,6 +116,16 @@ const CreateNewRepoForm = () => {
         })
       );
       history.push('/repo');
+    } catch (err: unknown) {
+      if (
+        (err as { message?: string })?.message?.includes?.(
+          'name already exists on this account'
+        )
+      ) {
+        setError('name', {
+          message: menuT('Repository name already exists on this owner')
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -141,13 +162,15 @@ const CreateNewRepoForm = () => {
             )}
           />
 
-          <FormLabel>{commonT('Repository name')}</FormLabel>
-          <Input
-            {...register('name')}
-            placeholder="xxxxx-locales"
-            name="name"
-            required
-          />
+          <FormControl isInvalid={!!errors.name} isRequired>
+            <FormLabel>{commonT('Repository name')}</FormLabel>
+            <Input
+              {...register('name')}
+              placeholder="xxxxx-locales"
+              name="name"
+            />
+            <ErrorMessage errors={errors} name="name" as={FormErrorMessage} />
+          </FormControl>
 
           <RadioGroup defaultValue={REPOSITORY_VISIBILITY[0]}>
             <HStack spacing={4}>
@@ -168,37 +191,51 @@ const CreateNewRepoForm = () => {
             ))}
           </Select>
 
-          <FormLabel>{commonT('File path pattern')}</FormLabel>
-          <Input
-            {...register('pattern')}
-            placeholder=":lng/:ns"
-            defaultValue=":lng/:ns"
-            name="pattern"
-          />
+          <FormControl isInvalid={!!errors.pattern} isRequired>
+            <FormLabel>{commonT('File path pattern')}</FormLabel>
+            <Input
+              {...register('pattern')}
+              placeholder=":lng/:ns"
+              defaultValue=":lng/:ns"
+              name="pattern"
+            />
+          </FormControl>
 
-          <FormLabel>{commonT('Languages')}</FormLabel>
-          <Controller
-            name="languages"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onChange } }) => (
-              <TagInput value={value} onChange={onChange} />
-            )}
-          />
+          <FormControl isInvalid={!!errors.languages} isRequired>
+            <FormLabel>{commonT('Languages')}</FormLabel>
+            <Controller
+              name="languages"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { value, onChange } }) => (
+                <TagInput
+                  e2eTitle="languages"
+                  value={value}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </FormControl>
 
-          <FormLabel>{commonT('Namespaces')}</FormLabel>
-          <Controller
-            name="namespaces"
-            control={control}
-            rules={{ required: true }}
-            defaultValue={['translationA', 'translationB']}
-            render={({ field: { value, onChange } }) => (
-              <TagInput value={value} onChange={onChange} />
-            )}
-          />
+          <FormControl isInvalid={!!errors.namespaces} isRequired>
+            <FormLabel>{commonT('Namespaces')}</FormLabel>
+            <Controller
+              name="namespaces"
+              control={control}
+              rules={{ required: true }}
+              defaultValue={['translationA', 'translationB']}
+              render={({ field: { value, onChange } }) => (
+                <TagInput
+                  e2eTitle="namespaces"
+                  value={value}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </FormControl>
 
           <FormLabel>{commonT('Default language')}</FormLabel>
-          <Select {...register('defaultLanguage')}>
+          <Select {...register('defaultLanguage')} required>
             {languages?.map((language) => (
               <option value={language} key={language}>
                 {language}

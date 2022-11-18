@@ -40,6 +40,9 @@ const useCheckRepoPermissions = () => {
           }
         };
       } catch (e) {
+        if ((e as { message?: string })?.message === 'Not Found') {
+          return { error: t('Repository not found') };
+        }
         return { error: t('Something went wrong') };
       }
     },

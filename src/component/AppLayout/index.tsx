@@ -21,7 +21,7 @@ const AppLayout = ({ children }: PropsWithChildren) => {
   }
 
   return (
-    <Flex direction="column" h="100%">
+    <Flex direction="column" h="100%" data-e2e-id="app">
       {(location.pathname !== '/repo' || !branch) && <Header />}
       {children}
       <CookiesPolicyPopup />
