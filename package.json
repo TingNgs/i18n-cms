@@ -57,6 +57,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "prepare": "husky install",
+    "cypress:run": "cypress run",
     "cypress:open": "cypress open"
   },
   "eslintConfig": {

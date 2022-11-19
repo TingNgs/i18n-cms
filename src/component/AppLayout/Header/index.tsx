@@ -43,6 +43,10 @@ const Header = () => {
 
   return (
     <Flex
+      position="sticky"
+      top="0"
+      zIndex="1"
+      backgroundColor="var(--chakra-colors-chakra-body-bg)"
       justifyContent="space-between"
       padding="var(--chakra-space-3) var(--chakra-space-4)">
       <Link to="/">
