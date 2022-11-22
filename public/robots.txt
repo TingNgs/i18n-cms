@@ -1,3 +1,4 @@
 # https://www.robotstxt.org/robotstxt.html
+Sitemap: https://i18n-cms.pages.dev/sitemap_index.xml
 User-agent: *
-Disallow:
+Allow: /
