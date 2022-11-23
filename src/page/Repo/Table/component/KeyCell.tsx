@@ -1,23 +1,27 @@
 import { memo, useCallback } from 'react';
-import { Editable, EditableInput, Tooltip } from '@chakra-ui/react';
-import { WarningIcon } from '@chakra-ui/icons';
+import { Editable, EditableInput, Tooltip, Flex } from '@chakra-ui/react';
+import { WarningIcon, DragHandleIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'react-i18next';
+import { type DraggableProvided } from 'react-beautiful-dnd';
 
 import { useAppDispatch } from '../../../../redux/store';
 import { handleLocaleKeyOnChange } from '../../../../redux/editingRepoSlice';
 
 import CellPreview from './CellPreview';
+import { CELL_PROPS } from '../../constants';
 
 const KeyCell = ({
   isMobile,
   localeId,
   localeKey,
-  isDuplicated
+  isDuplicated,
+  provided
 }: {
   isMobile: boolean;
   localeId: string;
   localeKey: string;
   isDuplicated: boolean;
+  provided: DraggableProvided;
 }) => {
   const { t } = useTranslation('repo');
   const dispatch = useAppDispatch();
@@ -31,7 +35,18 @@ const KeyCell = ({
   );
 
   return (
-    <>
+    <Flex
+      data-e2e-id="table_key_cell"
+      {...CELL_PROPS}
+      {...(isMobile ? { minWidth: undefined } : {})}
+      position="sticky"
+      left="0"
+      zIndex={1}
+      gap={1}>
+      <Flex {...provided.dragHandleProps} marginRight="2">
+        <DragHandleIcon w="3" h="3" />
+      </Flex>
+
       <Editable
         w="100%"
         onChange={onSubmit}
@@ -46,7 +61,7 @@ const KeyCell = ({
           <WarningIcon w="4" h="4" color="error" />
         </Tooltip>
       )}
-    </>
+    </Flex>
   );
 };
 

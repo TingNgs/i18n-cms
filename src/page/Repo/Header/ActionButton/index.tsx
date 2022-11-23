@@ -41,12 +41,15 @@ const ActionBtn = ({
       <Menu>
         <MenuButton
           as={IconButton}
-          aria-label="actions"
+          aria-label="namespace_actions"
           icon={<ChevronDownIcon />}
           disabled={!namespace}
         />
         <MenuList>
-          <MenuItem gap={2} onClick={setDeleteModalOpen.on}>
+          <MenuItem
+            data-e2e-id="delete_namespace_button"
+            gap={2}
+            onClick={setDeleteModalOpen.on}>
             <DeleteIcon color="gray.400" />
             <Text
               dangerouslySetInnerHTML={{

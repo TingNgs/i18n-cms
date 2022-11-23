@@ -6,7 +6,7 @@ import {
   Flex,
   useBreakpointValue
 } from '@chakra-ui/react';
-import { AddIcon, DragHandleIcon } from '@chakra-ui/icons';
+import { AddIcon } from '@chakra-ui/icons';
 
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import {
@@ -19,7 +19,7 @@ import KeyCell from './KeyCell';
 import ActionCell from './ActionCell';
 import TableCell from './TableCell';
 
-import { CELL_PROPS, ROW_PROPS } from '../../constants';
+import { ROW_PROPS } from '../../constants';
 
 const TableRow = ({
   style,
@@ -71,8 +71,7 @@ const TableRow = ({
               position: 'absolute',
               w: '100%',
               h: '100%',
-              bg: 'var(--chakra-colors-chakra-body-text)',
-              opacity: '0.1',
+              bg: 'text--selected',
               left: 0,
               top: 0,
               pointerEvents: 'none',
@@ -85,28 +84,13 @@ const TableRow = ({
         ...provided.draggableProps.style,
         minWidth: 'fit-content'
       }}>
-      <Flex
-        {...CELL_PROPS}
-        {...(isMobile ? { minWidth: undefined } : {})}
-        position="sticky"
-        left="0"
-        zIndex={1}
-        gap={1}>
-        <Flex
-          {...provided.dragHandleProps}
-          marginRight="2"
-          visibility={isSearchResult ? 'hidden' : 'visible'}
-          pointerEvents={isSearchResult ? 'none' : 'all'}>
-          <DragHandleIcon w="3" h="3" />
-        </Flex>
-
-        <KeyCell
-          isMobile={!!isMobile}
-          localeId={localeId}
-          isDuplicated={!!duplicatedKeys?.[localeKey]}
-          localeKey={localeKey}
-        />
-      </Flex>
+      <KeyCell
+        isMobile={!!isMobile}
+        localeId={localeId}
+        isDuplicated={!!duplicatedKeys?.[localeKey]}
+        localeKey={localeKey}
+        provided={provided}
+      />
 
       {!isMobile &&
         languages.map((language) => (

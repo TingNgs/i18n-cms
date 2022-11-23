@@ -1,5 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import {
+  getAuth,
+  signInWithPopup,
+  GithubAuthProvider,
+  signOut,
+  browserSessionPersistence,
+  setPersistence
+} from 'firebase/auth';
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -13,3 +21,13 @@ const firebase = initializeApp(firebaseConfig);
 export const db = getFirestore(firebase);
 
 export default firebase;
+
+export const firebaseAuth = {
+  getAuth,
+  signInWithPopup,
+  GithubAuthProvider,
+  signOut,
+  browserSessionPersistence,
+  setPersistence
+};
+window.firebaseAuth = firebaseAuth;

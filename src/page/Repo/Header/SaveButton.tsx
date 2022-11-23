@@ -63,7 +63,11 @@ const SaveButton = () => {
 
   return (
     <>
-      <Button disabled={!isDataChanged} onClick={openSaveModal} size="sm">
+      <Button
+        data-e2e-id="save_button"
+        disabled={!isDataChanged}
+        onClick={openSaveModal}
+        size="sm">
         {t('Save')}
       </Button>
       <Prompt when={isDataChanged} message={confirmationMessage} />

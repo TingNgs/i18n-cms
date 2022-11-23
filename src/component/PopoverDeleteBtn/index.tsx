@@ -57,13 +57,13 @@ const PopoverDeleteBtn = ({
             <PopoverFooter>
               <ButtonGroup size="sm">
                 <Button
-                  data-e2e-id="popover_delete_cancel"
+                  data-e2e-id="delete_cancel"
                   variant="outline"
                   onClick={onClose}>
                   {t('Cancel')}
                 </Button>
                 <Button
-                  data-e2e-id="popover_delete_confirm"
+                  data-e2e-id="delete_confirm"
                   colorScheme="red"
                   onClick={onDeleteClicked}
                   isLoading={isLoading}>

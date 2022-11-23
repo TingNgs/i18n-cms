@@ -40,6 +40,8 @@ const Namespace = ({
 
   return (
     <Flex
+      data-e2e-id="namespace"
+      aria-selected={isSelected}
       onClick={onClick}
       p="4px 16px"
       minHeight="40px"

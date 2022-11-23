@@ -8,6 +8,7 @@ import {
   Text,
   SlideFade
 } from '@chakra-ui/react';
+import { noop } from 'lodash-es';
 
 interface IProps {
   title?: string;
@@ -21,7 +22,7 @@ const LoadingModal = ({ title }: IProps) => {
   }, [title]);
 
   return (
-    <Modal isOpen onClose={() => null} motionPreset="none">
+    <Modal isOpen onClose={noop} motionPreset="none">
       <ModalContent>
         <ModalBody>
           <Stack

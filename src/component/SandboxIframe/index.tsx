@@ -20,14 +20,24 @@ const html = `
     <title>Hello Page</title>
     <script>
       window.FILE_TYPE_MAP_DATA = ${JSON.stringify(FILE_TYPE_MAP_DATA)};
-      const setGetCustomPath = async (data) => {
-        const module = await import(\`data:text/javascript,\${data}\`);
-        window.getCustomPath = module.default;
-      }
+
       const handleGetCustomPath = (data) => {
         const result = window.getCustomPath(data);
         window.parent.postMessage({ type: 'get_custom_path_response', data: result, source: 'sandbox-iframe' }, '*');
       }
+
+      let getCustomPathQueue = [];
+
+      const setGetCustomPath = async (data) => {
+        window.getCustomPath = undefined;
+        const module = await import(\`data:text/javascript,\${data}\`);
+        window.getCustomPath = module.default;
+        getCustomPathQueue.forEach((data) => {
+          handleGetCustomPath(data);
+        })
+        getCustomPathQueue = [];
+      }
+      
       onmessage = (e) => {
         const { type, data } = e.data;
         switch(type) {
@@ -35,7 +45,11 @@ const html = `
             setGetCustomPath(data);
             break;
           case 'get_custom_path':
-            handleGetCustomPath(data);
+            if(!!window.getCustomPath) {
+              handleGetCustomPath(data);
+            } else {
+              getCustomPathQueue.push(data);
+            }
             break;
         }
       }

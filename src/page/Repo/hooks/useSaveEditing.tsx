@@ -173,29 +173,41 @@ const useSaveEditing = () => {
 
         const filesToDeleteSet = new Set<string>();
         // Removed languages
-        removedLanguages.forEach((language) => {
-          originalNamespaces.forEach(async (namespace) => {
+        for (const language of removedLanguages) {
+          for (const namespace of originalNamespaces) {
             const path = await getLocalePath({
               language,
               namespace,
               repoConfig: editingRepoConfig
             });
             filesToDeleteSet.add(path);
-          });
-        });
+          }
+        }
 
         // Removed namespaces
-        removedNamespaces.forEach((namespace) => {
-          originalLanguages.forEach(async (language) => {
+        for (const namespace of removedNamespaces) {
+          for (const language of originalLanguages) {
             const path = await getLocalePath({
               language,
               namespace,
               repoConfig: editingRepoConfig
             });
             filesToDeleteSet.add(path);
-          });
+          }
+        }
+        const files = await dataToFiles({
+          data,
+          namespaces: Object.keys(data),
+          repoConfig: {
+            ...editingRepoConfig,
+            languages,
+            ...(editingRepoConfig.useCustomPath
+              ? {
+                  namespaces
+                }
+              : {})
+          }
         });
-
         const { commit } = await commitGithubFiles({
           owner: editingRepo.owner,
           repo: editingRepo.repo,
@@ -204,19 +216,7 @@ const useSaveEditing = () => {
             message: commitMessage,
             filesToDelete: Array.from(filesToDeleteSet),
             ignoreDeletionFailures: true,
-            files: dataToFiles({
-              data,
-              namespaces: Object.keys(data),
-              repoConfig: {
-                ...editingRepoConfig,
-                languages,
-                ...(editingRepoConfig.useCustomPath
-                  ? {
-                      namespaces
-                    }
-                  : {})
-              }
-            })
+            files
           }
         }).unwrap();
 

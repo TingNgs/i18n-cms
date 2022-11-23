@@ -1,5 +1,4 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-
 import {
   getAuth,
   signInWithPopup,
@@ -10,6 +9,15 @@ import {
 } from 'firebase/auth';
 import firebase from '../../utils/firebase';
 import { removeSessionStorage, setSessionStorage } from '../../utils/storage';
+
+const firebaseAuth = {
+  signInWithPopup,
+  GithubAuthProvider
+};
+
+if (window.Cypress) {
+  window.firebaseAuth = firebaseAuth;
+}
 
 const auth = getAuth(firebase);
 const provider = new GithubAuthProvider();
@@ -24,8 +32,9 @@ export const AuthApi = createApi({
     login: builder.mutation<{ uid: string }, undefined>({
       queryFn: async () => {
         await setPersistence(auth, browserSessionPersistence);
-        const result = await signInWithPopup(auth, provider);
-        const credential = GithubAuthProvider.credentialFromResult(result);
+        const result = await firebaseAuth.signInWithPopup(auth, provider);
+        const credential =
+          firebaseAuth.GithubAuthProvider.credentialFromResult(result);
         if (!credential?.accessToken) throw new Error('no credential');
         const { accessToken } = credential;
         setSessionStorage('github_access_token', accessToken);

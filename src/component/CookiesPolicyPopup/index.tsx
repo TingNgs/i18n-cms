@@ -53,8 +53,7 @@ const CookiesPolicyPopup = () => {
           position: 'absolute',
           w: '100%',
           h: '100%',
-          bg: 'var(--chakra-colors-chakra-body-text)',
-          opacity: '0.1',
+          bg: 'text--selected',
           left: 0,
           top: 0,
           zIndex: -1

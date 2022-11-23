@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import { ErrorMessage } from '@hookform/error-message';
 
 const NewItemBtn = ({
+  e2eTitle,
   addItemHandler,
   onCloseSidebar,
   items,
@@ -36,6 +37,7 @@ const NewItemBtn = ({
   title,
   itemName
 }: {
+  e2eTitle: string;
   addItemHandler: (item: string) => void;
   onCloseSidebar?: () => void;
   items: string[];
@@ -97,6 +99,7 @@ const NewItemBtn = ({
         initialFocusRef={inputRef}>
         <PopoverTrigger>
           <Button
+            data-e2e-id={`new_${e2eTitle}_button`}
             variant="link"
             size="sm"
             alignSelf="flex-start"
@@ -114,7 +117,11 @@ const NewItemBtn = ({
                 <Stack>
                   <FormControl isRequired isInvalid={!!errors.item}>
                     <FormLabel>{title}</FormLabel>
-                    <Input ref={popoverInputRef} {...itemRest} />
+                    <Input
+                      ref={popoverInputRef}
+                      {...itemRest}
+                      data-e2e-id={`new_${e2eTitle}_input`}
+                    />
                     <ErrorMessage
                       errors={errors}
                       name="item"
@@ -124,7 +131,10 @@ const NewItemBtn = ({
                 </Stack>
               </PopoverBody>
               <PopoverFooter>
-                <Button size="sm" type="submit">
+                <Button
+                  size="sm"
+                  type="submit"
+                  data-e2e-id={`new_${e2eTitle}_submit`}>
                   {t('Create')}
                 </Button>
               </PopoverFooter>
@@ -146,7 +156,11 @@ const NewItemBtn = ({
               <Stack>
                 <FormControl isRequired isInvalid={!!errors.item}>
                   <FormLabel>{itemName}</FormLabel>
-                  <Input {...register('item')} autoFocus />
+                  <Input
+                    {...register('item')}
+                    autoFocus
+                    data-e2e-id={`new_${e2eTitle}_input`}
+                  />
                   <ErrorMessage
                     errors={errors}
                     name="item"
@@ -154,7 +168,9 @@ const NewItemBtn = ({
                   />
                 </FormControl>
 
-                <Button type="submit">{t('Create')}</Button>
+                <Button type="submit" data-e2e-id={`new_${e2eTitle}_submit`}>
+                  {t('Create')}
+                </Button>
               </Stack>
             </form>
           </ModalBody>

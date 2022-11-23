@@ -53,7 +53,7 @@ export const getLocalePath = async ({
   return fullPath;
 };
 
-export const dataToFiles = ({
+export const dataToFiles = async ({
   namespaces,
   data,
   repoConfig
@@ -68,14 +68,14 @@ export const dataToFiles = ({
     [CONFIG_PATH]: dataToJson(repoConfig as unknown as Record<string, unknown>)
   };
 
-  namespaces.forEach((namespace) => {
-    repoConfig.languages.forEach(async (language) => {
+  for (const namespace of namespaces) {
+    for (const language of repoConfig.languages) {
       const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
-      if (!translation) return;
+      if (!translation) continue;
       const path = await getLocalePath({ language, namespace, repoConfig });
       files[path] = dataStringifyByType[repoConfig.fileType](translation);
-    });
-  });
+    }
+  }
   return files;
 };
 

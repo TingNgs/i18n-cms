@@ -8,7 +8,7 @@ const ColorModeBtn = () => {
     <IconButton
       onClick={mode.toggleColorMode}
       icon={mode.colorMode === 'dark' ? <SunIcon /> : <MoonIcon />}
-      aria-label="colorModeBtn"
+      aria-label="color_mode_button"
     />
   );
 };

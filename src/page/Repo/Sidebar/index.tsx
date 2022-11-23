@@ -169,6 +169,7 @@ const Sidebar = ({
                 />
               ))}
               <NewItemBtn
+                e2eTitle="namespace"
                 addItemHandler={onAddNewNamespace}
                 onCloseSidebar={onClose}
                 items={namespaces}
@@ -202,6 +203,7 @@ const Sidebar = ({
             <AccordionPanel padding={0}>
               <LanguageList />
               <NewItemBtn
+                e2eTitle="language"
                 addItemHandler={onAddNewLanguage}
                 items={languages}
                 duplicatedErrMsg={repoT('Language already exist')}

@@ -205,7 +205,11 @@ const LocaleTable = () => {
           )}
         </AutoSizer>
       ) : (
-        <Flex flex="1" alignItems="center" justifyContent="center">
+        <Flex
+          data-e2e-id="table_spinner"
+          flex="1"
+          alignItems="center"
+          justifyContent="center">
           <Spinner />
         </Flex>
       )}

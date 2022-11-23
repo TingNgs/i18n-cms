@@ -36,19 +36,19 @@ const DeleteModal = ({
       onClose={onClose}
       leastDestructiveRef={cancelRef}>
       <AlertDialogOverlay />
-      <AlertDialogContent>
+      <AlertDialogContent data-e2e-id="delete_modal">
         {title && <AlertDialogHeader>{title}</AlertDialogHeader>}
         <AlertDialogBody> {content}</AlertDialogBody>
         <AlertDialogFooter gap={4}>
           <Button
-            data-e2e-id="popover_delete_cancel"
+            data-e2e-id="delete_cancel"
             variant="outline"
             onClick={onClose}
             ref={cancelRef}>
             {t('Cancel')}
           </Button>
           <Button
-            data-e2e-id="popover_delete_confirm"
+            data-e2e-id="delete_confirm"
             colorScheme="red"
             onClick={onConfirm}
             isLoading={isLoading}>

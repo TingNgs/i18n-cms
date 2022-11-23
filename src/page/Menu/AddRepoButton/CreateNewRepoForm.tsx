@@ -84,6 +84,10 @@ const CreateNewRepoForm = () => {
           toast({ title: menuT('Create new repo fail'), status: 'error' });
           throw err;
         });
+      const files = await dataToFiles({
+        namespaces,
+        repoConfig
+      });
 
       await commitGithubFiles({
         owner: repo.owner.login,
@@ -91,10 +95,7 @@ const CreateNewRepoForm = () => {
         branch: repo.default_branch,
         change: {
           message: 'Initial locales',
-          files: dataToFiles({
-            namespaces,
-            repoConfig
-          })
+          files
         }
       }).catch((e) => {
         toast({ title: menuT('Setup new repo fail'), status: 'error' });

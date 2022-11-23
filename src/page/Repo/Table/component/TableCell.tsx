@@ -54,7 +54,7 @@ const TableCell = ({
   }, []);
 
   return (
-    <Flex {...CELL_PROPS}>
+    <Flex {...CELL_PROPS} data-e2e-id="table_cell" data-language={language}>
       <Editable w="100%" onChange={onChange} value={value}>
         <CellPreview
           ref={previewRef}
