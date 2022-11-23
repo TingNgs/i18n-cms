@@ -63,12 +63,11 @@ describe('import repo', () => {
     cy.loadingWithModal();
     cy.location('pathname').should('eq', '/repo');
     cy.visit('/menu');
-    cy.get('[data-e2e-id="menu_repo_card"]')
-      .contains(IMPORT_REPO_FULL_NAME)
-      .get('button[aria-label="repo-remove-btn"]')
+    cy.contains('[data-e2e-id="menu_repo_card"]', IMPORT_REPO_FULL_NAME)
+      .find('button[aria-label="repo-remove-btn"]')
       .click();
 
-    cy.get('button[data-e2e-id="popover_delete_confirm"]').click();
+    cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
     cy.menuListLoading();
     cy.contains(IMPORT_REPO_FULL_NAME).should('not.exist');
   });

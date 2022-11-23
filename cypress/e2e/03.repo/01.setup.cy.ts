@@ -3,6 +3,8 @@ import { Octokit } from '@octokit/rest';
 import RepoWording from '../../../public/locales/en/repo.json';
 import { SETUP_CONFIG_COMMIT_MESSAGE } from '../../../src/page/Repo/constants';
 import {
+  createTestRepo,
+  visitRepo,
   deleteAllTag,
   ERROR_MSG_CLASS,
   TOAST_CLASS,
@@ -15,23 +17,10 @@ const SETUP_REPO_NAME = 'mock-setup-repo';
 const SETUP_REPO_FULL_NAME = `${Cypress.env(
   'GITHUB_OWNER'
 )}/${SETUP_REPO_NAME}`;
-const SETUP_REPO_URL = `https://github.com/${SETUP_REPO_FULL_NAME}`;
-
-const visitRepoSetup = () => {
-  cy.visit('/menu');
-  cy.get('[data-e2e-id="app"]', { timeout: 50000 }).should('exist');
-  cy.menuListLoading();
-  cy.get('[data-e2e-id="menu_repo_card"]')
-    .contains(SETUP_REPO_FULL_NAME)
-    .click();
-  cy.loadingWithModal();
-  cy.location('pathname').should('eq', '/repo');
-  cy.get('[data-e2e-id="repo_setup"]').should('exist');
-};
 
 const clickOnRecentBranch = (branch: string) => {
-  visitRepoSetup();
-  cy.get('[data-e2e-id="recent_branch"]').contains(branch).click();
+  visitRepo(SETUP_REPO_FULL_NAME);
+  cy.contains('[data-e2e-id="recent_branch"]', branch).click();
   cy.loadingWithModal();
   cy.get('[data-e2e-id="repo_setup"]').should('not.exist');
   cy.get('[data-e2e-id="repo"]').should('exist');
@@ -49,55 +38,34 @@ const removeCreatedBranch = (branch: string) => {
       })
     );
   });
-  visitRepoSetup();
-  cy.get('[data-e2e-id="recent_branch"]').contains(branch).click();
+  visitRepo(SETUP_REPO_FULL_NAME);
+  cy.contains('[data-e2e-id="recent_branch"]', branch).click();
   cy.loadingWithModal();
   cy.get('[data-e2e-id="repo_setup"]').should('exist');
   cy.get('[data-e2e-id="repo"]').should('not.exist');
-  cy.get(TOAST_CLASS).contains(RepoWording['Branch not found']);
+  cy.contains(TOAST_CLASS, RepoWording['Branch not found']);
   cy.contains(branch).should('not.exist');
 };
 
 describe('setup repo', () => {
   before(() => {
     cy.loginWithGithub();
-    cy.visit('/menu');
-    waitFor(() => {
-      cy.wrap(
-        octokit.rest.repos.createUsingTemplate({
-          owner: Cypress.env('GITHUB_OWNER'),
-          name: SETUP_REPO_NAME,
-          template_owner: Cypress.env('GITHUB_OWNER'),
-          template_repo: 'mock-setup-repo-template',
-          include_all_branches: true
-        })
-      );
-    });
-    cy.get('[data-e2e-id="app"]').should('exist');
-    cy.get('[data-e2e-id="add_repo_button"]').click();
-    cy.get('[data-e2e-id="add_repo_import"]').click();
-    cy.get('input[name="githubUrl"]').type(SETUP_REPO_URL);
-    cy.get('button[type="submit"]').click();
-    cy.loadingWithModal();
-    cy.location('pathname').should('eq', '/repo');
+    createTestRepo(SETUP_REPO_NAME, 'mock-setup-repo-template');
   });
 
   after(() => {
     cy.visit('/menu');
-    octokit.rest.repos.delete({
-      owner: Cypress.env('GITHUB_OWNER'),
-      repo: SETUP_REPO_NAME
-    });
     cy.menuListLoading();
-    cy.get('[data-e2e-id="menu_repo_card"]')
-      .contains(SETUP_REPO_FULL_NAME)
-      .get('button[aria-label="repo-remove-btn"]')
+
+    cy.contains('[data-e2e-id="menu_repo_card"]', SETUP_REPO_FULL_NAME)
+      .find('button[aria-label="repo-remove-btn"]')
       .click();
-    cy.get('button[data-e2e-id="popover_delete_confirm"]').click();
+    cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
     cy.menuListLoading();
   });
+
   beforeEach(() => {
-    visitRepoSetup();
+    visitRepo(SETUP_REPO_FULL_NAME);
     cy.get('[data-e2e-id="cookies_accept_button"]').click();
   });
 
@@ -253,8 +221,8 @@ describe('setup repo', () => {
     cy.get('[data-e2e-id="repo_setup"]').should('not.exist');
     cy.get('[data-e2e-id="repo"]').should('exist');
     cy.get('[data-e2e-id="save_editing_modal"]').should('not.exist');
-    visitRepoSetup();
-    cy.get('[data-e2e-id="recent_branch"]').contains(branch).should('exist');
+    visitRepo(SETUP_REPO_FULL_NAME);
+    cy.contains('[data-e2e-id="recent_branch"]', branch).should('exist');
   });
 
   it('create branch with config', () => {
@@ -315,6 +283,17 @@ describe('setup repo', () => {
     cy.get('[data-e2e-id="save_editing_modal"]', { timeout: 50000 }).should(
       'not.exist'
     );
+    // Click on recent branch
+    clickOnRecentBranch(branch);
+  });
+
+  it('use existing branch with custom path handler', () => {
+    const branch = 'setup/04-branch-with-custom-path-handler';
+    cy.get('input[name="existingBranchName"]').type(branch);
+    cy.get('button[type="submit"]').click();
+    cy.loadingWithModal();
+    cy.get('[data-e2e-id="repo"]').should('exist');
+    cy.get('[data-e2e-id="save_editing_modal"]').should('not.exist');
     // Click on recent branch
     clickOnRecentBranch(branch);
   });

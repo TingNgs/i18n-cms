@@ -47,7 +47,7 @@ describe('create repo', () => {
 
     // Click existing repo
     cy.visit('/menu');
-    cy.get('[data-e2e-id="menu_repo_card"]').contains(CREATE_REPO_NAME).click();
+    cy.contains('[data-e2e-id="menu_repo_card"]', CREATE_REPO_NAME).click();
     cy.loadingWithModal();
     cy.location('pathname', { timeout: 50000 }).should('eq', '/repo');
 
@@ -62,9 +62,10 @@ describe('create repo', () => {
         })
       );
     });
-    cy.get('[data-e2e-id="menu_repo_card"]')
-      .contains(CREATE_REPO_FULL_NAME)
-      .click();
+    cy.contains(
+      '[data-e2e-id="menu_repo_card"]',
+      CREATE_REPO_FULL_NAME
+    ).click();
     cy.loadingWithModal();
     cy.get(TOAST_CLASS).should(
       'contain.text',

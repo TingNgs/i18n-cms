@@ -77,3 +77,30 @@ Cypress.Commands.add('menuListLoading', () => {
     'not.exist'
   );
 });
+
+Cypress.Commands.add('tableLoading', () => {
+  cy.get('[data-e2e-id="table_spinner"]', { timeout: 50000 }).should('exist');
+  cy.get('[data-e2e-id="table_spinner"]', { timeout: 50000 }).should(
+    'not.exist'
+  );
+});
+
+Cypress.Commands.add('tableCellType', (language, value) => {
+  cy.get(
+    `[data-e2e-id="table_cell"][data-language="${language}"] [aria-label="Edit"][type="button"]`
+  ).click();
+  cy.get(
+    `[data-e2e-id="table_cell"][data-language="${language}"] textarea`
+  ).type(value);
+});
+
+Cypress.Commands.add('save', (commitMessage) => {
+  cy.get('[data-e2e-id="save_button"]').click();
+  if (commitMessage) {
+    cy.get('input[name="commitMessage"]').type(commitMessage);
+  }
+  cy.get('[data-e2e-id="save_editing_modal"] button[type="submit"]').click();
+  cy.get('[data-e2e-id="save_editing_modal"]', { timeout: 50000 }).should(
+    'not.exist'
+  );
+});
