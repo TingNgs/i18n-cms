@@ -103,7 +103,7 @@ const TableRow = ({
           isRound
           colorScheme="green"
           size="xs"
-          aria-label="add"
+          aria-label="add locale"
           position="absolute"
           zIndex={2}
           left="0"

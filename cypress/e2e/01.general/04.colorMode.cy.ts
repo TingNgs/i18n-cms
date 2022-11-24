@@ -5,9 +5,9 @@ describe('color mode', () => {
     });
     cy.visit('/');
     cy.get('html').should('have.attr', 'data-theme', 'dark');
-    cy.get('button[aria-label="color_mode_button"]').click();
+    cy.get('button[aria-label="color mode button"]').click();
     cy.get('html').should('have.attr', 'data-theme', 'light');
-    cy.get('button[aria-label="color_mode_button"]').click();
+    cy.get('button[aria-label="color mode button"]').click();
     cy.get('html').should('have.attr', 'data-theme', 'dark');
   });
 });

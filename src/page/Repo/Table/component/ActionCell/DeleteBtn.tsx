@@ -47,7 +47,7 @@ const DeleteBtn = ({
       }
       onConfirm={onDeleteBtnClicked}>
       <IconButton
-        aria-label="more"
+        aria-label="delete locale"
         icon={<DeleteIcon color="error" />}
         variant="outline"
       />

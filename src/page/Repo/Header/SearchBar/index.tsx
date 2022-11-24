@@ -80,7 +80,7 @@ const SearchBar = () => {
         <IconButton
           variant="ghost"
           icon={<ArrowUpIcon />}
-          aria-label="search-button"
+          aria-label="search prev button"
           size="sm"
           disabled={!selectedNamespace}
           onClick={onPrevClicked}
@@ -88,7 +88,7 @@ const SearchBar = () => {
         <IconButton
           variant="ghost"
           icon={<ArrowDownIcon />}
-          aria-label="search-button"
+          aria-label="search next button"
           size="sm"
           disabled={!selectedNamespace}
           onClick={onNextClicked}

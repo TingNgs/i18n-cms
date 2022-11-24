@@ -53,7 +53,7 @@ const testAddNamespace = (namespace: string, branch: string) => {
 
 const testDeleteNamespace = (namespace: string, branch: string) => {
   cy.contains('[data-e2e-id="namespace"]', namespace).click();
-  cy.get('[aria-label="namespace_actions"]').click();
+  cy.get('[aria-label="namespace actions"]').click();
   cy.get('[data-e2e-id="delete_namespace_button"]').click();
   cy.get('[data-e2e-id="delete_confirm"]:visible').click();
   cy.contains('[data-e2e-id="namespace"]', namespace).should('not.exist');
@@ -63,7 +63,7 @@ const testDeleteNamespace = (namespace: string, branch: string) => {
   cy.contains('[data-e2e-id="namespace"]', namespace).should('not.exist');
 };
 
-describe('namespace', () => {
+describe('namespaces', () => {
   before(() => {
     cy.loginWithGithub();
     cy.visit('/menu');
@@ -74,7 +74,7 @@ describe('namespace', () => {
     cy.visit('/menu');
     cy.menuListLoading();
     cy.contains('[data-e2e-id="menu_repo_card"]', NAMESPACES_REPO_FULL_NAME)
-      .find('button[aria-label="repo-remove-btn"]')
+      .find('button[aria-label="repo remove btn"]')
       .click();
     cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
     cy.menuListLoading();

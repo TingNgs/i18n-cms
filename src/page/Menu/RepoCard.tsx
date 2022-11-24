@@ -92,7 +92,7 @@ const RepoCard = ({ repo, refetch }: IProps) => {
           icon={<DeleteIcon />}
           variant="ghost"
           colorScheme="red"
-          aria-label="repo-remove-btn"
+          aria-label="repo remove btn"
           onClick={(e) => e.stopPropagation()}
         />
       </PopoverDeleteBtn>

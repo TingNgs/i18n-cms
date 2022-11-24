@@ -8,6 +8,11 @@ declare global {
       menuListLoading(): Chainable<Element>;
       tableLoading(): Chainable<Element>;
       tableCellType(language: string, value: string): Chainable<Element>;
+      reorderList(
+        selector: string,
+        index: number,
+        step: number
+      ): Chainable<Element>;
       save(commitMessage?: string): Chainable<Element>;
       mount: typeof mount;
     }

@@ -40,6 +40,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/database';
 import 'firebase/compat/firestore';
 import { attachCustomCommands } from 'cypress-firebase';
+import * as keyCodes from './keyCodes';
 
 const fbConfig = {
   apiKey: Cypress.env('FIREBASE_API_KEY'),
@@ -92,6 +93,26 @@ Cypress.Commands.add('tableCellType', (language, value) => {
   cy.get(
     `[data-e2e-id="table_cell"][data-language="${language}"] textarea`
   ).type(value);
+});
+
+Cypress.Commands.add('reorderList', (selector, index, step) => {
+  cy.get(selector).eq(index).as('item');
+  cy.get('@item')
+    .focus()
+    .trigger('keydown', { keyCode: keyCodes.space })
+    .get('@item');
+  cy.wrap(Array.from({ length: Math.abs(step) })).each(() => {
+    cy.get('@item').trigger('keydown', {
+      keyCode: step > 0 ? keyCodes.arrowDown : keyCodes.arrowUp,
+      force: true
+    });
+  });
+  cy.get('@item')
+    .trigger('keydown', {
+      keyCode: keyCodes.space,
+      force: true
+    })
+    .wait(1000);
 });
 
 Cypress.Commands.add('save', (commitMessage) => {

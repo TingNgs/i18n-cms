@@ -58,7 +58,7 @@ describe('setup repo', () => {
     cy.menuListLoading();
 
     cy.contains('[data-e2e-id="menu_repo_card"]', SETUP_REPO_FULL_NAME)
-      .find('button[aria-label="repo-remove-btn"]')
+      .find('button[aria-label="repo remove btn"]')
       .click();
     cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
     cy.menuListLoading();

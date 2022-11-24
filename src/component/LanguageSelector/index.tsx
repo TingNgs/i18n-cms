@@ -17,7 +17,7 @@ const LanguageSelector = ({ onChange }: { onChange?: () => void }) => {
     <Menu autoSelect={false}>
       <MenuButton
         as={IconButton}
-        aria-label="language-selector"
+        aria-label="language selector"
         icon={<Icon as={IoLanguageOutline}></Icon>}
       />
       <MenuList>

@@ -41,7 +41,7 @@ const ActionBtn = ({
       <Menu>
         <MenuButton
           as={IconButton}
-          aria-label="namespace_actions"
+          aria-label="namespace actions"
           icon={<ChevronDownIcon />}
           disabled={!namespace}
         />

@@ -42,10 +42,11 @@ const Language = ({
 
   return (
     <Flex
+      data-e2e-id="language"
       ref={provided.innerRef}
       {...provided.draggableProps}
-      alignItems={'center'}>
-      <Flex {...provided.dragHandleProps} p={2}>
+      alignItems="center">
+      <Flex {...provided.dragHandleProps} p={2} data-e2e-id="drag_handler">
         <DragHandleIcon w="3" h="3" />
       </Flex>
       <Text flex="1" noOfLines={2}>
@@ -54,7 +55,8 @@ const Language = ({
       {isMd && (
         <IconButton
           colorScheme="gray"
-          aria-label="show-language"
+          data-visible={isSelected}
+          aria-label="toggle language"
           size="sm"
           variant="ghost"
           icon={isSelected ? <ViewIcon /> : <ViewOffIcon />}
@@ -79,7 +81,7 @@ const Language = ({
         }>
         <IconButton
           colorScheme="red"
-          aria-label="show-language"
+          aria-label="delete language"
           size="sm"
           variant="ghost"
           icon={<DeleteIcon />}

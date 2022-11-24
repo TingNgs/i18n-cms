@@ -136,7 +136,9 @@ const Sidebar = ({
 
         <Accordion allowMultiple defaultIndex={[1]} flex={1}>
           <AccordionItem>
-            <AccordionButton {...ACCORDION_BTN_PROPS}>
+            <AccordionButton
+              {...ACCORDION_BTN_PROPS}
+              data-e2e-id="repository_accordion_button">
               <Text {...TITLE_PROPS}>{t('Repository')}</Text>
               <AccordionIcon {...ACCORDION_ICON_PROPS} />
             </AccordionButton>
@@ -155,7 +157,9 @@ const Sidebar = ({
             </AccordionPanel>
           </AccordionItem>
           <AccordionItem>
-            <AccordionButton {...ACCORDION_BTN_PROPS}>
+            <AccordionButton
+              {...ACCORDION_BTN_PROPS}
+              data-e2e-id="namespaces_accordion_button">
               <Text {...TITLE_PROPS}>{t('Namespaces')}</Text>
               <AccordionIcon {...ACCORDION_ICON_PROPS} />
             </AccordionButton>
@@ -181,7 +185,9 @@ const Sidebar = ({
           </AccordionItem>
           <AccordionItem position="relative">
             <Flex {...ACCORDION_BTN_PROPS}>
-              <AccordionButton {...ACCORDION_BTN_PROPS}>
+              <AccordionButton
+                {...ACCORDION_BTN_PROPS}
+                data-e2e-id="languages_accordion_button">
                 <Text {...TITLE_PROPS}>{t('Languages')}</Text>
                 <AccordionIcon {...ACCORDION_ICON_PROPS} />
               </AccordionButton>
@@ -191,7 +197,8 @@ const Sidebar = ({
                   right="8"
                   top="2"
                   variant="ghost"
-                  aria-label="show-all-language"
+                  aria-label="show all language"
+                  data-visible={isAnyLanguageSelected}
                   size="sm"
                   zIndex={1}
                   icon={isAnyLanguageSelected ? <ViewIcon /> : <ViewOffIcon />}
