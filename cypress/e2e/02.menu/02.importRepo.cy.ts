@@ -3,7 +3,7 @@ import { ERROR_MSG_CLASS } from '../../support/utils';
 
 import { IMPORT_REPO_FULL_NAME, IMPORT_REPO_URL } from './constants';
 
-const REPO_WITH_NO_PERMISSION = 'https://github.com/TingNgs/i18n-cms-locales';
+const REPO_WITH_NO_PERMISSION = 'https://github.com/i18n-cms/i18n-cms-locales';
 const REPO_NOT_EXIST = `https://github.com/${Cypress.env(
   'GITHUB_OWNER'
 )}/afwioeuhfoawlenf`;
