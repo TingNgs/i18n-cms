@@ -1,6 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import {
   deleteAllTag,
+  deleteRepoFromMenu,
   ERROR_MSG_CLASS,
   TOAST_CLASS,
   waitFor
@@ -51,9 +52,6 @@ describe('create repo', () => {
     cy.loadingWithModal();
     cy.location('pathname', { timeout: 50000 }).should('eq', '/repo');
 
-    // Click removed repo
-    cy.visit('/menu');
-    cy.menuListLoading();
     waitFor(() => {
       cy.wrap(
         octokit.rest.repos.delete({
@@ -62,6 +60,9 @@ describe('create repo', () => {
         })
       );
     });
+    // Click removed repo
+    cy.visit('/menu');
+    cy.menuListLoading();
     cy.contains(
       '[data-e2e-id="menu_repo_card"]',
       CREATE_REPO_FULL_NAME
@@ -86,5 +87,30 @@ describe('create repo', () => {
       'have.text',
       MenuWording['Repository name already exists on this owner']
     );
+  });
+
+  it('test create repo in org', () => {
+    const org = 'i18n-cms-test-org';
+    const repoName = 'new_repo_in_org';
+
+    waitFor(() => {
+      cy.wrap(
+        octokit.rest.repos
+          .delete({
+            owner: org,
+            repo: repoName
+          })
+          .catch(() => null)
+      );
+    });
+
+    cy.get('select[data-e2e-id="owner_select"]', { timeout: 50000 }).select(
+      org
+    );
+    cy.get('input[name="name"]').type(repoName);
+    cy.get('button[type="submit"]').click();
+    cy.loadingWithModal();
+    cy.location('pathname', { timeout: 50000 }).should('eq', '/repo');
+    deleteRepoFromMenu(`${org}/${repoName}`);
   });
 });

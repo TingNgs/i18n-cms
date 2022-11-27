@@ -65,5 +65,15 @@ export const createTestRepo = (repo: string, templateRepo: string) => {
   cy.location('pathname').should('eq', '/repo');
 };
 
+export const deleteRepoFromMenu = (name: string) => {
+  cy.visit('/menu');
+  cy.menuListLoading();
+  cy.contains('[data-e2e-id="menu_repo_card"]', name)
+    .find('button[aria-label="repo remove btn"]')
+    .click();
+  cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
+  cy.menuListLoading();
+};
+
 export const ERROR_MSG_CLASS = '.chakra-form__error-message';
 export const TOAST_CLASS = '.chakra-toast';

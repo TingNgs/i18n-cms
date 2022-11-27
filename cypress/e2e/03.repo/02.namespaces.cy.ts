@@ -1,6 +1,7 @@
 import RepoWording from '../../../public/locales/en/repo.json';
 import {
   createTestRepo,
+  deleteRepoFromMenu,
   ERROR_MSG_CLASS,
   visitRepo
 } from '../../support/utils';
@@ -66,18 +67,11 @@ const testDeleteNamespace = (namespace: string, branch: string) => {
 describe('namespaces', () => {
   before(() => {
     cy.loginWithGithub();
-    cy.visit('/menu');
     createTestRepo(NAMESPACES_REPO_NAME, 'mock-namespaces-repo-template');
   });
 
   after(() => {
-    cy.visit('/menu');
-    cy.menuListLoading();
-    cy.contains('[data-e2e-id="menu_repo_card"]', NAMESPACES_REPO_FULL_NAME)
-      .find('button[aria-label="repo remove btn"]')
-      .click();
-    cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
-    cy.menuListLoading();
+    deleteRepoFromMenu(NAMESPACES_REPO_FULL_NAME);
   });
   beforeEach(() => {
     cy.visit('/');

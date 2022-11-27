@@ -8,6 +8,7 @@ declare global {
       menuListLoading(): Chainable<Element>;
       tableLoading(): Chainable<Element>;
       tableCellType(language: string, value: string): Chainable<Element>;
+      tableKeyType(value: string): Chainable<Element>;
       reorderList(
         selector: string,
         index: number,

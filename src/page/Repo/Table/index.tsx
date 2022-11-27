@@ -64,6 +64,7 @@ const Outer = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(
     return (
       <div
         {...rest}
+        data-e2e-id="table_container"
         style={{
           ...style,
           overflowX: isMobile ? 'hidden' : 'auto'

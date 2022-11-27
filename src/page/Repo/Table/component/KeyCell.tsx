@@ -58,7 +58,7 @@ const KeyCell = ({
 
       {isDuplicated && (
         <Tooltip hasArrow label={t('Duplicated key')} background="error">
-          <WarningIcon w="4" h="4" color="error" />
+          <WarningIcon data-e2e-id="key_error_icon" w="4" h="4" color="error" />
         </Tooltip>
       )}
     </Flex>

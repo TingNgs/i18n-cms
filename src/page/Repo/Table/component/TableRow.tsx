@@ -4,7 +4,8 @@ import {
   useBoolean,
   IconButton,
   Flex,
-  useBreakpointValue
+  useBreakpointValue,
+  Box
 } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 
@@ -60,6 +61,8 @@ const TableRow = ({
     <Flex
       {...ROW_PROPS}
       data-is-dragging={isDragging}
+      data-e2e-id="table_row"
+      data-index={index}
       onMouseEnter={setRowHover.on}
       onMouseLeave={setRowHover.off}
       {...provided.draggableProps}
@@ -98,19 +101,19 @@ const TableRow = ({
         ))}
       <ActionCell localeId={localeId} localeKey={localeKey} index={index} />
       {!isMobile && isRowHover && !isSearchResult && (
-        <IconButton
-          onClick={onAddButtonClicked}
-          isRound
-          colorScheme="green"
-          size="xs"
-          aria-label="add locale"
-          position="absolute"
-          zIndex={2}
-          left="0"
-          bottom={0}
-          transform="translateY(50%)"
-          icon={<AddIcon />}
-        />
+        <Box w="100%" h="0" position="absolute" zIndex="2" left="0" bottom="0">
+          <IconButton
+            position="sticky"
+            left="0"
+            onClick={onAddButtonClicked}
+            isRound
+            colorScheme="green"
+            size="xs"
+            aria-label="add locale after index"
+            transform="translateY(-50%)"
+            icon={<AddIcon />}
+          />
+        </Box>
       )}
     </Flex>
   );

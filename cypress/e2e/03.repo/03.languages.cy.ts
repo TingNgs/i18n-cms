@@ -1,6 +1,7 @@
 import RepoWording from '../../../public/locales/en/repo.json';
 import {
   createTestRepo,
+  deleteRepoFromMenu,
   ERROR_MSG_CLASS,
   visitRepo
 } from '../../support/utils';
@@ -40,13 +41,7 @@ describe('languages', () => {
   });
 
   after(() => {
-    cy.visit('/menu');
-    cy.menuListLoading();
-    cy.contains('[data-e2e-id="menu_repo_card"]', LANGUAGES_REPO_FULL_NAME)
-      .find('button[aria-label="repo remove btn"]')
-      .click();
-    cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
-    cy.menuListLoading();
+    deleteRepoFromMenu(LANGUAGES_REPO_FULL_NAME);
   });
   beforeEach(() => {
     cy.visit('/');
@@ -55,7 +50,7 @@ describe('languages', () => {
 
   it('crud language', () => {
     visitRepo(LANGUAGES_REPO_FULL_NAME, '01/crud-language');
-    cy.contains('[data-e2e-id="namespace"]', 'translationA').click();
+    cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
     cy.tableLoading();
     cy.get('[data-e2e-id="languages_accordion_button"]').click();
     checkLanguages(['en', 'zh']);
@@ -64,12 +59,12 @@ describe('languages', () => {
     cy.get('[data-e2e-id="new_language_input"]').type('de');
     cy.get('[data-e2e-id="new_language_submit"]:visible').click();
     checkLanguages(['en', 'zh', 'de']);
-    cy.contains('[data-e2e-id="namespace"]', 'translationB').click();
+    cy.get('[data-e2e-id="namespace"]').contains('translationB').click();
     checkLanguages(['en', 'zh', 'de']);
     cy.save();
 
     visitRepo(LANGUAGES_REPO_FULL_NAME, '01/crud-language');
-    cy.contains('[data-e2e-id="namespace"]', 'translationA').click();
+    cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
     cy.tableLoading();
     cy.get('[data-e2e-id="languages_accordion_button"]').click();
     checkLanguages(['en', 'zh', 'de']);
@@ -81,7 +76,7 @@ describe('languages', () => {
     cy.save();
 
     visitRepo(LANGUAGES_REPO_FULL_NAME, '01/crud-language');
-    cy.contains('[data-e2e-id="namespace"]', 'translationA').click();
+    cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
     cy.tableLoading();
     cy.get('[data-e2e-id="languages_accordion_button"]').click();
     checkLanguages(['en', 'de']);
@@ -104,7 +99,7 @@ describe('languages', () => {
   it('language visibility', () => {
     const languages = ['en', 'zh'];
     visitRepo(LANGUAGES_REPO_FULL_NAME, '03/language-visibility');
-    cy.contains('[data-e2e-id="namespace"]', 'translationA').click();
+    cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
     cy.tableLoading();
     cy.get('[data-e2e-id="languages_accordion_button"]').click();
 
@@ -153,7 +148,7 @@ describe('languages', () => {
 
   it('reorder language', () => {
     visitRepo(LANGUAGES_REPO_FULL_NAME, '04/reorder-languages');
-    cy.contains('[data-e2e-id="namespace"]', 'translationA').click();
+    cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
     cy.tableLoading();
     cy.get('[data-e2e-id="languages_accordion_button"]').click();
     ['en', 'zh', 'de', 'vi'].forEach(checkLanguageOrder);

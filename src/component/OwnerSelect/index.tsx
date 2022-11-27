@@ -39,6 +39,7 @@ const OwnerSelect = ({ value, onChange }: IProps) => {
 
   return (
     <Select
+      data-e2e-id="owner_select"
       value={value?.name}
       onChange={(e) => {
         onChange(data.find((owner) => owner.name === e.target.value));

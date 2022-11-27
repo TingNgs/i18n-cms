@@ -70,7 +70,12 @@ const Namespace = ({
             hasArrow
             label={t('With duplicated keys')}
             backgroundColor="error">
-            <WarningIcon w="4" h="4" color="error" />
+            <WarningIcon
+              data-e2e-id="namespace_error_icon"
+              w="4"
+              h="4"
+              color="error"
+            />
           </Tooltip>
         )}
       </Flex>

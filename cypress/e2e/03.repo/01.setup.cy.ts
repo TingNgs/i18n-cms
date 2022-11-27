@@ -8,7 +8,8 @@ import {
   deleteAllTag,
   ERROR_MSG_CLASS,
   TOAST_CLASS,
-  waitFor
+  waitFor,
+  deleteRepoFromMenu
 } from '../../support/utils';
 
 const octokit = new Octokit({ auth: Cypress.env('GITHUB_PAT') });
@@ -54,14 +55,7 @@ describe('setup repo', () => {
   });
 
   after(() => {
-    cy.visit('/menu');
-    cy.menuListLoading();
-
-    cy.contains('[data-e2e-id="menu_repo_card"]', SETUP_REPO_FULL_NAME)
-      .find('button[aria-label="repo remove btn"]')
-      .click();
-    cy.get('button[data-e2e-id="delete_confirm"]:visible').click();
-    cy.menuListLoading();
+    deleteRepoFromMenu(SETUP_REPO_FULL_NAME);
   });
 
   beforeEach(() => {

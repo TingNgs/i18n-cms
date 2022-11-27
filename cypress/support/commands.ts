@@ -80,7 +80,7 @@ Cypress.Commands.add('menuListLoading', () => {
 });
 
 Cypress.Commands.add('tableLoading', () => {
-  cy.get('[data-e2e-id="table_spinner"]', { timeout: 50000 }).should('exist');
+  cy.get('[data-e2e-id="table_spinner"]').should('exist');
   cy.get('[data-e2e-id="table_spinner"]', { timeout: 50000 }).should(
     'not.exist'
   );
@@ -89,10 +89,19 @@ Cypress.Commands.add('tableLoading', () => {
 Cypress.Commands.add('tableCellType', (language, value) => {
   cy.get(
     `[data-e2e-id="table_cell"][data-language="${language}"] [aria-label="Edit"][type="button"]`
-  ).click();
+  ).click({ scrollBehavior: 'nearest' });
   cy.get(
     `[data-e2e-id="table_cell"][data-language="${language}"] textarea`
-  ).type(value);
+  ).type(value, { scrollBehavior: 'nearest' });
+});
+
+Cypress.Commands.add('tableKeyType', (value) => {
+  cy.get(
+    `[data-e2e-id="table_key_cell"] [aria-label="Edit"][type="button"]`
+  ).click({ scrollBehavior: 'nearest' });
+  cy.get(`[data-e2e-id="table_key_cell"] input`).type(value, {
+    scrollBehavior: 'nearest'
+  });
 });
 
 Cypress.Commands.add('reorderList', (selector, index, step) => {

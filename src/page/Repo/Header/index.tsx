@@ -57,6 +57,7 @@ const Header = ({
           flex={{ base: 1, md: 0 }}
           size="sm">
           <Button
+            data-e2e-id="new_key_button"
             disabled={!selectedNamespace || isSearchResult}
             colorScheme="green"
             leftIcon={<AddIcon w="3" h="3" />}
