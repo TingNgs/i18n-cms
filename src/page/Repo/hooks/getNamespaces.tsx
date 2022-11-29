@@ -6,13 +6,13 @@ import UrlPattern from 'url-pattern';
 
 import { Repo, RepoConfig } from '../../../redux/editingRepoSlice';
 
-import { useLazyGetGithubTreeQuery } from '../../../redux/services/octokitApi';
+import { useLazyGetTreeQuery } from '../../../redux/services/octokitApi';
 import { FILE_TYPE_MAP_DATA } from '../../../constants';
 
 const useGetNamespaces = () => {
   const [isLoading, setLoading] = useState(false);
 
-  const [getGithubTree] = useLazyGetGithubTreeQuery();
+  const [getTree] = useLazyGetTreeQuery();
 
   const getNamespaces = async ({
     repo,
@@ -25,15 +25,14 @@ const useGetNamespaces = () => {
   }) => {
     try {
       setLoading(true);
-      const treeSha = rootSha;
-      const treeData = await getGithubTree({
+      const tree = await getTree({
         repo: repo.repo,
         owner: repo.owner,
-        treeSha
+        hash: rootSha
       }).unwrap();
 
       const pathList = multimatch(
-        compact(map(treeData.tree, 'path')),
+        compact(map(tree, 'path')),
         repoConfig.pattern
           .replace(':ns', '**')
           .replace(

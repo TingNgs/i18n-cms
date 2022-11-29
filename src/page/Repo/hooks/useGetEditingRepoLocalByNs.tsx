@@ -1,7 +1,7 @@
 import flatten from 'flat';
 import { useAppStore } from '../../../redux/store';
 
-import { useLazyGetGithubContentQuery } from '../../../redux/services/octokitApi';
+import { useLazyGetContentQuery } from '../../../redux/services/octokitApi';
 import {
   dataStringifyByType,
   fileParseByType,
@@ -11,7 +11,7 @@ import {
 const useGetEditingRepoLocalByNs = () => {
   const { getState } = useAppStore();
 
-  const [getGithubContent] = useLazyGetGithubContentQuery();
+  const [getContent] = useLazyGetContentQuery();
 
   const getLocalByNamespace = async ({ namespace }: { namespace: string }) => {
     const {
@@ -24,10 +24,10 @@ const useGetEditingRepoLocalByNs = () => {
 
     if (!repo || !owner || !repoConfig) return;
     const filesPromise = languages.map(async (language) =>
-      getGithubContent({
+      getContent({
         repo: repo,
         owner: owner,
-        ref: branch,
+        branch,
         path: await getLocalePath({ language, namespace, repoConfig })
       })
         .unwrap()

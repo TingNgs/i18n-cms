@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { createSelector } from '@reduxjs/toolkit';
 import { get, without } from 'lodash-es';
 
-import { useCommitGithubFilesMutation } from '../../../redux/services/octokitApi';
+import { useCommitFilesMutation } from '../../../redux/services/octokitApi';
 import { RootState, useAppDispatch, useAppStore } from '../../../redux/store';
 import {
   dataStringifyByType,
@@ -96,7 +96,7 @@ const useSaveEditing = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const { t: repoT } = useTranslation('repo');
-  const [commitGithubFiles] = useCommitGithubFilesMutation();
+  const [commitFiles] = useCommitFilesMutation();
   const [isLoading, setLoading] = useState(false);
 
   const saveEditing = useCallback(
@@ -208,7 +208,7 @@ const useSaveEditing = () => {
               : {})
           }
         });
-        const { commit } = await commitGithubFiles({
+        const commit = await commitFiles({
           owner: editingRepo.owner,
           repo: editingRepo.repo,
           branch: branch,
@@ -226,7 +226,7 @@ const useSaveEditing = () => {
             <Text
               dangerouslySetInnerHTML={{
                 __html: repoT('Saved successfully', {
-                  link: commit.html_url
+                  link: commit.url
                 })
               }}
             />

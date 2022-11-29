@@ -23,7 +23,7 @@ import TagInput from '../../../component/TagInput';
 import { FormValues } from './interface';
 import BranchInput from './BranchInput';
 import { Repo } from '../../../redux/editingRepoSlice';
-import { useLazyGetGithubBranchQuery } from '../../../redux/services/octokitApi';
+import { useLazyGetBranchQuery } from '../../../redux/services/octokitApi';
 
 interface IProps {
   repo: Repo;
@@ -37,7 +37,7 @@ const ConfigForm = ({ repo, onCancel }: IProps) => {
   const [isLoading, setLoading] = useState(false);
   const [namespaces, setNamespaces] = useState<string[] | null>(null);
 
-  const [getGithubBranch] = useLazyGetGithubBranchQuery();
+  const [getBranch] = useLazyGetBranchQuery();
   const [getNamespaces] = useGetNamespaces();
 
   const { register, watch, getValues, control } = useFormContext<FormValues>();
@@ -50,7 +50,7 @@ const ConfigForm = ({ repo, onCancel }: IProps) => {
     setNamespaces([]);
     if (!config) return;
     try {
-      const branch = await getGithubBranch({
+      const branch = await getBranch({
         repo: repo.repo,
         owner: repo.owner,
         branch: action === 'create' ? baseOn : existingBranchName
@@ -58,7 +58,7 @@ const ConfigForm = ({ repo, onCancel }: IProps) => {
       const data = await getNamespaces({
         repo,
         repoConfig: config,
-        rootSha: branch.commit.commit.tree.sha
+        rootSha: branch.treeHash
       });
       setNamespaces(data);
     } finally {

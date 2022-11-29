@@ -22,8 +22,8 @@ const OwnerSelect = ({ value, onChange }: IProps) => {
     if (!userData || !orgsData) return [];
 
     return [
-      { name: userData.login, type: 'user' as const },
-      ...orgsData.map((org) => ({ name: org.login, type: 'org' as const }))
+      { name: userData.name, type: 'user' as const },
+      ...orgsData.map((org) => ({ name: org.name, type: 'org' as const }))
     ];
   }, [userData, orgsData]);
 

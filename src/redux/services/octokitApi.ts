@@ -1,32 +1,7 @@
-import { Octokit } from '@octokit/rest';
-import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import { REPOSITORY_VISIBILITY } from '../../constants';
-import { getSessionStorage } from '../../utils/storage';
-import commitMultipleFiles, {
-  Options as CommentMultipleFilesOptions
-} from '../../utils/commitMultipleFiles';
-import { Owner } from '../../component/OwnerSelect';
 
-const auth = getSessionStorage('github_access_token');
-let octokit = new Octokit({ auth });
-
-let withAuth = !!auth;
-
-export type RepoListForAuthenticatedUser =
-  GetResponseDataTypeFromEndpointMethod<
-    typeof octokit.rest.repos.listForAuthenticatedUser
-  >[number];
-
-const setupOctokitClient = () => {
-  if (!withAuth) {
-    withAuth = true;
-    const auth = getSessionStorage('github_access_token');
-    octokit = new Octokit({
-      auth
-    });
-  }
-};
+import GitApiWrapper from '../../utils/GitApiWrapper';
+import GitApi from '../../utils/GitApiWrapper/interface';
 
 export const OctokitApi = createApi({
   reducerPath: 'octokitApi',
@@ -34,159 +9,91 @@ export const OctokitApi = createApi({
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getUser: builder.query<
-      GetResponseDataTypeFromEndpointMethod<
-        typeof octokit.rest.users.getAuthenticated
-      >,
+      Awaited<ReturnType<GitApi['getCurrentUser']>>,
       undefined
     >({
       queryFn: async () => {
-        setupOctokitClient();
-        const result = await octokit.rest.users.getAuthenticated();
-        return { data: result?.data };
-      }
-    }),
-    getOrganization: builder.query<
-      GetResponseDataTypeFromEndpointMethod<
-        typeof octokit.rest.orgs.listForAuthenticatedUser
-      >,
-      undefined
-    >({
-      queryFn: async () => {
-        setupOctokitClient();
-        const result = await octokit.rest.orgs.listForAuthenticatedUser();
-        return { data: result?.data };
-      }
-    }),
-    getGithubRepo: builder.query<
-      GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.repos.get>,
-      { repo: string; owner: string }
-    >({
-      queryFn: async ({ repo, owner }) => {
-        setupOctokitClient();
-        const result = await octokit.rest.repos.get({ repo, owner });
-        return { data: result?.data };
-      },
-      keepUnusedDataFor: 0.0001
-    }),
-    commitGithubFiles: builder.mutation<
-      Awaited<ReturnType<typeof commitMultipleFiles>>,
-      CommentMultipleFilesOptions
-    >({
-      queryFn: async (option) => {
-        setupOctokitClient();
-        const data = await commitMultipleFiles(octokit, option);
+        const data = await GitApiWrapper['Github'].getCurrentUser();
         return { data };
       }
     }),
-    createGithubRepo: builder.mutation<
-      GetResponseDataTypeFromEndpointMethod<
-        typeof octokit.rest.repos.createForAuthenticatedUser
-      >,
-      {
-        name: string;
-        visibility: typeof REPOSITORY_VISIBILITY[number];
-        owner: Owner;
-      }
+    getOrganization: builder.query<
+      Awaited<ReturnType<GitApi['getOrganization']>>,
+      undefined
     >({
-      queryFn: async ({ name, visibility, owner }) => {
-        setupOctokitClient();
-
-        const result = await (owner.type === 'user'
-          ? octokit.rest.repos.createForAuthenticatedUser({
-              name,
-              private: visibility === 'private',
-              auto_init: true
-            })
-          : octokit.rest.repos.createInOrg({
-              name,
-              org: owner.name,
-              private: visibility === 'private',
-              auto_init: true
-            }));
-        return { data: result?.data };
-      }
-    }),
-    getGithubRepoList: builder.query({
       queryFn: async () => {
-        setupOctokitClient();
-        const result = await octokit.rest.repos.listForAuthenticatedUser();
-        return { data: result?.data };
+        const data = await GitApiWrapper['Github'].getOrganization();
+        return { data };
       }
     }),
-    getGithubContent: builder.query<
-      string,
-      { repo: string; owner: string; path: string; ref?: string }
+    getRepo: builder.query<
+      Awaited<ReturnType<GitApi['getRepo']>>,
+      Parameters<GitApi['getRepo']>[0]
     >({
-      queryFn: async ({ repo, owner, path, ref }) => {
-        setupOctokitClient();
-        const result = await octokit.rest.repos.getContent({
-          repo,
-          owner,
-          path,
-          ref,
-          mediaType: { format: 'raw' }
-        });
-        return { data: result?.data as unknown as string };
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].getRepo(data) };
+      },
+      keepUnusedDataFor: 0.0001
+    }),
+    createRepo: builder.mutation<
+      Awaited<ReturnType<GitApi['createRepo']>>,
+      Parameters<GitApi['createRepo']>[0]
+    >({
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].createRepo(data) };
       }
     }),
-    getGithubTree: builder.query<
-      GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.git.getTree>,
-      { repo: string; owner: string; treeSha: string }
+    getContent: builder.query<
+      Awaited<ReturnType<GitApi['getContent']>>,
+      Parameters<GitApi['getContent']>[0]
     >({
-      queryFn: async ({ repo, owner, treeSha }) => {
-        setupOctokitClient();
-        const result = await octokit.rest.git.getTree({
-          repo,
-          owner,
-          tree_sha: treeSha,
-          recursive: '1'
-        });
-        return { data: result?.data };
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].getContent(data) };
       }
     }),
-    getGithubBranch: builder.query<
-      GetResponseDataTypeFromEndpointMethod<
-        typeof octokit.rest.repos.getBranch
-      >,
-      { repo: string; owner: string; branch: string }
+    getTree: builder.query<
+      Awaited<ReturnType<GitApi['getTree']>>,
+      Parameters<GitApi['getTree']>[0]
     >({
-      queryFn: async ({ repo, owner, branch }) => {
-        setupOctokitClient();
-        const result = await octokit.rest.repos.getBranch({
-          repo,
-          owner,
-          branch
-        });
-        return { data: result?.data };
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].getTree(data) };
       }
     }),
-    createGithubRef: builder.mutation<
-      GetResponseDataTypeFromEndpointMethod<typeof octokit.rest.git.createRef>,
-      { repo: string; owner: string; ref: string; sha: string }
+    getBranch: builder.query<
+      Awaited<ReturnType<GitApi['getBranch']>>,
+      Parameters<GitApi['getBranch']>[0]
     >({
-      queryFn: async ({ repo, owner, ref, sha }) => {
-        setupOctokitClient();
-        const result = await octokit.rest.git.createRef({
-          repo,
-          owner,
-          ref,
-          sha
-        });
-        return { data: result?.data };
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].getBranch(data) };
+      }
+    }),
+    createBranch: builder.mutation<
+      Awaited<ReturnType<GitApi['createBranch']>>,
+      Parameters<GitApi['createBranch']>[0]
+    >({
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].createBranch(data) };
+      }
+    }),
+    commitFiles: builder.mutation<
+      Awaited<ReturnType<GitApi['commitFiles']>>,
+      Parameters<GitApi['commitFiles']>[0]
+    >({
+      queryFn: async (data) => {
+        return { data: await GitApiWrapper['Github'].commitFiles(data) };
       }
     })
   })
 });
 
 export const {
-  useGetGithubRepoListQuery,
-  useCreateGithubRepoMutation,
-  useCommitGithubFilesMutation,
+  useCreateRepoMutation,
+  useCommitFilesMutation,
   useGetUserQuery,
   useGetOrganizationQuery,
-  useLazyGetGithubRepoQuery,
-  useLazyGetGithubContentQuery,
-  useLazyGetGithubTreeQuery,
-  useLazyGetGithubBranchQuery,
-  useCreateGithubRefMutation
+  useLazyGetRepoQuery,
+  useLazyGetContentQuery,
+  useLazyGetTreeQuery,
+  useLazyGetBranchQuery,
+  useCreateBranchMutation
 } = OctokitApi;

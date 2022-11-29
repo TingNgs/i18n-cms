@@ -23,8 +23,8 @@ import {
   REPOSITORY_VISIBILITY
 } from '../../../constants';
 import {
-  useCreateGithubRepoMutation,
-  useCommitGithubFilesMutation
+  useCreateRepoMutation,
+  useCommitFilesMutation
 } from '../../../redux/services/octokitApi';
 
 import TagInput from '../../../component/TagInput';
@@ -43,10 +43,10 @@ const CreateNewRepoForm = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setLoading] = useState(false);
 
-  const [createGithubRepo, { isLoading: isCreateRepoLoading }] =
-    useCreateGithubRepoMutation();
-  const [commitGithubFiles, { isLoading: isCommitLoading }] =
-    useCommitGithubFilesMutation();
+  const [createRepo, { isLoading: isCreateRepoLoading }] =
+    useCreateRepoMutation();
+  const [commitFiles, { isLoading: isCommitLoading }] =
+    useCommitFilesMutation();
   const [updateExistingRepo] = useUpdateExistingRepoMutation();
 
   const {
@@ -74,7 +74,7 @@ const CreateNewRepoForm = () => {
       const { name, visibility, namespaces, owner, ...repoConfig } = values;
 
       setLoading(true);
-      const repo = await createGithubRepo({
+      const repo = await createRepo({
         name,
         visibility,
         owner
@@ -89,9 +89,9 @@ const CreateNewRepoForm = () => {
         repoConfig
       });
 
-      await commitGithubFiles({
-        owner: repo.owner.login,
-        repo: repo.name,
+      await commitFiles({
+        owner: repo.owner,
+        repo: repo.repo,
         branch: repo.default_branch,
         change: {
           message: 'Initial locales',
@@ -102,16 +102,16 @@ const CreateNewRepoForm = () => {
         throw e;
       });
       await updateExistingRepo({
-        repo: repo.name,
-        owner: repo.owner.login,
+        repo: repo.repo,
+        owner: repo.owner,
         fullName: repo.full_name,
         recentBranches: []
       });
 
       dispatch(
         setEditingRepo({
-          owner: repo.owner.login,
-          repo: repo.name,
+          owner: repo.owner,
+          repo: repo.repo,
           fullName: repo.full_name,
           recentBranches: []
         })

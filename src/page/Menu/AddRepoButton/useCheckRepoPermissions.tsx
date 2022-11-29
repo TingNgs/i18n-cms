@@ -2,13 +2,13 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Repo } from '../../../redux/editingRepoSlice';
-import { useLazyGetGithubRepoQuery } from '../../../redux/services/octokitApi';
+import { useLazyGetRepoQuery } from '../../../redux/services/octokitApi';
 
 const useCheckRepoPermissions = () => {
   const { t } = useTranslation();
   const { t: menuT } = useTranslation('menu');
 
-  const [getGithubRepo] = useLazyGetGithubRepoQuery();
+  const [getRepo] = useLazyGetRepoQuery();
 
   const checkRepoPermissions = useCallback(
     async ({
@@ -22,20 +22,20 @@ const useCheckRepoPermissions = () => {
       error?: string;
     }> => {
       try {
-        const githubRepo = await getGithubRepo({
+        const repo = await getRepo({
           repo: repoName,
           owner: owner
         }).unwrap();
-        if (!githubRepo.permissions?.push) {
+        if (!['admin', 'write'].includes(repo.permission)) {
           return { error: menuT('Without push permission in this repo') };
         }
 
         return {
           data: {
             repo: {
-              owner: githubRepo.owner.login,
-              repo: githubRepo.name,
-              fullName: githubRepo.full_name
+              owner: repo.owner,
+              repo: repo.repo,
+              fullName: repo.full_name
             }
           }
         };

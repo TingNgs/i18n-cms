@@ -18,9 +18,9 @@ import {
 } from '../../../redux/editingRepoSlice';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import {
-  useCreateGithubRefMutation,
-  useLazyGetGithubBranchQuery,
-  useLazyGetGithubContentQuery
+  useCreateBranchMutation,
+  useLazyGetBranchQuery,
+  useLazyGetContentQuery
 } from '../../../redux/services/octokitApi';
 import { useAppDispatch } from '../../../redux/store';
 
@@ -45,12 +45,11 @@ const BranchFormModal = ({ repo }: IProps) => {
   const [isNewConfig, setIsNewConfig] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
-  const [getGithubBranch, { isLoading: isFetchingBranch }] =
-    useLazyGetGithubBranchQuery();
-  const [getGithubContent, { isLoading: isFetchingConfig }] =
-    useLazyGetGithubContentQuery();
-  const [createGithubRef, { isLoading: isCreatingRef }] =
-    useCreateGithubRefMutation();
+  const [getBranch, { isLoading: isFetchingBranch }] = useLazyGetBranchQuery();
+  const [getContent, { isLoading: isFetchingConfig }] =
+    useLazyGetContentQuery();
+  const [createBranch, { isLoading: isCreatingRef }] =
+    useCreateBranchMutation();
   const [updateExistingRepo, { isLoading: isUpdatingRepo }] =
     useUpdateExistingRepoMutation();
   const [getNamespaces, { isLoading: isFetchingNamespaces }] =
@@ -90,23 +89,23 @@ const BranchFormModal = ({ repo }: IProps) => {
 
     try {
       setLoading(true);
-      const branch = await getGithubBranch({
+      const branch = await getBranch({
         repo: repo.repo,
         owner: repo.owner,
         branch: action === 'create' ? baseOn : existingBranchName
       }).unwrap();
 
-      if (action === 'existing' && branch.protection.enabled) {
+      if (action === 'existing' && branch.isProtected) {
         throw new Error('Protected branch');
       }
 
       const repoConfig = isNewConfig
         ? config
-        : await getGithubContent({
+        : await getContent({
             repo: repo.repo,
             owner: repo.owner,
             path: CONFIG_PATH,
-            ref: branch.name
+            branch: branch.name
           })
             .unwrap()
             .then((data) => decodeConfigFile(data))
@@ -131,11 +130,11 @@ const BranchFormModal = ({ repo }: IProps) => {
       if (!repoConfig) return;
 
       if (action === 'create') {
-        await createGithubRef({
+        await createBranch({
           repo: repo.repo,
           owner: repo.owner,
-          ref: `refs/heads/${newBranchName}`,
-          sha: branch.commit.sha
+          branch: newBranchName,
+          hash: branch.hash
         }).unwrap();
       }
       const branchName =
@@ -158,17 +157,17 @@ const BranchFormModal = ({ repo }: IProps) => {
 
       if (repoConfig.useCustomPath && repoConfig.namespaces !== undefined) {
         initRepoData.namespaces = repoConfig.namespaces;
-        initRepoData.customPathHandlerScript = await getGithubContent({
+        initRepoData.customPathHandlerScript = await getContent({
           repo: repo.repo,
           owner: repo.owner,
-          ref: branchName,
+          branch: branchName,
           path: CUSTOM_PATH_HANDLER_PATH
         }).unwrap();
       } else {
         const namespaces = await getNamespaces({
           repo,
           repoConfig,
-          rootSha: branch.commit.commit.tree.sha
+          rootSha: branch.treeHash
         });
         initRepoData.namespaces = namespaces;
       }

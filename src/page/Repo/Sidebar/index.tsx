@@ -36,7 +36,7 @@ import LanguageSelector from '../../../component/LanguageSelector';
 import ColorModeBtn from '../../../component/ColorModeBtn';
 import Container from './Container';
 
-import { getGithubBranchUrl, getGithubUrl } from '../../../utils';
+import { getBranchUrl, getGithubUrl } from '../../../utils';
 
 const TITLE_PROPS = {
   fontWeight: 'bold',
@@ -116,7 +116,7 @@ const Sidebar = ({
   if (!editingRepo || !branch) return null;
 
   const githubLink = getGithubUrl(editingRepo);
-  const branchLink = getGithubBranchUrl(editingRepo, branch);
+  const branchLink = getBranchUrl(editingRepo, branch);
 
   return (
     <Container isOpen={isOpen} onClose={onClose}>
