@@ -1,5 +1,6 @@
 interface SessionStorage {
-  github_access_token: string;
+  access_token: string;
+  git_provider: 'github' | 'bitbucket';
 }
 
 interface LocalStorage {
@@ -16,7 +17,7 @@ export const setSessionStorage = <Key extends keyof SessionStorage>(
 export const getSessionStorage = <Key extends keyof SessionStorage>(
   key: Key
 ): SessionStorage[Key] | null => {
-  return sessionStorage.getItem(key);
+  return sessionStorage.getItem(key) as SessionStorage[Key] | null;
 };
 
 export const removeSessionStorage = <Key extends keyof SessionStorage>(

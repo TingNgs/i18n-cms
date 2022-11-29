@@ -3,14 +3,14 @@ import commitMultipleFiles from './commitMultipleFiles';
 import { getSessionStorage } from '../../storage';
 import GitApi from '../interface';
 
-const auth = getSessionStorage('github_access_token');
+const auth = getSessionStorage('access_token');
 let octokit = new Octokit({ auth });
 let withAuth = !!auth;
 
 const setupOctokitClient = () => {
   if (!withAuth) {
     withAuth = true;
-    const auth = getSessionStorage('github_access_token');
+    const auth = getSessionStorage('access_token');
     octokit = new Octokit({
       auth
     });

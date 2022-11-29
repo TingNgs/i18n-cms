@@ -15,7 +15,7 @@ const useAuth = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user && getSessionStorage('github_access_token')) {
+      if (user && getSessionStorage('access_token')) {
         dispatch(setAuthState({ authState: 'signIn', firebaseUid: user.uid }));
         return;
       }

@@ -5,6 +5,7 @@ import {
   GithubAuthProvider,
   signOut,
   browserSessionPersistence,
+  signInWithCustomToken,
   setPersistence
 } from 'firebase/auth';
 import firebase from '../../utils/firebase';
@@ -29,7 +30,7 @@ export const AuthApi = createApi({
   tagTypes: ['Auth'],
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    login: builder.mutation<{ uid: string }, undefined>({
+    loginWithGithub: builder.mutation<{ uid: string }, undefined>({
       queryFn: async () => {
         await setPersistence(auth, browserSessionPersistence);
         const result = await firebaseAuth.signInWithPopup(auth, provider);
@@ -37,7 +38,22 @@ export const AuthApi = createApi({
           firebaseAuth.GithubAuthProvider.credentialFromResult(result);
         if (!credential?.accessToken) throw new Error('no credential');
         const { accessToken } = credential;
-        setSessionStorage('github_access_token', accessToken);
+        setSessionStorage('access_token', accessToken);
+        setSessionStorage('git_provider', 'github');
+
+        return { data: { uid: result.user.uid } };
+      },
+      invalidatesTags: ['Auth']
+    }),
+    loginWithBitbucket: builder.mutation<{ uid: string }, { code: string }>({
+      queryFn: async ({ code }) => {
+        const { token, access_token } = await fetch(
+          `${process.env.REACT_APP_FUNCTIONS_URL}bitbucket?code=${code}`
+        ).then((res) => res.json());
+        await setPersistence(auth, browserSessionPersistence);
+        const result = await signInWithCustomToken(auth, token);
+        setSessionStorage('access_token', access_token);
+        setSessionStorage('git_provider', 'bitbucket');
 
         return { data: { uid: result.user.uid } };
       },
@@ -45,7 +61,8 @@ export const AuthApi = createApi({
     }),
     logout: builder.mutation<Promise<void>, undefined>({
       queryFn: async () => {
-        removeSessionStorage('github_access_token');
+        removeSessionStorage('access_token');
+        removeSessionStorage('git_provider');
         return { data: signOut(auth) };
       },
       invalidatesTags: ['Auth']
@@ -53,4 +70,8 @@ export const AuthApi = createApi({
   })
 });
 
-export const { useLoginMutation, useLogoutMutation } = AuthApi;
+export const {
+  useLoginWithGithubMutation,
+  useLoginWithBitbucketMutation,
+  useLogoutMutation
+} = AuthApi;

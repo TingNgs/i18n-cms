@@ -16,7 +16,10 @@ export const appSlice = createSlice({
   name: 'app',
   initialState: {
     ...initialState,
-    authState: getSessionStorage('github_access_token') ? 'initial' : 'signOff'
+    authState:
+      getSessionStorage('access_token') && getSessionStorage('git_provider')
+        ? 'initial'
+        : 'signOff'
   },
   reducers: {
     setAuthState: (
@@ -32,7 +35,14 @@ export const appSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      AuthApi.endpoints.login.matchFulfilled,
+      AuthApi.endpoints.loginWithGithub.matchFulfilled,
+      (state, { payload }) => {
+        state.authState = 'signIn';
+        state.firebaseUid = payload.uid;
+      }
+    );
+    builder.addMatcher(
+      AuthApi.endpoints.loginWithBitbucket.matchFulfilled,
       (state, { payload }) => {
         state.authState = 'signIn';
         state.firebaseUid = payload.uid;
