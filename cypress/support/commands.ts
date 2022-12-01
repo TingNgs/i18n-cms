@@ -41,6 +41,7 @@ import 'firebase/compat/database';
 import 'firebase/compat/firestore';
 import { attachCustomCommands } from 'cypress-firebase';
 import * as keyCodes from './keyCodes';
+import { setSessionStorage } from '../../src/utils/storage';
 
 const fbConfig = {
   apiKey: Cypress.env('FIREBASE_API_KEY'),
@@ -59,7 +60,8 @@ attachCustomCommands({ Cypress, cy, firebase });
 Cypress.Commands.add('loginWithGithub', () => {
   cy.login();
   cy.window().then(() => {
-    sessionStorage.setItem('github_access_token', Cypress.env('GITHUB_PAT'));
+    setSessionStorage('access_token', Cypress.env('GITHUB_PAT'));
+    setSessionStorage('git_provider', 'github');
   });
 });
 

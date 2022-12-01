@@ -212,15 +212,12 @@ const useSaveEditing = () => {
           owner: editingRepo.owner,
           repo: editingRepo.repo,
           branch: branch,
-          change: {
-            message: commitMessage,
-            filesToDelete: Array.from(filesToDeleteSet),
-            ignoreDeletionFailures: true,
-            files
-          }
+          message: commitMessage,
+          filesToDelete: Array.from(filesToDeleteSet),
+          files
         }).unwrap();
 
-        dispatch(saveLocaleSuccess(data));
+        dispatch(saveLocaleSuccess({ data, commitHash: commit.hash }));
         toast({
           title: (
             <Text

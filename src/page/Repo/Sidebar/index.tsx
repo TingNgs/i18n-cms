@@ -36,7 +36,7 @@ import LanguageSelector from '../../../component/LanguageSelector';
 import ColorModeBtn from '../../../component/ColorModeBtn';
 import Container from './Container';
 
-import { getBranchUrl, getGithubUrl } from '../../../utils';
+import { getBranchUrl, getRepoUrl } from '../../../utils';
 
 const TITLE_PROPS = {
   fontWeight: 'bold',
@@ -115,7 +115,7 @@ const Sidebar = ({
 
   if (!editingRepo || !branch) return null;
 
-  const githubLink = getGithubUrl(editingRepo);
+  const repoLink = getRepoUrl(editingRepo);
   const branchLink = getBranchUrl(editingRepo, branch);
 
   return (
@@ -145,7 +145,7 @@ const Sidebar = ({
             <AccordionPanel>
               <Stack>
                 <Text {...SUB_TITLE_PROPS}>{t('Repository')}</Text>
-                <Link isExternal href={githubLink}>
+                <Link isExternal href={repoLink}>
                   <ExternalLinkIcon marginBottom={1} /> {editingRepo?.fullName}
                 </Link>
 

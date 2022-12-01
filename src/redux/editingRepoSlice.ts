@@ -32,6 +32,7 @@ export interface EditingRepoState {
   editingRepoConfig?: RepoConfig;
   customPathHandlerScript?: string;
   branch?: string;
+  commitHash?: string;
   namespaces: string[];
   languages: string[];
 
@@ -98,6 +99,7 @@ export const editingRepoSlice = createSlice({
         languages: string[];
         repoConfig: RepoConfig;
         branch: string;
+        commitHash: string;
         customPathHandlerScript?: string;
       }>
     ) => {
@@ -106,8 +108,10 @@ export const editingRepoSlice = createSlice({
         languages,
         repoConfig,
         branch,
+        commitHash,
         customPathHandlerScript
       } = action.payload;
+      state.commitHash = commitHash;
       state.editingRepoConfig = repoConfig;
       state.customPathHandlerScript = customPathHandlerScript;
       state.branch = branch;
@@ -232,11 +236,15 @@ export const editingRepoSlice = createSlice({
     saveLocaleSuccess: (
       state,
       action: PayloadAction<{
-        [namespace: string]: { [lng: string]: { [key: string]: string } };
+        data: {
+          [namespace: string]: { [lng: string]: { [key: string]: string } };
+        };
+        commitHash: string;
       }>
     ) => {
-      const data = action.payload;
+      const { data, commitHash } = action.payload;
       state.saveModalProps = null;
+      state.commitHash = commitHash;
       Object.keys(state.originalLocalesData).forEach((namespace) => {
         if (!state.namespaces.includes(namespace))
           delete state.originalLocalesData[namespace];

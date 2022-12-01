@@ -1,6 +1,5 @@
 import { Owner } from '../../component/OwnerSelect';
 import { REPOSITORY_VISIBILITY } from '../../constants';
-import { Options } from './Github/commitMultipleFiles';
 
 interface GitApi {
   getCurrentUser: () => Promise<{ name: string }>;
@@ -25,7 +24,8 @@ interface GitApi {
     repo: string;
     owner: string;
     path: string;
-    branch?: string;
+    branch: string;
+    commitHash: string;
   }) => Promise<string>;
   createBranch: (data: {
     repo: string;
@@ -43,12 +43,19 @@ interface GitApi {
     owner: string;
     branch: string;
   }) => Promise<{
-    hash: string;
+    commitHash: string;
     treeHash: string;
     name: string;
     isProtected: boolean;
   }>;
-  commitFiles: (data: Options) => Promise<{ url: string }>;
+  commitFiles: (data: {
+    repo: string;
+    owner: string;
+    branch: string;
+    message: string;
+    filesToDelete?: string[];
+    files: { [path: string]: string };
+  }) => Promise<{ url: string; hash: string }>;
 }
 
 export default GitApi;

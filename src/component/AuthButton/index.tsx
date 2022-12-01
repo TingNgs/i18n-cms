@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Flex } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
-import { AiOutlineGithub } from 'react-icons/ai';
+import { SiGithub, SiBitbucket } from 'react-icons/si';
+
 import OauthPopup from 'react-oauth-popup';
 import { noop } from 'lodash-es';
 
@@ -14,7 +15,7 @@ import {
 } from '../../redux/services/authApi';
 import { useAppSelector } from '../../redux/store';
 
-const SHOW_BITBUCKET = false;
+const SHOW_BITBUCKET = process.env.NODE_ENV !== 'production';
 
 const AuthButton = () => {
   const history = useHistory();
@@ -57,7 +58,7 @@ const AuthButton = () => {
       <Button
         data-e2e-id="github_login_button"
         onClick={onGithubLoginClick}
-        leftIcon={<AiOutlineGithub />}>
+        leftIcon={<SiGithub />}>
         {t('Login with GitHub')}
       </Button>
       {SHOW_BITBUCKET && (
@@ -68,6 +69,7 @@ const AuthButton = () => {
           url={`https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.REACT_APP_BITBUCKET_KEY}&response_type=code`}>
           <Button
             data-e2e-id="bitbucket_login_button"
+            leftIcon={<SiBitbucket />}
             isLoading={isBitbucketLoading}>
             {t('Login with Bitbucket')}
           </Button>

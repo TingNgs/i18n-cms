@@ -23,7 +23,9 @@ const OwnerSelect = ({ value, onChange }: IProps) => {
 
     return [
       { name: userData.name, type: 'user' as const },
-      ...orgsData.map((org) => ({ name: org.name, type: 'org' as const }))
+      ...orgsData
+        .filter((org) => org.name !== userData.name)
+        .map((org) => ({ name: org.name, type: 'org' as const }))
     ];
   }, [userData, orgsData]);
 

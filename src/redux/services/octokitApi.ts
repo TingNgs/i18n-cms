@@ -2,6 +2,7 @@ import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
 import GitApiWrapper from '../../utils/GitApiWrapper';
 import GitApi from '../../utils/GitApiWrapper/interface';
+import { getSessionStorage } from '../../utils/storage';
 
 export const OctokitApi = createApi({
   reducerPath: 'octokitApi',
@@ -13,7 +14,9 @@ export const OctokitApi = createApi({
       undefined
     >({
       queryFn: async () => {
-        const data = await GitApiWrapper['Github'].getCurrentUser();
+        const data = await GitApiWrapper[
+          getSessionStorage('git_provider') || 'github'
+        ].getCurrentUser();
         return { data };
       }
     }),
@@ -22,7 +25,9 @@ export const OctokitApi = createApi({
       undefined
     >({
       queryFn: async () => {
-        const data = await GitApiWrapper['Github'].getOrganization();
+        const data = await GitApiWrapper[
+          getSessionStorage('git_provider') || 'github'
+        ].getOrganization();
         return { data };
       }
     }),
@@ -31,7 +36,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['getRepo']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].getRepo(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].getRepo(data)
+        };
       },
       keepUnusedDataFor: 0.0001
     }),
@@ -40,7 +49,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['createRepo']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].createRepo(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].createRepo(data)
+        };
       }
     }),
     getContent: builder.query<
@@ -48,7 +61,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['getContent']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].getContent(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].getContent(data)
+        };
       }
     }),
     getTree: builder.query<
@@ -56,7 +73,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['getTree']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].getTree(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].getTree(data)
+        };
       }
     }),
     getBranch: builder.query<
@@ -64,7 +85,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['getBranch']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].getBranch(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].getBranch(data)
+        };
       }
     }),
     createBranch: builder.mutation<
@@ -72,7 +97,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['createBranch']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].createBranch(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].createBranch(data)
+        };
       }
     }),
     commitFiles: builder.mutation<
@@ -80,7 +109,11 @@ export const OctokitApi = createApi({
       Parameters<GitApi['commitFiles']>[0]
     >({
       queryFn: async (data) => {
-        return { data: await GitApiWrapper['Github'].commitFiles(data) };
+        return {
+          data: await GitApiWrapper[
+            getSessionStorage('git_provider') || 'github'
+          ].commitFiles(data)
+        };
       }
     })
   })

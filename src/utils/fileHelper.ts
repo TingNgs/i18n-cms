@@ -1,5 +1,3 @@
-import { GetResponseDataTypeFromEndpointMethod } from '@octokit/types';
-import { Octokit } from '@octokit/rest';
 import YAML from 'yaml';
 
 import { CONFIG_PATH, FILE_TYPE_MAP_DATA } from '../constants';
@@ -77,17 +75,6 @@ export const dataToFiles = async ({
     }
   }
   return files;
-};
-
-export const decodeGithubFileContent = (
-  file: GetResponseDataTypeFromEndpointMethod<
-    Octokit['rest']['repos']['getContent']
-  >
-) => {
-  if (typeof file === 'object' && 'type' in file && file.type === 'file') {
-    return Buffer.from(file.content, 'base64').toString();
-  }
-  throw new Error('not file');
 };
 
 export const decodeConfigFile = (data: string) => {

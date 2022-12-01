@@ -31,6 +31,7 @@ import LoadingModal from '../../../component/LoadingModal';
 import BranchForm from './BranchForm';
 import ConfigForm from './ConfigForm';
 import { SETUP_CONFIG_COMMIT_MESSAGE } from '../constants';
+import { ERROR_MSG } from '../../../utils/GitApiWrapper/constants';
 
 interface IProps {
   repo: Repo;
@@ -96,7 +97,7 @@ const BranchFormModal = ({ repo }: IProps) => {
       }).unwrap();
 
       if (action === 'existing' && branch.isProtected) {
-        throw new Error('Protected branch');
+        throw new Error(ERROR_MSG.PROTECTED_BRANCH);
       }
 
       const repoConfig = isNewConfig
@@ -105,7 +106,8 @@ const BranchFormModal = ({ repo }: IProps) => {
             repo: repo.repo,
             owner: repo.owner,
             path: CONFIG_PATH,
-            branch: branch.name
+            branch: branch.name,
+            commitHash: branch.commitHash
           })
             .unwrap()
             .then((data) => decodeConfigFile(data))
@@ -134,7 +136,7 @@ const BranchFormModal = ({ repo }: IProps) => {
           repo: repo.repo,
           owner: repo.owner,
           branch: newBranchName,
-          hash: branch.hash
+          hash: branch.commitHash
         }).unwrap();
       }
       const branchName =
@@ -152,7 +154,8 @@ const BranchFormModal = ({ repo }: IProps) => {
         namespaces: [''],
         languages: repoConfig.languages,
         repoConfig,
-        branch: branchName
+        branch: branchName,
+        commitHash: branch.commitHash
       };
 
       if (repoConfig.useCustomPath && repoConfig.namespaces !== undefined) {
@@ -161,7 +164,8 @@ const BranchFormModal = ({ repo }: IProps) => {
           repo: repo.repo,
           owner: repo.owner,
           branch: branchName,
-          path: CUSTOM_PATH_HANDLER_PATH
+          path: CUSTOM_PATH_HANDLER_PATH,
+          commitHash: branch.commitHash
         }).unwrap();
       } else {
         const namespaces = await getNamespaces({
@@ -187,7 +191,7 @@ const BranchFormModal = ({ repo }: IProps) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       switch (e?.message) {
-        case 'Protected branch':
+        case ERROR_MSG.PROTECTED_BRANCH:
           if (isRecentBranch) {
             toast({
               title: t('Protected branch not supported'),
@@ -206,7 +210,7 @@ const BranchFormModal = ({ repo }: IProps) => {
             });
           }
           break;
-        case 'Branch not found':
+        case ERROR_MSG.BRANCH_NOT_FOUND:
           if (isRecentBranch) {
             const updatedRepo = await updateExistingRepo({
               ...repo,

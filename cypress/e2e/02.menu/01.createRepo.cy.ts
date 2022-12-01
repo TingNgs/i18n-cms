@@ -12,6 +12,7 @@ import {
   CREATE_REPO_NAME,
   IMPORT_REPO_NAME
 } from './constants';
+import { noop } from 'lodash-es';
 
 const octokit = new Octokit({ auth: Cypress.env('GITHUB_PAT') });
 
@@ -40,6 +41,16 @@ describe('create repo', () => {
   });
 
   it('test create repo', () => {
+    waitFor(() => {
+      cy.wrap(
+        octokit.rest.repos
+          .delete({
+            owner: Cypress.env('GITHUB_OWNER'),
+            repo: CREATE_REPO_NAME
+          })
+          .catch(noop)
+      );
+    });
     cy.get('input[name="name"]').type(CREATE_REPO_NAME);
     cy.get('button[type="submit"]', { timeout: 50000 }).should('be.enabled');
     cy.get('button[type="submit"]').click();

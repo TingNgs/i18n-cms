@@ -1,7 +1,9 @@
-import Github from './Github';
+import github from './Github';
+import bitbucket from './Bitbucket';
 
 const GitApiWrapper = {
-  Github
+  github,
+  bitbucket
 };
 
 export default GitApiWrapper;

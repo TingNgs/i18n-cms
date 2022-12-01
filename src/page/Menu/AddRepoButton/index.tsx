@@ -15,16 +15,16 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CreateNewRepoForm from './CreateNewRepoForm';
-import ImportGithubRepoForm from './ImportGithubRepoForm';
+import ImportRepoForm from './ImportRepoForm';
 
 const FORM_BUTTON_LIST = [
   {
-    title: 'Create new Github repository',
+    title: 'Create new repository',
     id: 'new',
     e2eId: 'add_repo_create'
   },
   {
-    title: 'Import existing Github repository',
+    title: 'Import existing repository',
     id: 'import',
     e2eId: 'add_repo_import'
   }
@@ -40,7 +40,7 @@ const AddRepoButton = () => {
       case 'new':
         return <CreateNewRepoForm />;
       case 'import':
-        return <ImportGithubRepoForm />;
+        return <ImportRepoForm />;
       default:
         return FORM_BUTTON_LIST.map((button, index) => (
           <Box

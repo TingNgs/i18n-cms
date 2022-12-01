@@ -1,6 +1,8 @@
 interface SessionStorage {
   access_token: string;
   git_provider: 'github' | 'bitbucket';
+  expire_in: string;
+  refresh_token: string;
 }
 
 interface LocalStorage {

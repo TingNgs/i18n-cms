@@ -15,7 +15,7 @@ import { ExternalLinkIcon } from '@chakra-ui/icons';
 
 import { Repo } from '../../../redux/editingRepoSlice';
 
-import { getGithubUrl } from '../../../utils';
+import { getRepoUrl } from '../../../utils';
 import { FormValues } from './interface';
 import BranchInput from './BranchInput';
 
@@ -42,7 +42,7 @@ const BranchForm = ({ repo, onSubmit }: IProps) => {
         <Text>{t('Branch alert')}</Text>
       </Alert>
       <Text fontWeight="semibold">{commonT('Repository')}</Text>
-      <Link isExternal href={getGithubUrl(repo)}>
+      <Link isExternal href={getRepoUrl(repo)}>
         <ExternalLinkIcon marginBottom={1} /> {repo?.fullName}
       </Link>
       <Divider />

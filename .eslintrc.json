@@ -20,5 +20,10 @@
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/ban-ts-comment": "off"
   },
-  "ignorePatterns": ["config-overrides.js", "build/*", "functions/*"]
+  "ignorePatterns": [
+    "config-overrides.js",
+    "build/*",
+    "functions/*",
+    "./node_modules"
+  ]
 }

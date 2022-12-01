@@ -47,12 +47,25 @@ export const AuthApi = createApi({
     }),
     loginWithBitbucket: builder.mutation<{ uid: string }, { code: string }>({
       queryFn: async ({ code }) => {
-        const { token, access_token } = await fetch(
-          `${process.env.REACT_APP_FUNCTIONS_URL}bitbucket?code=${code}`
+        const { token, access_token, refresh_token, expires_in } = await fetch(
+          `${process.env.REACT_APP_FUNCTIONS_URL}bitbucket`,
+          {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code })
+          }
         ).then((res) => res.json());
         await setPersistence(auth, browserSessionPersistence);
         const result = await signInWithCustomToken(auth, token);
         setSessionStorage('access_token', access_token);
+        setSessionStorage(
+          'expire_in',
+          (Date.now() + 1000 * expires_in).toString()
+        );
+        setSessionStorage('refresh_token', refresh_token);
         setSessionStorage('git_provider', 'bitbucket');
 
         return { data: { uid: result.user.uid } };
@@ -63,6 +76,8 @@ export const AuthApi = createApi({
       queryFn: async () => {
         removeSessionStorage('access_token');
         removeSessionStorage('git_provider');
+        removeSessionStorage('expire_in');
+        removeSessionStorage('refresh_token');
         return { data: signOut(auth) };
       },
       invalidatesTags: ['Auth']

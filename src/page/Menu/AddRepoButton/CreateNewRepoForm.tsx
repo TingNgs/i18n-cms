@@ -93,10 +93,8 @@ const CreateNewRepoForm = () => {
         owner: repo.owner,
         repo: repo.repo,
         branch: repo.default_branch,
-        change: {
-          message: 'Initial locales',
-          files
-        }
+        message: 'Initial locales',
+        files
       }).catch((e) => {
         toast({ title: menuT('Setup new repo fail'), status: 'error' });
         throw e;
@@ -151,7 +149,7 @@ const CreateNewRepoForm = () => {
     <>
       <form onSubmit={onSubmit} style={{ width: '100%' }}>
         <Stack w="100%">
-          <Text fontSize="2xl">{menuT('Create new Github repository')}</Text>
+          <Text fontSize="2xl">{menuT('Create new repository')}</Text>
 
           <FormLabel>{commonT('Owner')}</FormLabel>
           <Controller

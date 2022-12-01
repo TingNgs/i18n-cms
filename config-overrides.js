@@ -18,5 +18,9 @@ module.exports = function override(config) {
       path: require.resolve('path-browserify')
     }
   };
+  config.ignoreWarnings = [
+    ...(config.ignoreWarnings || []),
+    /node_modules\/bitbucket/
+  ];
   return config;
 };

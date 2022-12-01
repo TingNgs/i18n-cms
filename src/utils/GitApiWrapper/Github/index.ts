@@ -2,15 +2,18 @@ import { Octokit } from '@octokit/rest';
 import commitMultipleFiles from './commitMultipleFiles';
 import { getSessionStorage } from '../../storage';
 import GitApi from '../interface';
+import { ERROR_MSG } from '../constants';
 
-const auth = getSessionStorage('access_token');
+const auth = (getSessionStorage('git_provider') === 'github' &&
+  getSessionStorage('access_token')) as string;
 let octokit = new Octokit({ auth });
 let withAuth = !!auth;
 
 const setupOctokitClient = () => {
   if (!withAuth) {
     withAuth = true;
-    const auth = getSessionStorage('access_token');
+    const auth = (getSessionStorage('git_provider') === 'github' &&
+      getSessionStorage('access_token')) as string;
     octokit = new Octokit({
       auth
     });
@@ -99,22 +102,47 @@ const Github: GitApi = {
   },
   getBranch: async ({ repo, owner, branch }) => {
     setupOctokitClient();
-    const { data } = await octokit.rest.repos.getBranch({
-      repo,
-      owner,
-      branch
-    });
+    const { data } = await octokit.rest.repos
+      .getBranch({
+        repo,
+        owner,
+        branch
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.status === 404) {
+          throw new Error(ERROR_MSG.BRANCH_NOT_FOUND);
+        }
+        throw err;
+      });
     return {
-      hash: data.commit.sha,
+      commitHash: data.commit.sha,
       treeHash: data.commit.commit.tree.sha,
       name: data.name,
       isProtected: !!data.protection.enabled
     };
   },
-  commitFiles: async (data) => {
+  commitFiles: async ({
+    repo,
+    owner,
+    branch,
+    message,
+    filesToDelete,
+    files
+  }) => {
     setupOctokitClient();
-    const result = await commitMultipleFiles(octokit, data);
-    return { url: result.commit.html_url };
+    const result = await commitMultipleFiles(octokit, {
+      owner,
+      branch,
+      repo,
+      change: {
+        files,
+        message,
+        filesToDelete,
+        ignoreDeletionFailures: true
+      }
+    });
+    return { url: result.commit.html_url, hash: result.commit.sha };
   }
 };
 

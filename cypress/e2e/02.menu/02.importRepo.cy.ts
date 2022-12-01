@@ -22,43 +22,43 @@ describe('import repo', () => {
 
   it('test required field', () => {
     cy.get('button[type="submit"]').click();
-    cy.get('input[name="githubUrl"]:invalid').should('exist');
+    cy.get('input[name="gitUrl"]:invalid').should('exist');
   });
 
   it('test invalid url', () => {
-    cy.get('input[name="githubUrl"]').type(INVALID_URL);
+    cy.get('input[name="gitUrl"]').type(INVALID_URL);
     cy.get('button[type="submit"]').click();
-    cy.get('input[name="githubUrl"][aria-invalid="true"]').should('exist');
-    cy.get(`input[name="githubUrl"] + ${ERROR_MSG_CLASS}`).should(
+    cy.get('input[name="gitUrl"][aria-invalid="true"]').should('exist');
+    cy.get(`input[name="gitUrl"] + ${ERROR_MSG_CLASS}`).should(
       'have.text',
-      MenuWording['Invalid github url']
+      MenuWording['Invalid url']
     );
   });
 
   it('test repo not exist', () => {
-    cy.get('input[name="githubUrl"]').type(REPO_NOT_EXIST);
+    cy.get('input[name="gitUrl"]').type(REPO_NOT_EXIST);
     cy.get('button[type="submit"]').click();
     cy.loadingWithModal();
-    cy.get('input[name="githubUrl"][aria-invalid="true"]').should('exist');
-    cy.get(`input[name="githubUrl"] + ${ERROR_MSG_CLASS}`).should(
+    cy.get('input[name="gitUrl"][aria-invalid="true"]').should('exist');
+    cy.get(`input[name="gitUrl"] + ${ERROR_MSG_CLASS}`).should(
       'have.text',
       MenuWording['Repository not found']
     );
   });
 
   it('test repo without permission', () => {
-    cy.get('input[name="githubUrl"]').type(REPO_WITH_NO_PERMISSION);
+    cy.get('input[name="gitUrl"]').type(REPO_WITH_NO_PERMISSION);
     cy.get('button[type="submit"]').click();
     cy.loadingWithModal();
-    cy.get('input[name="githubUrl"][aria-invalid="true"]').should('exist');
-    cy.get(`input[name="githubUrl"] + ${ERROR_MSG_CLASS}`).should(
+    cy.get('input[name="gitUrl"][aria-invalid="true"]').should('exist');
+    cy.get(`input[name="gitUrl"] + ${ERROR_MSG_CLASS}`).should(
       'have.text',
       MenuWording['Without push permission in this repo']
     );
   });
 
   it('test import repo success', () => {
-    cy.get('input[name="githubUrl"]').type(IMPORT_REPO_URL);
+    cy.get('input[name="gitUrl"]').type(IMPORT_REPO_URL);
     cy.get('button[type="submit"]').click();
     cy.loadingWithModal();
     cy.location('pathname').should('eq', '/repo');

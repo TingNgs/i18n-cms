@@ -12,6 +12,7 @@ const NAMESPACES_REPO_FULL_NAME = `${Cypress.env(
 )}/${NAMESPACES_REPO_NAME}`;
 
 const checkNamespace = (namespace: string) => {
+  cy.wait(10);
   cy.get('[data-e2e-id="namespace"]').contains(namespace).click();
   cy.get('[data-e2e-id="namespace"][aria-selected="true"]').should(
     'have.text',

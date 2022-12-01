@@ -18,17 +18,19 @@ const useGetEditingRepoLocalByNs = () => {
       editingRepo,
       editingRepoConfig: repoConfig,
       branch,
+      commitHash,
       originalLanguages: languages
     } = getState().EditingRepoReducer;
     const { repo, owner } = editingRepo || {};
 
-    if (!repo || !owner || !repoConfig) return;
+    if (!repo || !owner || !repoConfig || !branch || !commitHash) return;
     const filesPromise = languages.map(async (language) =>
       getContent({
         repo: repo,
         owner: owner,
         branch,
-        path: await getLocalePath({ language, namespace, repoConfig })
+        path: await getLocalePath({ language, namespace, repoConfig }),
+        commitHash: commitHash || ''
       })
         .unwrap()
         .catch(() => null)

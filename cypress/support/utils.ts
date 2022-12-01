@@ -1,4 +1,5 @@
 import { Octokit } from '@octokit/rest';
+import { noop } from 'lodash-es';
 const octokit = new Octokit({ auth: Cypress.env('GITHUB_PAT') });
 
 export const waitFor = (cb: () => void) => {
@@ -42,8 +43,10 @@ export const createTestRepo = (repo: string, templateRepo: string) => {
           owner: Cypress.env('GITHUB_OWNER'),
           repo: repo
         })
-        .catch(() => null)
+        .catch(noop)
     );
+  });
+  waitFor(() => {
     cy.wrap(
       octokit.rest.repos.createUsingTemplate({
         owner: Cypress.env('GITHUB_OWNER'),
@@ -57,7 +60,7 @@ export const createTestRepo = (repo: string, templateRepo: string) => {
   cy.get('[data-e2e-id="app"]').should('exist');
   cy.get('[data-e2e-id="add_repo_button"]').click();
   cy.get('[data-e2e-id="add_repo_import"]').click();
-  cy.get('input[name="githubUrl"]').type(
+  cy.get('input[name="gitUrl"]').type(
     `https://github.com/${Cypress.env('GITHUB_OWNER')}/${repo}`
   );
   cy.get('button[type="submit"]').click();
