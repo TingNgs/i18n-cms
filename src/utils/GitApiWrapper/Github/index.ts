@@ -4,21 +4,19 @@ import { getSessionStorage } from '../../storage';
 import GitApi from '../interface';
 import { ERROR_MSG } from '../constants';
 
-const auth = (getSessionStorage('git_provider') === 'github' &&
-  getSessionStorage('access_token')) as string;
-let octokit = new Octokit({ auth });
-let withAuth = !!auth;
-
+let octokit = new Octokit();
+let prevToken: string | undefined = undefined;
 const setupOctokitClient = () => {
-  if (!withAuth) {
-    withAuth = true;
-    const auth = (getSessionStorage('git_provider') === 'github' &&
-      getSessionStorage('access_token')) as string;
+  const token = (getSessionStorage('git_provider') === 'github' &&
+    getSessionStorage('access_token')) as string;
+  if (prevToken !== token) {
+    prevToken = token;
     octokit = new Octokit({
-      auth
+      auth: token
     });
   }
 };
+setupOctokitClient();
 
 const getPermission = (permissions?: { admin: boolean; push: boolean }) => {
   if (permissions?.admin) return 'admin';
@@ -39,7 +37,12 @@ const Github: GitApi = {
   },
   getRepo: async ({ repo, owner }) => {
     setupOctokitClient();
-    const { data } = await octokit.rest.repos.get({ repo, owner });
+    const { data } = await octokit.rest.repos
+      .get({ repo, owner })
+      .catch((err) => {
+        if (err.status === 404) throw new Error(ERROR_MSG.REPO_NOT_FOUND);
+        throw err;
+      });
     const permission = getPermission(data.permissions);
     return {
       owner: data.owner.login,
@@ -50,24 +53,35 @@ const Github: GitApi = {
   },
   createRepo: async ({ name, visibility, owner }) => {
     setupOctokitClient();
-    const { data } = await (owner.type === 'user'
-      ? octokit.rest.repos.createForAuthenticatedUser({
-          name,
-          private: visibility === 'private',
-          auto_init: true
-        })
-      : octokit.rest.repos.createInOrg({
-          name,
-          org: owner.name,
-          private: visibility === 'private',
-          auto_init: true
-        }));
-    return {
-      owner: data.owner.login,
-      repo: data.name,
-      default_branch: data.default_branch,
-      full_name: data.full_name
-    };
+    try {
+      const { data } = await (owner.type === 'user'
+        ? octokit.rest.repos.createForAuthenticatedUser({
+            name,
+            private: visibility === 'private',
+            auto_init: true
+          })
+        : octokit.rest.repos.createInOrg({
+            name,
+            org: owner.name,
+            private: visibility === 'private',
+            auto_init: true
+          }));
+      return {
+        owner: data.owner.login,
+        repo: data.name,
+        default_branch: data.default_branch,
+        full_name: data.full_name
+      };
+    } catch (err) {
+      if (
+        (err as { message?: string })?.message?.includes?.(
+          'name already exists on this account'
+        )
+      ) {
+        throw new Error(ERROR_MSG.REPO_ALREADY_EXIST);
+      }
+      throw err;
+    }
   },
   getContent: async ({ repo, owner, path, branch }) => {
     setupOctokitClient();
@@ -82,12 +96,18 @@ const Github: GitApi = {
   },
   createBranch: async ({ repo, owner, branch, hash }) => {
     setupOctokitClient();
-    const result = await octokit.rest.git.createRef({
-      repo,
-      owner,
-      ref: `refs/heads/${branch}`,
-      sha: hash
-    });
+    const result = await octokit.rest.git
+      .createRef({
+        repo,
+        owner,
+        ref: `refs/heads/${branch}`,
+        sha: hash
+      })
+      .catch((err) => {
+        if (err.message === 'Reference already exists')
+          throw new Error(ERROR_MSG.BRANCH_ALREADY_EXIST);
+        throw err;
+      });
     return result.data;
   },
   getTree: async ({ repo, owner, hash }) => {

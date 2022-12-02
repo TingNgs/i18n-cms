@@ -13,7 +13,8 @@ import { removeSessionStorage, setSessionStorage } from '../../utils/storage';
 
 const firebaseAuth = {
   signInWithPopup,
-  GithubAuthProvider
+  GithubAuthProvider,
+  signInWithCustomToken
 };
 
 if (window.Cypress) {
@@ -59,7 +60,7 @@ export const AuthApi = createApi({
           }
         ).then((res) => res.json());
         await setPersistence(auth, browserSessionPersistence);
-        const result = await signInWithCustomToken(auth, token);
+        const result = await firebaseAuth.signInWithCustomToken(auth, token);
         setSessionStorage('access_token', access_token);
         setSessionStorage(
           'expire_in',

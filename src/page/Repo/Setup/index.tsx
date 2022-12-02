@@ -226,7 +226,7 @@ const BranchFormModal = ({ repo }: IProps) => {
             });
           }
           break;
-        case 'Reference already exists':
+        case ERROR_MSG.BRANCH_ALREADY_EXIST:
           setError('newBranchName', {
             message: t('Branch already exists')
           });

@@ -3,6 +3,8 @@ import {
   createTestRepo,
   deleteRepoFromMenu,
   ERROR_MSG_CLASS,
+  gitProviders,
+  login,
   visitRepo
 } from '../../support/utils';
 
@@ -67,54 +69,65 @@ const testDeleteNamespace = (namespace: string, branch: string) => {
   cy.contains('[data-e2e-id="namespace"]', namespace).should('not.exist');
 };
 
-describe('namespaces', () => {
-  before(() => {
-    cy.loginWithGithub();
-    createTestRepo(NAMESPACES_REPO_NAME, 'mock-namespaces-repo-template');
-  });
+gitProviders.map((gitProvider) => {
+  describe(`namespaces - ${gitProvider}`, () => {
+    before(() => {
+      login(gitProvider);
+      createTestRepo({
+        repo: NAMESPACES_REPO_NAME,
+        templateRepo: 'mock-namespaces-repo-template',
+        gitProvider
+      });
+    });
 
-  after(() => {
-    deleteRepoFromMenu(NAMESPACES_REPO_FULL_NAME);
-  });
-  beforeEach(() => {
-    cy.visit('/');
-    cy.get('[data-e2e-id="cookies_accept_button"]').click();
-  });
+    after(() => {
+      deleteRepoFromMenu(NAMESPACES_REPO_FULL_NAME);
+    });
+    beforeEach(() => {
+      cy.visit('/');
+      cy.get('[data-e2e-id="cookies_accept_button"]').click();
+    });
 
-  it('default file path', () => {
-    const branch = '01/default-file-path';
-    visitRepo(NAMESPACES_REPO_FULL_NAME, branch);
-    checkNamespaces(['translationA', 'translationB', 'translationC']);
-    testAddNamespace('translationD', branch);
-    testDeleteNamespace('translationB', branch);
-  });
+    it('default file path', () => {
+      const branch = '01/default-file-path';
+      visitRepo(NAMESPACES_REPO_FULL_NAME, branch);
+      checkNamespaces(['translationA', 'translationB', 'translationC']);
+      testAddNamespace('translationD', branch);
+      testDeleteNamespace('translationB', branch);
+    });
 
-  it('file path with prefix', () => {
-    const branch = '02/file-path-with-prefix';
-    visitRepo(NAMESPACES_REPO_FULL_NAME, branch);
-    checkNamespaces(['translationA', 'translationB', 'translationC']);
-    testAddNamespace('translationD', branch);
-    testDeleteNamespace('translationB', branch);
-  });
+    it('file path with prefix', () => {
+      const branch = '02/file-path-with-prefix';
+      visitRepo(NAMESPACES_REPO_FULL_NAME, branch);
+      checkNamespaces(['translationA', 'translationB', 'translationC']);
+      testAddNamespace('translationD', branch);
+      testDeleteNamespace('translationB', branch);
+    });
 
-  it('custom path handler', () => {
-    const branch = '03/custom-file-path-handler';
-    visitRepo(NAMESPACES_REPO_FULL_NAME, branch);
-    checkNamespaces(['common', 'translationA', 'translationB', 'translationC']);
-    testAddNamespace('translationD', branch);
-    testDeleteNamespace('translationB', branch);
-  });
+    it('custom path handler', () => {
+      const branch = '03/custom-file-path-handler';
+      visitRepo(NAMESPACES_REPO_FULL_NAME, branch);
+      checkNamespaces([
+        'common',
+        'translationA',
+        'translationB',
+        'translationC'
+      ]);
+      testAddNamespace('translationD', branch);
+      testDeleteNamespace('translationB', branch);
+    });
 
-  it('add repeated namespace', () => {
-    const namespace = 'translationA';
-    visitRepo(NAMESPACES_REPO_FULL_NAME, '04/add-repeated-namespace');
-    checkNamespace(namespace);
-    cy.get('[data-e2e-id="new_namespace_button"]').click();
-    cy.get('[data-e2e-id="new_namespace_input"]:visible').type(namespace);
-    cy.get('[data-e2e-id="new_namespace_submit"]:visible').click();
-    cy.contains(
-      `[data-e2e-id="new_namespace_input"][aria-invalid="true"]:visible + ${ERROR_MSG_CLASS}`,
-      RepoWording['Namespace already exist']
-    ).should('exist');
+    it('add repeated namespace', () => {
+      const namespace = 'translationA';
+      visitRepo(NAMESPACES_REPO_FULL_NAME, '04/add-repeated-namespace');
+      checkNamespace(namespace);
+      cy.get('[data-e2e-id="new_namespace_button"]').click();
+      cy.get('[data-e2e-id="new_namespace_input"]:visible').type(namespace);
+      cy.get('[data-e2e-id="new_namespace_submit"]:visible').click();
+      cy.contains(
+        `[data-e2e-id="new_namespace_input"][aria-invalid="true"]:visible + ${ERROR_MSG_CLASS}`,
+        RepoWording['Namespace already exist']
+      ).should('exist');
+    });
   });
 });

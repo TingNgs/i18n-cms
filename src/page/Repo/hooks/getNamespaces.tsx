@@ -28,7 +28,8 @@ const useGetNamespaces = () => {
       const tree = await getTree({
         repo: repo.repo,
         owner: repo.owner,
-        hash: rootSha
+        hash: rootSha,
+        repoConfig
       }).unwrap();
 
       const pathList = multimatch(

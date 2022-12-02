@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Repo } from '../../../redux/editingRepoSlice';
 import { useLazyGetRepoQuery } from '../../../redux/services/octokitApi';
+import { ERROR_MSG } from '../../../utils/GitApiWrapper/constants';
 
 const useCheckRepoPermissions = () => {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ const useCheckRepoPermissions = () => {
           }
         };
       } catch (e) {
-        if ((e as { message?: string })?.message === 'Not Found') {
+        if ((e as { message: string })?.message === ERROR_MSG.REPO_NOT_FOUND) {
           return { error: t('Repository not found') };
         }
         return { error: t('Something went wrong') };

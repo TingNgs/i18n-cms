@@ -1,4 +1,7 @@
 export const ERROR_MSG = {
   BRANCH_NOT_FOUND: 'branch_not_found',
-  PROTECTED_BRANCH: 'Protected branch'
+  BRANCH_ALREADY_EXIST: 'branch_already_exist',
+  PROTECTED_BRANCH: 'protected_branch',
+  REPO_NOT_FOUND: 'repo_not_found',
+  REPO_ALREADY_EXIST: 'repo_already_exist'
 };

@@ -1,7 +1,7 @@
 import { Repo } from '../redux/editingRepoSlice';
 import { getSessionStorage } from './storage';
 
-export const getRepoUrl = (repo: Repo) => {
+export const getRepoUrl = (repo: { fullName: string }) => {
   switch (getSessionStorage('git_provider')) {
     case 'bitbucket':
       return `https://bitbucket.org/${repo.fullName}`;

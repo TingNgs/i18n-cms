@@ -68,6 +68,13 @@ const AuthButton = () => {
           onClose={noop}
           url={`https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.REACT_APP_BITBUCKET_KEY}&response_type=code`}>
           <Button
+            onClick={
+              window.Cypress
+                ? () => {
+                    onCode('1234');
+                  }
+                : undefined
+            }
             data-e2e-id="bitbucket_login_button"
             leftIcon={<SiBitbucket />}
             isLoading={isBitbucketLoading}>

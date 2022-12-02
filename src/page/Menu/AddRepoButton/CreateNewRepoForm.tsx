@@ -22,6 +22,7 @@ import {
   FILE_TYPE_MAP_DATA,
   REPOSITORY_VISIBILITY
 } from '../../../constants';
+import { ERROR_MSG } from '../../../utils/GitApiWrapper/constants';
 import {
   useCreateRepoMutation,
   useCommitFilesMutation
@@ -117,9 +118,7 @@ const CreateNewRepoForm = () => {
       history.push('/repo');
     } catch (err: unknown) {
       if (
-        (err as { message?: string })?.message?.includes?.(
-          'name already exists on this account'
-        )
+        (err as { message: string })?.message === ERROR_MSG.REPO_ALREADY_EXIST
       ) {
         setError('name', {
           message: menuT('Repository name already exists on this owner')

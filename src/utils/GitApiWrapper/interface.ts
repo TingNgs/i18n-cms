@@ -1,5 +1,6 @@
 import { Owner } from '../../component/OwnerSelect';
 import { REPOSITORY_VISIBILITY } from '../../constants';
+import { RepoConfig } from '../../redux/editingRepoSlice';
 
 interface GitApi {
   getCurrentUser: () => Promise<{ name: string }>;
@@ -8,7 +9,7 @@ interface GitApi {
     owner: string;
     repo: string;
     full_name: string;
-    permission: 'write' | 'admin' | 'read';
+    permission: 'write' | 'admin' | 'read' | 'none';
   }>;
   createRepo: (data: {
     name: string;
@@ -37,6 +38,7 @@ interface GitApi {
     repo: string;
     owner: string;
     hash: string;
+    repoConfig: RepoConfig;
   }) => Promise<{ path?: string }[]>;
   getBranch: (data: {
     repo: string;

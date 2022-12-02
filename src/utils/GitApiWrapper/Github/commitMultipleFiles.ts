@@ -272,7 +272,6 @@ export default async function (octokit: Octokit, opts: Options) {
   await octokit.rest.git[action]({
     owner,
     repo,
-    force: true,
     ref: `${updateRefBase}heads/${branchName}`,
     sha: baseTree
   });

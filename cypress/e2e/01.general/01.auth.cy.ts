@@ -1,39 +1,8 @@
-describe('auth', () => {
+import { gitProviders, login, mockOAuth } from '../../support/utils';
+
+describe(`auth`, () => {
   beforeEach(() => {
     cy.logout();
-  });
-  it('click login & logout button', () => {
-    cy.visit('/');
-    cy.window()
-      .its('firebaseAuth')
-      .then((firebaseAuth) => {
-        cy.stub(firebaseAuth, 'signInWithPopup').returns({
-          user: { uid: Cypress.env('TEST_UID') }
-        });
-        cy.stub(
-          firebaseAuth.GithubAuthProvider,
-          'credentialFromResult'
-        ).returns({
-          accessToken: Cypress.env('GITHUB_PAT')
-        });
-      });
-
-    cy.get('[data-e2e-id="github_login_button"]').should('exist');
-    cy.get('[data-e2e-id="github_login_button"]').first().click();
-    cy.loginWithGithub();
-    cy.location('pathname', { timeout: 50000 }).should('eq', '/menu');
-    cy.visit('/');
-    cy.get('[data-e2e-id="github_login_button"]').should('not.exist');
-
-    cy.visit('/menu');
-    cy.get('[data-e2e-id="logout_button"]').first().click();
-    cy.location('pathname', { timeout: 50000 }).should('eq', '/');
-  });
-
-  it('visit menu when login', () => {
-    cy.loginWithGithub();
-    cy.visit('/menu');
-    cy.location('pathname').should('eq', '/menu');
   });
 
   it('visit menu when logout', () => {
@@ -46,14 +15,39 @@ describe('auth', () => {
     cy.location('pathname').should('eq', '/');
   });
 
-  it('visit repo when login', () => {
-    cy.loginWithGithub();
-    cy.visit('/repo');
-    cy.location('pathname').should('eq', '/menu');
-  });
-
   it('visit page not existed', () => {
     cy.visit('/iasuhdiashud');
     cy.location('pathname').should('eq', '/');
+  });
+
+  gitProviders.map((gitProvider) => {
+    describe(`auth - ${gitProvider}`, () => {
+      it('click login & logout button', () => {
+        cy.visit('/');
+        mockOAuth(gitProvider);
+        const loginButton = `[data-e2e-id="${gitProvider}_login_button"]`;
+        cy.get(loginButton).should('exist').first().click();
+        login(gitProvider);
+        cy.location('pathname', { timeout: 50000 }).should('eq', '/menu');
+        cy.visit('/');
+        cy.get(loginButton).should('not.exist');
+
+        cy.visit('/menu');
+        cy.get('[data-e2e-id="logout_button"]').click();
+        cy.location('pathname', { timeout: 50000 }).should('eq', '/');
+      });
+
+      it('visit menu when login', () => {
+        login(gitProvider);
+        cy.visit('/menu');
+        cy.location('pathname').should('eq', '/menu');
+      });
+
+      it('visit repo when login', () => {
+        login(gitProvider);
+        cy.visit('/repo');
+        cy.location('pathname').should('eq', '/menu');
+      });
+    });
   });
 });

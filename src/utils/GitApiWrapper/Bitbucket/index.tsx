@@ -1,21 +1,29 @@
 import { Bitbucket } from 'bitbucket';
+import multimatch from 'multimatch';
+import { FILE_TYPE_MAP_DATA } from '../../../constants';
 import { getSessionStorage } from '../../storage';
 import { ERROR_MSG } from '../constants';
 import GitApi from '../interface';
 
-const token = (getSessionStorage('git_provider') === 'bitbucket' &&
-  getSessionStorage('access_token')) as string;
-let bitbucket = new Bitbucket({ auth: { token }, notice: false });
-let withAuth = !!token;
-
+let bitbucket = new Bitbucket({ notice: false });
+let prevToken: string | undefined = undefined;
 const setupBitbucketClient = () => {
-  if (!withAuth) {
-    withAuth = true;
-    const token = (getSessionStorage('git_provider') === 'bitbucket' &&
-      getSessionStorage('access_token')) as string;
-    bitbucket = new Bitbucket({ auth: { token } });
+  const token = (getSessionStorage('git_provider') === 'bitbucket' &&
+    getSessionStorage('access_token')) as string;
+  if (prevToken !== token) {
+    prevToken = token;
+    bitbucket = new Bitbucket({
+      notice: false,
+      auth: window.Cypress
+        ? {
+            password: Cypress.env('BITBUCKET_PAT'),
+            username: Cypress.env('BITBUCKET_OWNER')
+          }
+        : { token }
+    });
   }
 };
+setupBitbucketClient();
 
 const BitbucketApi: GitApi = {
   getCurrentUser: async () => {
@@ -32,25 +40,48 @@ const BitbucketApi: GitApi = {
   },
   getRepo: async ({ repo, owner }) => {
     setupBitbucketClient();
-    const { data } = await bitbucket.repositories.get({
-      repo_slug: repo,
-      workspace: owner
+    const { data } = await bitbucket.repositories
+      .get({
+        repo_slug: repo,
+        workspace: owner
+      })
+      .catch((err) => {
+        if (err.status === 404) throw new Error(ERROR_MSG.REPO_NOT_FOUND);
+        throw err;
+      });
+
+    const { data: permissions } = await bitbucket.user.listPermissionsForRepos({
+      q: `repository.uuid="${data.uuid}"`
     });
 
     return {
       owner: data.full_name?.split('/')[0] || '',
       full_name: data.full_name || '',
       repo: data.name || '',
-      permission: 'write'
+      permission: permissions?.values?.[0]?.permission || 'none'
     };
   },
   createRepo: async ({ name, visibility, owner }) => {
     setupBitbucketClient();
-    const { data } = await bitbucket.repositories.create({
-      repo_slug: name,
-      workspace: owner.name,
-      _body: { is_private: visibility === 'private', type: 'repository' }
-    });
+    const { data } = await bitbucket.repositories
+      .create({
+        repo_slug: name,
+        workspace: owner.name,
+        _body: {
+          is_private: visibility === 'private',
+          type: 'repository'
+        }
+      })
+      .catch((err) => {
+        if (
+          err?.error?.error?.message?.includes?.(
+            'Repository with this Slug and Owner already exists.'
+          )
+        ) {
+          throw new Error(ERROR_MSG.REPO_ALREADY_EXIST);
+        }
+        throw err;
+      });
     return {
       owner: data.full_name?.split('/')[0] || '',
       repo: data.name || '',
@@ -70,14 +101,20 @@ const BitbucketApi: GitApi = {
   },
   createBranch: async ({ repo, owner, branch, hash }) => {
     setupBitbucketClient();
-    const result = await bitbucket.repositories.createBranch({
-      repo_slug: repo,
-      workspace: owner,
-      _body: { name: branch, target: { hash } }
-    });
+    const result = await bitbucket.repositories
+      .createBranch({
+        repo_slug: repo,
+        workspace: owner,
+        _body: { name: branch, target: { hash } }
+      })
+      .catch((err) => {
+        if (err.error.error.code === 'BRANCH_ALREADY_EXISTS')
+          throw new Error(ERROR_MSG.BRANCH_ALREADY_EXIST);
+        throw err;
+      });
     return result.data;
   },
-  getTree: async ({ repo, owner, hash }) => {
+  getTree: async ({ repo, owner, hash, repoConfig }) => {
     setupBitbucketClient();
     let data: {
       path?: string | undefined;
@@ -85,6 +122,13 @@ const BitbucketApi: GitApi = {
 
     let page: string | undefined = undefined;
     do {
+      const pathQuery = `${repoConfig.pattern}.${
+        FILE_TYPE_MAP_DATA[repoConfig.fileType].ext
+      }`
+        .replace(':lng', repoConfig.defaultLanguage)
+        .split(':ns')
+        .filter((path) => !!path);
+
       const result = await bitbucket.source.read({
         commit: hash,
         repo_slug: repo,
@@ -92,7 +136,9 @@ const BitbucketApi: GitApi = {
         path: '/',
         max_depth: 1024,
         pagelen: 100,
-        q: 'type="commit_file"',
+        q: `type="commit_file"${pathQuery
+          .map((path) => ` AND path~"${path}"`)
+          .join('')}`,
         page
       });
       data = data.concat(
@@ -120,12 +166,26 @@ const BitbucketApi: GitApi = {
         }
         throw err;
       });
+    const { data: restrictions } =
+      await bitbucket.repositories.listBranchRestrictions({
+        repo_slug: repo,
+        workspace: owner,
+        kind: 'push'
+      });
+
+    const isProtected =
+      multimatch(
+        branch,
+        (restrictions.values
+          ?.filter((restriction) => !!restriction.pattern)
+          .map((restriction) => restriction.pattern) || []) as string[]
+      ).length > 0;
 
     return {
       commitHash: data.target?.hash || '',
       treeHash: data.target?.hash || '',
       name: data.name || '',
-      isProtected: false
+      isProtected
     };
   },
   commitFiles: async ({
@@ -147,6 +207,7 @@ const BitbucketApi: GitApi = {
     filesToDelete?.forEach((path) => {
       requestBody.append('files', path);
     });
+
     await bitbucket.source.createFileCommit({
       workspace: owner,
       repo_slug: repo,
