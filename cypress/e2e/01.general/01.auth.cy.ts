@@ -26,7 +26,8 @@ describe(`auth`, () => {
         cy.visit('/');
         mockOAuth(gitProvider);
         const loginButton = `[data-e2e-id="${gitProvider}_login_button"]`;
-        cy.get(loginButton).should('exist').first().click();
+        cy.get('[data-e2e-id="login_button"]').first().click();
+        cy.get(loginButton).should('exist').click();
         login(gitProvider);
         cy.location('pathname', { timeout: 50000 }).should('eq', '/menu');
         cy.visit('/');

@@ -6,7 +6,8 @@ import {
   Text,
   Image,
   useColorModeValue,
-  AspectRatio
+  AspectRatio,
+  Heading
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -36,7 +37,9 @@ const About = () => {
           w={{ lg: '45%' }}
           flexShrink="0"
           spacing={5}>
-          <Text fontSize="3xl">{homeT('header.title')}</Text>
+          <Heading as="h1" fontSize="3xl">
+            {homeT('header.title')}
+          </Heading>
           <Text fontSize="1xl">{homeT('header.description')}</Text>
           {!isAuth && <Text>{homeT('header.start_subtitle')}</Text>}
           <ButtonGroup>

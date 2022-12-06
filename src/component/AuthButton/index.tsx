@@ -1,6 +1,16 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Flex } from '@chakra-ui/react';
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  useDisclosure
+} from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
 import { SiGithub, SiBitbucket } from 'react-icons/si';
 
@@ -15,10 +25,10 @@ import {
 } from '../../redux/services/authApi';
 import { useAppSelector } from '../../redux/store';
 
-const SHOW_BITBUCKET = process.env.NODE_ENV !== 'production';
-
 const AuthButton = () => {
   const history = useHistory();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { t } = useTranslation();
   const [loginWithGithub] = useLoginWithGithubMutation();
@@ -30,6 +40,7 @@ const AuthButton = () => {
 
   const onGithubLoginClick = useCallback(async () => {
     await loginWithGithub(undefined).unwrap();
+    onClose();
     history.push('/menu');
   }, [loginWithGithub]);
 
@@ -41,48 +52,65 @@ const AuthButton = () => {
   const onCode = useCallback(
     async (code: string) => {
       await loginWithBitbucket({ code }).unwrap();
+      onClose();
       history.push('/menu');
     },
     [loginWithBitbucket]
   );
 
-  return isAuth ? (
-    <Button
-      data-e2e-id="logout_button"
-      onClick={onLogoutClicked}
-      variant="outline">
-      {t('Logout')}
-    </Button>
-  ) : (
-    <Flex flexWrap="wrap">
-      <Button
-        data-e2e-id="github_login_button"
-        onClick={onGithubLoginClick}
-        leftIcon={<SiGithub />}>
-        {t('Login with GitHub')}
-      </Button>
-      {SHOW_BITBUCKET && (
-        /* @ts-ignore */
-        <OauthPopup
-          onCode={onCode}
-          onClose={noop}
-          url={`https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.REACT_APP_BITBUCKET_KEY}&response_type=code`}>
-          <Button
-            onClick={
-              window.Cypress
-                ? () => {
-                    onCode('1234');
-                  }
-                : undefined
-            }
-            data-e2e-id="bitbucket_login_button"
-            leftIcon={<SiBitbucket />}
-            isLoading={isBitbucketLoading}>
-            {t('Login with Bitbucket')}
-          </Button>
-        </OauthPopup>
+  return (
+    <>
+      {isAuth ? (
+        <Button
+          data-e2e-id="logout_button"
+          onClick={onLogoutClicked}
+          variant="outline">
+          {t('Logout')}
+        </Button>
+      ) : (
+        <Button data-e2e-id="login_button" onClick={onOpen}>
+          {t('Login')}
+        </Button>
       )}
-    </Flex>
+
+      <Modal isOpen={isOpen} onClose={onClose} size="xs">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalHeader textAlign="center" />
+          <ModalBody>
+            <Stack>
+              <Button
+                data-e2e-id="github_login_button"
+                onClick={onGithubLoginClick}
+                leftIcon={<SiGithub />}>
+                {t('Login with GitHub')}
+              </Button>
+              {/* @ts-ignore */}
+              <OauthPopup
+                onCode={onCode}
+                onClose={noop}
+                url={`https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.REACT_APP_BITBUCKET_KEY}&response_type=code`}>
+                <Button
+                  w="100%"
+                  onClick={
+                    window.Cypress
+                      ? () => {
+                          onCode('1234');
+                        }
+                      : undefined
+                  }
+                  data-e2e-id="bitbucket_login_button"
+                  leftIcon={<SiBitbucket />}
+                  isLoading={isBitbucketLoading}>
+                  {t('Login with Bitbucket')}
+                </Button>
+              </OauthPopup>
+            </Stack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
