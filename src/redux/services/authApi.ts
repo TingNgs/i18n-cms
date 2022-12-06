@@ -46,25 +46,22 @@ export const AuthApi = createApi({
       },
       invalidatesTags: ['Auth']
     }),
-    loginWithBitbucket: builder.mutation<{ uid: string }, { code: string }>({
-      queryFn: async ({ code }) => {
-        const { token, access_token, refresh_token, expires_in } = await fetch(
-          `${process.env.REACT_APP_FUNCTIONS_URL}bitbucket`,
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ code })
-          }
-        ).then((res) => res.json());
+    loginWithBitbucket: builder.mutation<
+      { uid: string },
+      {
+        token: string;
+        access_token: string;
+        refresh_token: string;
+        expires_in: string;
+      }
+    >({
+      queryFn: async ({ token, access_token, refresh_token, expires_in }) => {
         await setPersistence(auth, browserSessionPersistence);
         const result = await firebaseAuth.signInWithCustomToken(auth, token);
         setSessionStorage('access_token', access_token);
         setSessionStorage(
           'expire_in',
-          (Date.now() + 1000 * expires_in).toString()
+          (Date.now() + 1000 * parseInt(expires_in)).toString()
         );
         setSessionStorage('refresh_token', refresh_token);
         setSessionStorage('git_provider', 'bitbucket');

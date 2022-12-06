@@ -50,8 +50,11 @@ const AuthButton = () => {
   }, [logout]);
 
   const onCode = useCallback(
-    async (code: string) => {
-      await loginWithBitbucket({ code }).unwrap();
+    async (code: string, p: URLSearchParams) => {
+      const data = Object.fromEntries(p) as Parameters<
+        typeof loginWithBitbucket
+      >[0];
+      await loginWithBitbucket(data).unwrap();
       onClose();
       history.push('/menu');
     },
@@ -90,13 +93,13 @@ const AuthButton = () => {
               <OauthPopup
                 onCode={onCode}
                 onClose={noop}
-                url={`https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.REACT_APP_BITBUCKET_KEY}&response_type=code`}>
+                url={`${process.env.REACT_APP_FUNCTIONS_URL}bitbucket/auth?redirectUrl=${window.location}`}>
                 <Button
                   w="100%"
                   onClick={
                     window.Cypress
                       ? () => {
-                          onCode('1234');
+                          onCode('1234', new URLSearchParams(''));
                         }
                       : undefined
                   }
