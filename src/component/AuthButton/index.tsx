@@ -99,7 +99,12 @@ const AuthButton = () => {
                   onClick={
                     window.Cypress
                       ? () => {
-                          onCode('1234', new URLSearchParams(''));
+                          onCode(
+                            '1234',
+                            new URLSearchParams(
+                              'access_token=asd&expires_in=7200&refresh_token=mock_refresh_token&token=token'
+                            )
+                          );
                         }
                       : undefined
                   }

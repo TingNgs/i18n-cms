@@ -1,13 +1,54 @@
 import { Bitbucket } from 'bitbucket';
 import multimatch from 'multimatch';
 import { FILE_TYPE_MAP_DATA } from '../../../constants';
-import { getSessionStorage } from '../../storage';
+import { getSessionStorage, setSessionStorage } from '../../storage';
 import { ERROR_MSG } from '../constants';
 import GitApi from '../interface';
 
+let isRefreshing = false;
+let refreshQueue: (() => void)[] = [];
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = getSessionStorage('refresh_token');
+    const data = await fetch(
+      `${process.env.REACT_APP_FUNCTIONS_URL}bitbucket/refresh`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refreshToken })
+      }
+    ).then((res) => res.json());
+    const { access_token, expires_in, refresh_token } = data;
+
+    setSessionStorage('access_token', access_token);
+    setSessionStorage(
+      'expire_in',
+      (Date.now() + 1000 * parseInt(expires_in)).toString()
+    );
+    setSessionStorage('refresh_token', refresh_token);
+  } finally {
+    isRefreshing = false;
+    refreshQueue.forEach((res) => res());
+    refreshQueue = [];
+  }
+};
+
 let bitbucket = new Bitbucket({ notice: false });
 let prevToken: string | undefined = undefined;
-const setupBitbucketClient = () => {
+const setupBitbucketClient = async () => {
+  const expireIn = getSessionStorage('expire_in');
+  if (expireIn && parseInt(expireIn) < Date.now()) {
+    if (!isRefreshing) {
+      refreshAccessToken();
+      isRefreshing = true;
+    }
+    await new Promise<void>((res) => {
+      refreshQueue.push(res);
+    });
+  }
+
   const token = (getSessionStorage('git_provider') === 'bitbucket' &&
     getSessionStorage('access_token')) as string;
   if (prevToken !== token) {
@@ -27,19 +68,19 @@ setupBitbucketClient();
 
 const BitbucketApi: GitApi = {
   getCurrentUser: async () => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const result = await bitbucket.users.getAuthedUser({});
     return { name: result.data.username || '' };
   },
   getOrganization: async () => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const result = await bitbucket.workspaces.getWorkspaces({});
     return (
       result.data?.values?.map((value) => ({ name: value.slug || '' })) || []
     );
   },
   getRepo: async ({ repo, owner }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const { data } = await bitbucket.repositories
       .get({
         repo_slug: repo,
@@ -62,7 +103,7 @@ const BitbucketApi: GitApi = {
     };
   },
   createRepo: async ({ name, visibility, owner }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const { data } = await bitbucket.repositories
       .create({
         repo_slug: name,
@@ -90,7 +131,7 @@ const BitbucketApi: GitApi = {
     };
   },
   getContent: async ({ repo, owner, path, commitHash }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const result = await bitbucket.source.read({
       workspace: owner,
       repo_slug: repo,
@@ -100,7 +141,7 @@ const BitbucketApi: GitApi = {
     return result?.data as unknown as string;
   },
   createBranch: async ({ repo, owner, branch, hash }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const result = await bitbucket.repositories
       .createBranch({
         repo_slug: repo,
@@ -117,7 +158,7 @@ const BitbucketApi: GitApi = {
     return result.data;
   },
   getTree: async ({ repo, owner, hash, repoConfig }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     let data: {
       path?: string | undefined;
     }[] = [];
@@ -155,7 +196,7 @@ const BitbucketApi: GitApi = {
     return data;
   },
   getBranch: async ({ repo, owner, branch }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
     const { data } = await bitbucket.repositories
       .getBranch({
         repo_slug: repo,
@@ -198,7 +239,7 @@ const BitbucketApi: GitApi = {
     filesToDelete,
     files
   }) => {
-    setupBitbucketClient();
+    await setupBitbucketClient();
 
     const requestBody = new FormData();
     requestBody.append('branch', branch);

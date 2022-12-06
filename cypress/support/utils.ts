@@ -291,17 +291,6 @@ export const mockOAuth = (gitProvider: GitProvider) => {
       break;
     }
     case 'bitbucket': {
-      cy.intercept('POST', '**/bitbucket', {
-        body: {
-          access_token: '',
-          scopes: 'account repository:admin team repository:write',
-          token_type: 'bearer',
-          expires_in: 7200,
-          state: 'authorization_code',
-          refresh_token: 'mock_refresh_token',
-          token: 'mock_custom_token'
-        }
-      });
       cy.window()
         .its('firebaseAuth')
         .then((firebaseAuth) => {

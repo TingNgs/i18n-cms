@@ -13,6 +13,29 @@ initializeApp({
 const app = express();
 app.use(cors({ origin: true }));
 
+app.post(
+  '/refresh',
+  async (request: express.Request, response: express.Response) => {
+    const { refreshToken } = request.body;
+
+    const { data } = await axios.post(
+      `https://bitbucket.org/site/oauth2/access_token`,
+      `grant_type=refresh_token&refresh_token=${refreshToken}`,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        auth: {
+          username: process.env.BITBUCKET_KEY || '',
+          password: process.env.BITBUCKET_SECRET || ''
+        }
+      }
+    );
+    response.set('Access-Control-Allow-Origin', '*');
+    response.send(data);
+  }
+);
+
 app.get(
   '/auth',
   async (request: express.Request, response: express.Response) => {
