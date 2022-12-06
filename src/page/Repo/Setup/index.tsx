@@ -231,6 +231,11 @@ const BranchFormModal = ({ repo }: IProps) => {
             message: t('Branch already exists')
           });
           break;
+        case ERROR_MSG.BRANCH_PERMISSION_VIOLATED:
+          setError('newBranchName', {
+            message: t('Protected branch not supported')
+          });
+          break;
         default:
           console.log(e);
           toast({ title: commonT('Something went wrong'), status: 'error' });

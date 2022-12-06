@@ -156,6 +156,23 @@ gitProviders.map((gitProvider) => {
       );
     });
 
+    it('create protected branch', () => {
+      setBranchProtected({
+        branch: 'yoyoyo',
+        gitProvider,
+        repo: SETUP_REPO_NAME
+      });
+      cy.get('[data-e2e-id="branch_action_create"]').click();
+      cy.get('input[name="baseOn"]').type('main');
+      cy.get('input[name="newBranchName"]').type('yoyoyo');
+      cy.get('button[type="submit"]').click();
+      cy.loadingWithModal();
+      cy.get(`input[name="newBranchName"] + ${ERROR_MSG_CLASS}`).should(
+        'contain',
+        RepoWording['Protected branch not supported']
+      );
+    });
+
     it('use branch not exist', () => {
       cy.get('input[name="existingBranchName"]').type('iaushdislahd');
       cy.get('button[type="submit"]').click();

@@ -1,10 +1,13 @@
 import { Octokit } from '@octokit/rest';
+import { graphql, GraphQlQueryResponseData } from '@octokit/graphql';
+import multimatch from 'multimatch';
 import commitMultipleFiles from './commitMultipleFiles';
 import { getSessionStorage } from '../../storage';
 import GitApi from '../interface';
 import { ERROR_MSG } from '../constants';
 
 let octokit = new Octokit();
+let graphqlWithAuth = graphql;
 let prevToken: string | undefined = undefined;
 const setupOctokitClient = () => {
   const token = (getSessionStorage('git_provider') === 'github' &&
@@ -13,6 +16,11 @@ const setupOctokitClient = () => {
     prevToken = token;
     octokit = new Octokit({
       auth: token
+    });
+    graphqlWithAuth = graphql.defaults({
+      headers: {
+        authorization: `token ${token}`
+      }
     });
   }
 };
@@ -43,6 +51,7 @@ const Github: GitApi = {
         if (err.status === 404) throw new Error(ERROR_MSG.REPO_NOT_FOUND);
         throw err;
       });
+
     const permission = getPermission(data.permissions);
     return {
       owner: data.owner.login,
@@ -96,6 +105,33 @@ const Github: GitApi = {
   },
   createBranch: async ({ repo, owner, branch, hash }) => {
     setupOctokitClient();
+
+    const patterns = await graphqlWithAuth(
+      `query getRepository($repo: String!, $owner:String!) {
+          repository(name:$repo, owner: $owner) {
+            branchProtectionRules(first: 100) {
+              nodes {
+                pattern
+              }
+            }
+          }
+        }`,
+      {
+        repo,
+        owner
+      }
+    ).then((data) => {
+      return (
+        data as GraphQlQueryResponseData
+      ).repository.branchProtectionRules.nodes.map(
+        ({ pattern }: { pattern: string }) => pattern
+      );
+    });
+
+    if (multimatch(branch, patterns).length > 0) {
+      throw new Error(ERROR_MSG.BRANCH_PERMISSION_VIOLATED);
+    }
+
     const result = await octokit.rest.git
       .createRef({
         repo,
@@ -108,6 +144,16 @@ const Github: GitApi = {
           throw new Error(ERROR_MSG.BRANCH_ALREADY_EXIST);
         throw err;
       });
+
+    const { data: newBranch } = await octokit.rest.repos.getBranch({
+      repo,
+      owner,
+      branch
+    });
+    if (newBranch.protected) {
+      throw new Error(ERROR_MSG.BRANCH_PERMISSION_VIOLATED);
+    }
+
     return result.data;
   },
   getTree: async ({ repo, owner, hash }) => {
@@ -139,7 +185,7 @@ const Github: GitApi = {
       commitHash: data.commit.sha,
       treeHash: data.commit.commit.tree.sha,
       name: data.name,
-      isProtected: !!data.protection.enabled
+      isProtected: data.protected
     };
   },
   commitFiles: async ({

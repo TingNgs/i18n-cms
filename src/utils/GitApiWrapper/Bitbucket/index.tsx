@@ -110,6 +110,8 @@ const BitbucketApi: GitApi = {
       .catch((err) => {
         if (err.error.error.code === 'BRANCH_ALREADY_EXISTS')
           throw new Error(ERROR_MSG.BRANCH_ALREADY_EXIST);
+        if (err.error.error.code === 'BRANCH_PERMISSION_VIOLATED')
+          throw new Error(ERROR_MSG.BRANCH_PERMISSION_VIOLATED);
         throw err;
       });
     return result.data;

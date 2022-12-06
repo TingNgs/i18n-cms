@@ -8,16 +8,6 @@ export interface Options {
   branch: string;
   base?: string;
   createBranch?: boolean;
-  committer?: {
-    name?: string;
-    email?: string;
-    date?: string;
-  };
-  author?: {
-    name: string;
-    email: string;
-    date?: string;
-  };
   change: {
     message: string;
     filesToDelete?: string[];
@@ -100,7 +90,7 @@ async function loadRef(
     });
     return x.data.object.sha;
   } catch (e) {
-    // console.log(e);
+    console.log(e);
   }
 }
 
@@ -112,15 +102,7 @@ export default async function (octokit: Octokit, opts: Options) {
   }
 
   // Destructuring for easier access later
-  const {
-    owner,
-    repo,
-    branch: branchName,
-    createBranch = true,
-    committer,
-    author,
-    change
-  } = opts;
+  const { owner, repo, branch: branchName, createBranch = true, change } = opts;
   let { base } = opts;
 
   let branchAlreadyExists = true;
@@ -250,8 +232,6 @@ export default async function (octokit: Octokit, opts: Options) {
     owner,
     repo,
     message,
-    committer,
-    author,
     tree: tree.sha,
     parents: [baseTree]
   });

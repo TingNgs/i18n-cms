@@ -1,10 +1,16 @@
 import { Bitbucket } from 'bitbucket';
 import { Octokit } from '@octokit/rest';
+import { graphql } from '@octokit/graphql';
 import { noop } from 'lodash-es';
 import { setSessionStorage } from '../../src/utils/storage';
 import { getRepoUrl } from '../../src/utils';
 
 const octokit = new Octokit({ auth: Cypress.env('GITHUB_PAT') });
+const graphqlWithAuth = graphql.defaults({
+  headers: {
+    authorization: `token ${Cypress.env('GITHUB_PAT')}`
+  }
+});
 const bitbucket = new Bitbucket({
   notice: false,
   auth: {
@@ -179,19 +185,38 @@ export const setBranchProtected = ({
 }) => {
   switch (gitProvider) {
     case 'github': {
+      let id = '';
       waitFor(() => {
         cy.wrap(
-          octokit.rest.repos.updateBranchProtection({
-            owner: owner || getOwner('github'),
-            repo,
-            branch,
-            required_pull_request_reviews: {},
-            required_status_checks: { strict: false, contexts: [] },
-            enforce_admins: true,
-            restrictions: null
-          })
+          octokit.rest.repos
+            .get({
+              repo,
+              owner: owner || (getOwner('github') as string)
+            })
+            .then(({ data }) => {
+              id = data.node_id;
+              return data;
+            })
         );
       });
+      waitFor(() => {
+        cy.wrap(
+          graphqlWithAuth(
+            `mutation addBranchProtection($repositoryId:ID!, $pattern:String!) {
+              createBranchProtectionRule(input: {
+                pattern: $pattern
+                repositoryId: $repositoryId
+              }) {
+                branchProtectionRule {
+                  id
+                }
+              }
+            }`,
+            { repositoryId: id, pattern: branch }
+          )
+        );
+      });
+
       break;
     }
     case 'bitbucket': {
