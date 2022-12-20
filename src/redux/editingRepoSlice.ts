@@ -10,6 +10,7 @@ export interface RepoConfig {
   pattern: string;
   defaultLanguage: string;
   languages: string[];
+  targetPattern?: string;
   useCustomPath?: boolean;
   namespaces?: string[];
 }

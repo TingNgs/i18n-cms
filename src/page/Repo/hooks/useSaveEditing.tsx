@@ -50,33 +50,41 @@ export const isDataChangedSelector = createSelector(
       data[namespace] = {};
       for (const language of languages) {
         data[namespace][language] = {};
-        for (const localeId of localeIds[namespace]) {
-          const localeData = modifiedLocalesData[namespace][localeId];
-          const localeKey = localeData['key'];
-          const locale = get(localeData, ['value', language]);
-          const oldLocale = get(originalLocalesData, [
-            namespace,
-            language,
-            localeKey
-          ]);
-          if ((locale || oldLocale) && locale !== oldLocale) {
-            return true;
-          }
 
-          if (locale !== undefined)
-            data[namespace][language][localeKey] = locale;
-        }
-        if (
-          dataStringifyByType[editingRepoConfig.fileType](
-            data[namespace]?.[language]
-          ) ===
-          dataStringifyByType[editingRepoConfig.fileType](
-            originalLocalesData[namespace]?.[language]
-          )
-        ) {
-          delete data[namespace][language];
-        } else {
-          return true;
+        switch (editingRepoConfig.fileType) {
+          case 'md': {
+            break;
+          }
+          default: {
+            for (const localeId of localeIds[namespace]) {
+              const localeData = modifiedLocalesData[namespace][localeId];
+              const localeKey = localeData['key'];
+              const locale = get(localeData, ['value', language]);
+              const oldLocale = get(originalLocalesData, [
+                namespace,
+                language,
+                localeKey
+              ]);
+              if ((locale || oldLocale) && locale !== oldLocale) {
+                return true;
+              }
+
+              if (locale !== undefined)
+                data[namespace][language][localeKey] = locale;
+            }
+            if (
+              dataStringifyByType[editingRepoConfig.fileType](
+                data[namespace]?.[language]
+              ) ===
+              dataStringifyByType[editingRepoConfig.fileType](
+                originalLocalesData[namespace]?.[language]
+              )
+            ) {
+              delete data[namespace][language];
+            } else {
+              return true;
+            }
+          }
         }
       }
       if (Object.keys(data[namespace]).length === 0) {
@@ -127,23 +135,30 @@ const useSaveEditing = () => {
         for (const namespace of modifiedNamespaces) {
           data[namespace] = {};
           for (const language of languages) {
-            data[namespace][language] = {};
-            for (const localeId of localeIds[namespace]) {
-              const localeData = modifiedLocalesData[namespace][localeId];
-              const locale = localeData['value'][language];
-              if (locale !== undefined)
-                data[namespace][language][localeData['key']] = locale;
-            }
+            switch (editingRepoConfig.fileType) {
+              case 'md': {
+                break;
+              }
+              default: {
+                data[namespace][language] = {};
+                for (const localeId of localeIds[namespace]) {
+                  const localeData = modifiedLocalesData[namespace][localeId];
+                  const locale = localeData['value'][language];
+                  if (locale !== undefined)
+                    data[namespace][language][localeData['key']] = locale;
+                }
 
-            if (
-              dataStringifyByType[editingRepoConfig.fileType](
-                data[namespace][language]
-              ) ===
-              dataStringifyByType[editingRepoConfig.fileType](
-                originalLocalesData[namespace]?.[language]
-              )
-            ) {
-              delete data[namespace][language];
+                if (
+                  dataStringifyByType[editingRepoConfig.fileType](
+                    data[namespace][language]
+                  ) ===
+                  dataStringifyByType[editingRepoConfig.fileType](
+                    originalLocalesData[namespace]?.[language]
+                  )
+                ) {
+                  delete data[namespace][language];
+                }
+              }
             }
           }
           if (Object.keys(data[namespace]).length === 0) {

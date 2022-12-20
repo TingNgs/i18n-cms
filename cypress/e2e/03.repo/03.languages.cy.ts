@@ -57,6 +57,7 @@ gitProviders.map((gitProvider) => {
 
     it('crud language', () => {
       visitRepo(LANGUAGES_REPO_FULL_NAME, '01/crud-language');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
       cy.get('[data-e2e-id="languages_accordion_button"]').click();
@@ -71,6 +72,7 @@ gitProviders.map((gitProvider) => {
       cy.save();
 
       visitRepo(LANGUAGES_REPO_FULL_NAME, '01/crud-language');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
       cy.get('[data-e2e-id="languages_accordion_button"]').click();
@@ -83,6 +85,7 @@ gitProviders.map((gitProvider) => {
       cy.save();
 
       visitRepo(LANGUAGES_REPO_FULL_NAME, '01/crud-language');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
       cy.get('[data-e2e-id="languages_accordion_button"]').click();
@@ -106,6 +109,7 @@ gitProviders.map((gitProvider) => {
     it('language visibility', () => {
       const languages = ['en', 'zh'];
       visitRepo(LANGUAGES_REPO_FULL_NAME, '03/language-visibility');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
       cy.get('[data-e2e-id="languages_accordion_button"]').click();
@@ -155,6 +159,7 @@ gitProviders.map((gitProvider) => {
 
     it('reorder language', () => {
       visitRepo(LANGUAGES_REPO_FULL_NAME, '04/reorder-languages');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
       cy.get('[data-e2e-id="languages_accordion_button"]').click();

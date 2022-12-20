@@ -36,12 +36,7 @@ const useGetNamespaces = () => {
         compact(map(tree, 'path')),
         repoConfig.pattern
           .replace(':ns', '**')
-          .replace(
-            ':lng',
-            repoConfig.languages.length > 1
-              ? `{${repoConfig.languages.join(',')}}`
-              : repoConfig.languages[0]
-          )
+          .replace(':lng', repoConfig.defaultLanguage)
           .concat(`.${FILE_TYPE_MAP_DATA[repoConfig.fileType].ext}`)
       );
       const pattern = new UrlPattern(

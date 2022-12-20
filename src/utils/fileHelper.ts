@@ -12,21 +12,23 @@ const dataToYaml = (data: Record<string, unknown>) => {
   return YAML.stringify(data);
 };
 
-const jsonToData = (json: string) => JSON.parse(json);
-const yamlToData = (yaml: string) => YAML.parse(yaml);
+const jsonToData = (json?: string) => JSON.parse(json || '{}');
+const yamlToData = (yaml?: string) => YAML.parse(yaml || '{}');
 
 export const dataStringifyByType = {
   json: (data: Record<string, unknown>) => dataToJson(unflatten(data)),
   yaml: (data: Record<string, unknown>) => dataToYaml(unflatten(data)),
   json_flatten: dataToJson,
-  yaml_flatten: dataToYaml
+  yaml_flatten: dataToYaml,
+  md: (value: string) => value
 };
 
 export const fileParseByType = {
   json: jsonToData,
   yaml: yamlToData,
   json_flatten: jsonToData,
-  yaml_flatten: yamlToData
+  yaml_flatten: yamlToData,
+  md: (value?: string) => value || ''
 };
 
 export const getLocalePath = async ({
@@ -38,15 +40,18 @@ export const getLocalePath = async ({
   namespace: string;
   repoConfig: RepoConfig;
 }) => {
-  const { fileType, pattern, useCustomPath } = repoConfig;
+  const { fileType, pattern, targetPattern, useCustomPath } = repoConfig;
+  if (useCustomPath && window.getCustomPath)
+    return window.getCustomPath({ namespace, language, repoConfig });
 
-  const fullPath =
-    useCustomPath && window.getCustomPath
-      ? await window.getCustomPath({ namespace, language, repoConfig })
+  const fullPath = (
+    language !== repoConfig.defaultLanguage && targetPattern
+      ? targetPattern
       : pattern
-          .replace(':lng', language)
-          .replace(':ns', namespace)
-          .concat(`.${FILE_TYPE_MAP_DATA[fileType].ext}`);
+  )
+    .replace(':lng', language)
+    .replace(':ns', namespace)
+    .concat(`.${FILE_TYPE_MAP_DATA[fileType].ext}`);
 
   return fullPath;
 };
@@ -68,10 +73,17 @@ export const dataToFiles = async ({
 
   for (const namespace of namespaces) {
     for (const language of repoConfig.languages) {
-      const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
-      if (!translation) continue;
-      const path = await getLocalePath({ language, namespace, repoConfig });
-      files[path] = dataStringifyByType[repoConfig.fileType](translation);
+      switch (repoConfig.fileType) {
+        case 'md': {
+          break;
+        }
+        default: {
+          const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
+          if (!translation) continue;
+          const path = await getLocalePath({ language, namespace, repoConfig });
+          files[path] = dataStringifyByType[repoConfig.fileType](translation);
+        }
+      }
     }
   }
   return files;

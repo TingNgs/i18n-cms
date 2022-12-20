@@ -1,12 +1,8 @@
-import flatten from 'flat';
+import { flatten } from 'flat';
 import { useAppStore } from '../../../redux/store';
 
 import { useLazyGetContentQuery } from '../../../redux/services/octokitApi';
-import {
-  dataStringifyByType,
-  fileParseByType,
-  getLocalePath
-} from '../../../utils/fileHelper';
+import { fileParseByType, getLocalePath } from '../../../utils/fileHelper';
 
 const useGetEditingRepoLocalByNs = () => {
   const { getState } = useAppStore();
@@ -33,14 +29,13 @@ const useGetEditingRepoLocalByNs = () => {
         commitHash: commitHash || ''
       })
         .unwrap()
-        .catch(() => null)
+        .catch(() => undefined)
     );
     const files = await Promise.all(filesPromise);
     return files.reduce<{ [language: string]: { [key: string]: string } }>(
       (acc, cur, index) => {
-        const file = cur || dataStringifyByType[repoConfig.fileType]({});
         acc[languages[index]] = flatten(
-          fileParseByType[repoConfig.fileType](file)
+          fileParseByType[repoConfig.fileType](cur)
         );
         return acc;
       },

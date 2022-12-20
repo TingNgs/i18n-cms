@@ -1,6 +1,12 @@
-export const FLATTEN_FILE_TYPE = ['json_flatten', 'yaml_flatten'] as const;
+const isDev = process.env.NODE_ENV === 'development';
 
-export const FILE_TYPE = ['json', 'yaml', ...FLATTEN_FILE_TYPE] as const;
+export const FLATTEN_FILE_TYPE = ['json_flatten', 'yaml_flatten'] as const;
+export const FILE_TYPE = [
+  'json',
+  'yaml',
+  ...FLATTEN_FILE_TYPE,
+  ...(isDev ? (['md'] as const) : [])
+] as const;
 
 export const REPOSITORY_VISIBILITY = ['public', 'private'] as const;
 
@@ -10,7 +16,8 @@ export const FILE_TYPE_MAP_DATA: {
   json: { ext: 'json', label: 'JSON' },
   yaml: { ext: 'yaml', label: 'YAML' },
   json_flatten: { ext: 'json', label: 'JSON (flatten)' },
-  yaml_flatten: { ext: 'yaml', label: 'YAML (flatten)' }
+  yaml_flatten: { ext: 'yaml', label: 'YAML (flatten)' },
+  md: { ext: 'md', label: 'Markdown' }
 };
 
 export const CONFIG_FOLDER = '.i18n-cms' as const;
