@@ -2,7 +2,8 @@ import React, {
   KeyboardEventHandler,
   memo,
   useCallback,
-  useEffect
+  useEffect,
+  useRef
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowDownIcon, ArrowUpIcon, SearchIcon } from '@chakra-ui/icons';
@@ -14,12 +15,14 @@ import {
   InputRightElement,
   Text
 } from '@chakra-ui/react';
+import { noop } from 'lodash-es';
 
 import { useAppDispatch, useAppSelector } from '../../../../redux/store';
 import { onNextMatch, setFindText } from '../../../../redux/editingRepoSlice';
 import useFindMatches from './useFindMatches';
 
 const SearchBar = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation('repo');
   const dispatch = useAppDispatch();
 
@@ -63,15 +66,39 @@ const SearchBar = () => {
     []
   );
 
+  const searchBarDisabled = !selectedNamespace;
+
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    const isMac = navigator.platform.toUpperCase().includes('MAC');
+    if (e.key == 'f' && (isMac ? e.metaKey : e.ctrlKey) && inputRef.current) {
+      e.preventDefault();
+      const text = window.getSelection()?.toString().trim();
+      inputRef.current.focus();
+      if (text) {
+        inputRef.current.value = text;
+        dispatch(setFindText({ text }));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (searchBarDisabled) return noop;
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [searchBarDisabled, onKeyDown]);
+
   return (
     <InputGroup size="sm">
       <InputLeftElement>
         <SearchIcon />
       </InputLeftElement>
       <Input
+        ref={inputRef}
         value={findText}
         onChange={onChange}
-        disabled={!selectedNamespace}
+        disabled={searchBarDisabled}
         borderRadius="5"
         placeholder={t('Search by key or value')}
         onKeyDown={onInputKeyDown}
