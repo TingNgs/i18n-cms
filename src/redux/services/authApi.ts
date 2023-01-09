@@ -46,16 +46,23 @@ export const AuthApi = createApi({
       },
       invalidatesTags: ['Auth']
     }),
-    loginWithBitbucket: builder.mutation<
+    loginWithOauth: builder.mutation<
       { uid: string },
       {
+        provider: 'bitbucket' | 'gitlab';
         token: string;
         access_token: string;
         refresh_token: string;
         expires_in: string;
       }
     >({
-      queryFn: async ({ token, access_token, refresh_token, expires_in }) => {
+      queryFn: async ({
+        provider,
+        token,
+        access_token,
+        refresh_token,
+        expires_in
+      }) => {
         await setPersistence(auth, browserSessionPersistence);
         const result = await firebaseAuth.signInWithCustomToken(auth, token);
         setSessionStorage('access_token', access_token);
@@ -64,7 +71,7 @@ export const AuthApi = createApi({
           (Date.now() + 1000 * parseInt(expires_in)).toString()
         );
         setSessionStorage('refresh_token', refresh_token);
-        setSessionStorage('git_provider', 'bitbucket');
+        setSessionStorage('git_provider', provider);
 
         return { data: { uid: result.user.uid } };
       },
@@ -85,6 +92,6 @@ export const AuthApi = createApi({
 
 export const {
   useLoginWithGithubMutation,
-  useLoginWithBitbucketMutation,
+  useLoginWithOauthMutation,
   useLogoutMutation
 } = AuthApi;

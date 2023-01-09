@@ -42,7 +42,7 @@ export const appSlice = createSlice({
       }
     );
     builder.addMatcher(
-      AuthApi.endpoints.loginWithBitbucket.matchFulfilled,
+      AuthApi.endpoints.loginWithOauth.matchFulfilled,
       (state, { payload }) => {
         state.authState = 'signIn';
         state.firebaseUid = payload.uid;

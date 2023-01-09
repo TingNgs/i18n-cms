@@ -1,6 +1,8 @@
+import GitApiWrapper from './GitApiWrapper';
+
 interface SessionStorage {
   access_token: string;
-  git_provider: 'github' | 'bitbucket';
+  git_provider: keyof typeof GitApiWrapper;
   expire_in: string;
   refresh_token: string;
 }
