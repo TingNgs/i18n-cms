@@ -129,7 +129,10 @@ const GitlabApi: GitApi = {
       branch,
       hash
     ).catch((err) => {
-      /// TODO
+      if (err.description === 'Branch already exists')
+        throw new Error(ERROR_MSG.BRANCH_ALREADY_EXIST);
+      if (err.description === 'creation denied by custom hooks')
+        throw new Error(ERROR_MSG.BRANCH_PERMISSION_VIOLATED);
       throw err;
     });
     return result.data;
@@ -165,7 +168,14 @@ const GitlabApi: GitApi = {
   },
   getBranch: async ({ repo, owner, branch }) => {
     await setupGitlabClient();
-    const data = await gitlab.Branches.show(`${owner}/${repo}`, branch);
+    const data = await gitlab.Branches.show(`${owner}/${repo}`, branch).catch(
+      (err) => {
+        if (err.description === '404 Branch Not Found') {
+          throw new Error(ERROR_MSG.BRANCH_NOT_FOUND);
+        }
+        throw err;
+      }
+    );
     return {
       commitHash: data.commit.id as string,
       treeHash: '',
