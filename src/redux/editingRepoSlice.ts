@@ -31,6 +31,7 @@ export interface ModifiedLocalesData {
 export interface EditingRepoState {
   editingRepo?: Repo;
   editingRepoConfig?: RepoConfig;
+  configExist: boolean;
   customPathHandlerScript?: string;
   branch?: string;
   commitHash?: string;
@@ -83,7 +84,8 @@ const initialState: EditingRepoState = {
   filteredIds: [],
   findText: '',
   findMatches: [],
-  selectedMatch: null
+  selectedMatch: null,
+  configExist: false
 };
 
 export const editingRepoSlice = createSlice({
@@ -101,6 +103,7 @@ export const editingRepoSlice = createSlice({
         repoConfig: RepoConfig;
         branch: string;
         commitHash: string;
+        configExist: boolean;
         customPathHandlerScript?: string;
       }>
     ) => {
@@ -108,12 +111,14 @@ export const editingRepoSlice = createSlice({
         namespaces,
         languages,
         repoConfig,
+        configExist,
         branch,
         commitHash,
         customPathHandlerScript
       } = action.payload;
       state.commitHash = commitHash;
       state.editingRepoConfig = repoConfig;
+      state.configExist = configExist;
       state.customPathHandlerScript = customPathHandlerScript;
       state.branch = branch;
       state.languages = languages.reduce<string[]>((acc, cur) => {
@@ -252,6 +257,7 @@ export const editingRepoSlice = createSlice({
       });
       state.originalLanguages = state.languages;
       state.originalNamespaces = state.namespaces;
+      state.configExist = true;
       for (const namespace in data) {
         if (!state.originalLocalesData[namespace]) {
           state.originalLocalesData[namespace] = {};

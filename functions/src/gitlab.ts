@@ -8,6 +8,29 @@ const querystring = require('querystring');
 const app = express();
 app.use(cors({ origin: true }));
 
+app.post(
+  '/refresh',
+  async (request: express.Request, response: express.Response) => {
+    const { refreshToken } = request.body;
+    const { data } = await axios.post(`https://gitlab.com/oauth/token`, null, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+        'Accept-Encoding': false
+      },
+
+      params: {
+        grant_type: 'refresh_token',
+        client_id: process.env.GITLAB_CLIENT_ID,
+        client_secret: process.env.GITLAB_SECRET,
+        refresh_token: refreshToken
+      }
+    });
+
+    response.send(data);
+  }
+);
+
 app.get(
   '/auth',
   async (request: express.Request, response: express.Response) => {
@@ -22,7 +45,7 @@ app.get(
         redirectUrl
       });
       response.redirect(
-        `https://gitlab.com/oauth/authorize?${query}&scope=read_api+read_user+read_repository+write_repository`
+        `https://gitlab.com/oauth/authorize?${query}&scope=api+read_api+read_user+read_repository+write_repository`
       );
       return;
     }

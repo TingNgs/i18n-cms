@@ -155,7 +155,8 @@ const BranchFormModal = ({ repo }: IProps) => {
         languages: repoConfig.languages,
         repoConfig,
         branch: branchName,
-        commitHash: branch.commitHash
+        commitHash: branch.commitHash,
+        configExist: !isNewConfig
       };
 
       if (repoConfig.useCustomPath && repoConfig.namespaces !== undefined) {
@@ -171,6 +172,7 @@ const BranchFormModal = ({ repo }: IProps) => {
         const namespaces = await getNamespaces({
           repo,
           repoConfig,
+          branch: branch.name,
           rootSha: branch.treeHash
         });
         initRepoData.namespaces = namespaces;

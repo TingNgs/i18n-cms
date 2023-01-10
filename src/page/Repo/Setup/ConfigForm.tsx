@@ -58,6 +58,7 @@ const ConfigForm = ({ repo, onCancel }: IProps) => {
       const data = await getNamespaces({
         repo,
         repoConfig: { ...config },
+        branch: branch.name,
         rootSha: branch.treeHash
       });
       setNamespaces(data);

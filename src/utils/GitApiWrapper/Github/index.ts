@@ -36,12 +36,12 @@ const Github: GitApi = {
   getCurrentUser: async () => {
     setupOctokitClient();
     const result = await octokit.rest.users.getAuthenticated();
-    return { name: result.data.login };
+    return { name: result.data.login, id: result.data.id };
   },
   getOrganization: async () => {
     setupOctokitClient();
     const result = await octokit.rest.orgs.listForAuthenticatedUser();
-    return result.data.map((org) => ({ name: org.login }));
+    return result.data.map((org) => ({ name: org.login, id: org.id }));
   },
   getRepo: async ({ repo, owner }) => {
     setupOctokitClient();
@@ -197,12 +197,16 @@ const Github: GitApi = {
     files
   }) => {
     setupOctokitClient();
+    const filesData: { [key: string]: string } = {};
+    Object.entries(files).forEach(([key, file]) => {
+      filesData[key] = file.content;
+    });
     const result = await commitMultipleFiles(octokit, {
       owner,
       branch,
       repo,
       change: {
-        files,
+        files: filesData,
         message,
         filesToDelete,
         ignoreDeletionFailures: true

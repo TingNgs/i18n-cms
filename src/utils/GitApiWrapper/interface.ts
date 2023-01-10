@@ -2,9 +2,13 @@ import { Owner } from '../../component/OwnerSelect';
 import { REPOSITORY_VISIBILITY } from '../../constants';
 import { RepoConfig } from '../../redux/editingRepoSlice';
 
+export interface Files {
+  [path: string]: { content: string; action: 'update' | 'create' };
+}
+
 interface GitApi {
-  getCurrentUser: () => Promise<{ name: string }>;
-  getOrganization: () => Promise<{ name: string }[]>;
+  getCurrentUser: () => Promise<{ name: string; id: number | string }>;
+  getOrganization: () => Promise<{ name: string; id: number | string }[]>;
   getRepo: (data: { owner: string; repo: string }) => Promise<{
     owner: string;
     repo: string;
@@ -38,6 +42,7 @@ interface GitApi {
     repo: string;
     owner: string;
     hash: string;
+    branch: string;
     repoConfig: RepoConfig;
   }) => Promise<{ path?: string }[]>;
   getBranch: (data: {
@@ -56,7 +61,7 @@ interface GitApi {
     branch: string;
     message: string;
     filesToDelete?: string[];
-    files: { [path: string]: string };
+    files: Files;
   }) => Promise<{ url: string; hash: string }>;
 }
 
