@@ -1,4 +1,9 @@
 describe('cookies policy', () => {
+  beforeEach(() => {
+    cy.window().then(() => {
+      localStorage.setItem('i18nextLng', 'en');
+    });
+  });
   it('accept cookies policy', () => {
     cy.visit('/');
     cy.get('[data-e2e-id="cookies_accept_button"]').click();

@@ -1,8 +1,11 @@
 import { Repo } from '../redux/editingRepoSlice';
 import { getSessionStorage } from './storage';
 
-export const getRepoUrl = (repo: { fullName: string }) => {
-  switch (getSessionStorage('git_provider')) {
+export const getRepoUrl = (
+  repo: { fullName: string },
+  gitProvider = getSessionStorage('git_provider')
+) => {
+  switch (gitProvider) {
     case 'bitbucket':
       return `https://bitbucket.org/${repo.fullName}`;
     case 'gitlab':
@@ -13,8 +16,12 @@ export const getRepoUrl = (repo: { fullName: string }) => {
   }
 };
 
-export const getBranchUrl = (repo: Repo, branch: string) => {
-  switch (getSessionStorage('git_provider')) {
+export const getBranchUrl = (
+  repo: Repo,
+  branch: string,
+  gitProvider = getSessionStorage('git_provider')
+) => {
+  switch (gitProvider) {
     case 'bitbucket':
       return `${getRepoUrl(repo)}/branch/${branch}`;
     case 'gitlab':

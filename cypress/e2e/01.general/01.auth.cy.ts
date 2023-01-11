@@ -1,8 +1,12 @@
-import { gitProviders, login, mockOAuth } from '../../support/utils';
+import { gitProviders, login, logout, mockOAuth } from '../../support/utils';
 
 describe(`auth`, () => {
   beforeEach(() => {
-    cy.logout();
+    cy.window().then(() => {
+      localStorage.setItem('i18nextLng', 'en');
+    });
+
+    logout();
   });
 
   it('visit menu when logout', () => {

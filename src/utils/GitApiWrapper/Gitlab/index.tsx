@@ -1,8 +1,11 @@
 import { Gitlab } from '@gitbeaker/browser';
+import multimatch from 'multimatch';
 import { FILE_TYPE_MAP_DATA } from '../../../constants';
 import { getSessionStorage, setSessionStorage } from '../../storage';
 import { ERROR_MSG } from '../constants';
 import GitApi from '../interface';
+
+const TREE_PAGE_SIZE = 20;
 
 let isRefreshing = false;
 let refreshQueue: (() => void)[] = [];
@@ -53,9 +56,13 @@ const setupGitlabClient = async () => {
     getSessionStorage('access_token')) as string;
   if (prevToken !== token) {
     prevToken = token;
-    gitlab = new Gitlab({
-      oauthToken: token
-    });
+    gitlab = new Gitlab(
+      window.Cypress
+        ? { token }
+        : {
+            oauthToken: token
+          }
+    );
   }
 };
 setupGitlabClient();
@@ -76,7 +83,8 @@ const GitlabApi: GitApi = {
     const data = await gitlab.Projects.show(
       `${owner}/${repo}`.toString()
     ).catch((err) => {
-      if (err.status === 404) throw new Error(ERROR_MSG.REPO_NOT_FOUND);
+      if (err.description === '404 Project Not Found')
+        throw new Error(ERROR_MSG.REPO_NOT_FOUND);
       throw err;
     });
 
@@ -124,6 +132,20 @@ const GitlabApi: GitApi = {
   },
   createBranch: async ({ repo, owner, branch, hash }) => {
     await setupGitlabClient();
+
+    const protectedBranchs = await gitlab.ProtectedBranches.all(
+      `${owner}/${repo}`
+    );
+    if (
+      protectedBranchs.some(
+        (rule) =>
+          multimatch([branch], rule.name).length > 0 &&
+          rule.push_access_levels?.every((level) => level.access_level !== 30)
+      )
+    ) {
+      throw new Error(ERROR_MSG.BRANCH_PERMISSION_VIOLATED);
+    }
+
     const result = await gitlab.Branches.create(
       `${owner}/${repo}`,
       branch,
@@ -131,8 +153,7 @@ const GitlabApi: GitApi = {
     ).catch((err) => {
       if (err.description === 'Branch already exists')
         throw new Error(ERROR_MSG.BRANCH_ALREADY_EXIST);
-      if (err.description === 'creation denied by custom hooks')
-        throw new Error(ERROR_MSG.BRANCH_PERMISSION_VIOLATED);
+
       throw err;
     });
     return result.data;
@@ -143,27 +164,24 @@ const GitlabApi: GitApi = {
       path?: string | undefined;
     }[] = [];
 
-    let page_token: string | undefined = undefined;
-    do {
-      const pathQuery = `${repoConfig.pattern}.${
-        FILE_TYPE_MAP_DATA[repoConfig.fileType].ext
-      }`
-        .replace(':lng', repoConfig.defaultLanguage)
-        .split(':ns')
-        .filter((path) => !!path);
+    const pathQuery = `${repoConfig.pattern}.${
+      FILE_TYPE_MAP_DATA[repoConfig.fileType].ext
+    }`
+      .replace(':lng', repoConfig.defaultLanguage)
+      .split(':ns')
+      .filter((path) => !!path);
 
-      const tree = await gitlab.Repositories.tree(`${owner}/${repo}`, {
-        path: pathQuery[0] || undefined,
-        per_page: 100,
-        recursive: true,
-        ref: branch,
-        page_token
-      });
-      data = data.concat(tree?.map((file) => ({ path: file.path })) || []);
-      if (tree.length === 0 || tree.length < 100) break;
+    const tree = await gitlab.Repositories.tree(`${owner}/${repo}`, {
+      path: pathQuery[0] || undefined,
+      per_page: TREE_PAGE_SIZE,
+      recursive: true,
+      ref: branch,
+      pagination: 'keyset',
+      order_by: 'id',
+      sort: 'acs'
+    });
+    data = tree?.map((file) => ({ path: file.path })) || [];
 
-      page_token = tree[tree.length - 1].id as string;
-    } while (page_token);
     return data;
   },
   getBranch: async ({ repo, owner, branch }) => {

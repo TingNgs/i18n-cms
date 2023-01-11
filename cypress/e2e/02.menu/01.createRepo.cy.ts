@@ -3,16 +3,13 @@ import {
   deleteRepo,
   deleteRepoFromMenu,
   ERROR_MSG_CLASS,
+  getOwner,
   gitProviders,
   login,
+  logout,
   TOAST_CLASS
 } from '../../support/utils';
 import MenuWording from '../../../public/locales/en/menu.json';
-import {
-  CREATE_REPO_FULL_NAME,
-  CREATE_REPO_NAME,
-  IMPORT_REPO_NAME
-} from './constants';
 
 gitProviders.map((gitProvider) => {
   describe(`create repo - ${gitProvider}`, () => {
@@ -24,6 +21,9 @@ gitProviders.map((gitProvider) => {
       cy.get('[data-e2e-id="app"]').should('exist');
       cy.get('[data-e2e-id="add_repo_button"]').click();
       cy.get('[data-e2e-id="add_repo_create"]').click();
+    });
+    after(() => {
+      logout();
     });
 
     it('test required field', () => {
@@ -44,6 +44,10 @@ gitProviders.map((gitProvider) => {
     });
 
     it('test create repo', () => {
+      const CREATE_REPO_NAME = 'mock-create-repo';
+      const CREATE_REPO_FULL_NAME = `${getOwner(
+        gitProvider
+      )}/${CREATE_REPO_NAME}`;
       deleteRepo({ gitProvider, repo: CREATE_REPO_NAME });
       cy.get('input[name="name"]').type(CREATE_REPO_NAME);
       cy.get('button[type="submit"]', { timeout: 50000 }).should('be.enabled');
@@ -76,6 +80,7 @@ gitProviders.map((gitProvider) => {
     });
 
     it('test create repo repeated', () => {
+      const IMPORT_REPO_NAME = 'mock-import-repo';
       cy.get('input[name="name"]').type(IMPORT_REPO_NAME);
       cy.get('button[type="submit"]').click();
       cy.loadingWithModal();

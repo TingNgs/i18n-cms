@@ -24,15 +24,19 @@ import { getSessionStorage } from '../../../utils/storage';
 import GitApiWrapper from '../../../utils/GitApiWrapper';
 
 const parseGitlabUrl = (gitlabUrl: string) => {
-  const url = new URL(gitlabUrl);
+  try {
+    const url = new URL(gitlabUrl);
 
-  const path = url.pathname;
-  const parts = path.split('/');
-  parts.shift();
-  if (url.host !== 'gitlab.com') return {};
-  const name = parts.pop();
-  const owner = parts.join('/');
-  return { name, owner };
+    const path = url.pathname;
+    const parts = path.split('/');
+    parts.shift();
+    if (url.host !== 'gitlab.com') return {};
+    const name = parts.pop();
+    const owner = parts.join('/');
+    return { name, owner };
+  } catch {
+    return {};
+  }
 };
 
 const parseGitUrl: (
