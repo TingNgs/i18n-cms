@@ -2,6 +2,11 @@ import CommonWordingEN from '../../../public/locales/en/common.json';
 import CommonWordingZH from '../../../public/locales/zh/common.json';
 
 describe('language selector', () => {
+  beforeEach(() => {
+    cy.window().then(() => {
+      localStorage.setItem('i18nextLng', 'en');
+    });
+  });
   after(() => {
     cy.get('button[aria-label="language selector"]').click();
     cy.contains(

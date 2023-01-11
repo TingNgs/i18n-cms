@@ -87,7 +87,8 @@ const CreateNewRepoForm = () => {
         });
       const files = await dataToFiles({
         namespaces,
-        repoConfig
+        repoConfig,
+        configExist: false
       });
 
       await commitFiles({

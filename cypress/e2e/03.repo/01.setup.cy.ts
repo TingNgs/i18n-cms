@@ -11,42 +11,42 @@ import {
   login,
   deleteBranch,
   GitProvider,
-  setBranchProtected
+  setBranchProtected,
+  getOwner,
+  logout
 } from '../../support/utils';
 
-const SETUP_REPO_NAME = 'mock-setup-repo';
-const SETUP_REPO_FULL_NAME = `${Cypress.env(
-  'GITHUB_OWNER'
-)}/${SETUP_REPO_NAME}`;
-
-const clickOnRecentBranch = (branch: string) => {
-  visitRepo(SETUP_REPO_FULL_NAME);
-  cy.contains('[data-e2e-id="recent_branch"]', branch).click();
-  cy.loadingWithModal();
-  cy.get('[data-e2e-id="repo_setup"]').should('not.exist');
-  cy.get('[data-e2e-id="repo"]').should('exist');
-  cy.get('[data-e2e-id="save_editing_modal"]').should('not.exist');
-};
-
-const removeCreatedBranch = ({
-  gitProvider,
-  branch
-}: {
-  gitProvider: GitProvider;
-  branch: string;
-}) => {
-  // Click on removed branch
-  deleteBranch({ branch, repo: SETUP_REPO_NAME, gitProvider });
-  visitRepo(SETUP_REPO_FULL_NAME);
-  cy.contains('[data-e2e-id="recent_branch"]', branch).click();
-  cy.loadingWithModal();
-  cy.get('[data-e2e-id="repo_setup"]').should('exist');
-  cy.get('[data-e2e-id="repo"]').should('not.exist');
-  cy.contains(TOAST_CLASS, RepoWording['Branch not found']);
-  cy.contains(branch).should('not.exist');
-};
-
 gitProviders.map((gitProvider) => {
+  const SETUP_REPO_NAME = 'mock-setup-repo';
+  const SETUP_REPO_FULL_NAME = `${getOwner(gitProvider)}/${SETUP_REPO_NAME}`;
+
+  const clickOnRecentBranch = (branch: string) => {
+    visitRepo(SETUP_REPO_FULL_NAME);
+    cy.contains('[data-e2e-id="recent_branch"]', branch).click();
+    cy.loadingWithModal();
+    cy.get('[data-e2e-id="repo_setup"]').should('not.exist');
+    cy.get('[data-e2e-id="repo"]').should('exist');
+    cy.get('[data-e2e-id="save_editing_modal"]').should('not.exist');
+  };
+
+  const removeCreatedBranch = ({
+    gitProvider,
+    branch
+  }: {
+    gitProvider: GitProvider;
+    branch: string;
+  }) => {
+    // Click on removed branch
+    deleteBranch({ branch, repo: SETUP_REPO_NAME, gitProvider });
+    visitRepo(SETUP_REPO_FULL_NAME);
+    cy.contains('[data-e2e-id="recent_branch"]', branch).click();
+    cy.loadingWithModal();
+    cy.get('[data-e2e-id="repo_setup"]').should('exist');
+    cy.get('[data-e2e-id="repo"]').should('not.exist');
+    cy.contains(TOAST_CLASS, RepoWording['Branch not found']);
+    cy.contains(branch).should('not.exist');
+  };
+
   describe(`setup repo - ${gitProvider}`, () => {
     before(() => {
       login(gitProvider);
@@ -59,9 +59,13 @@ gitProviders.map((gitProvider) => {
 
     after(() => {
       deleteRepoFromMenu(SETUP_REPO_FULL_NAME);
+      logout();
     });
 
     beforeEach(() => {
+      cy.window().then(() => {
+        localStorage.setItem('i18nextLng', 'en');
+      });
       visitRepo(SETUP_REPO_FULL_NAME);
       cy.get('[data-e2e-id="cookies_accept_button"]').click();
     });
@@ -142,12 +146,13 @@ gitProviders.map((gitProvider) => {
     });
 
     it('use protected branch', () => {
+      const branch = 'setup/05-branch-protected';
       setBranchProtected({
-        branch: 'main',
+        branch,
         gitProvider,
         repo: SETUP_REPO_NAME
       });
-      cy.get('input[name="existingBranchName"]').type('main');
+      cy.get('input[name="existingBranchName"]').type(branch);
       cy.get('button[type="submit"]').click();
       cy.loadingWithModal();
       cy.get(`input[name="existingBranchName"] + ${ERROR_MSG_CLASS}`).should(
@@ -158,7 +163,7 @@ gitProviders.map((gitProvider) => {
 
     it('create protected branch', () => {
       setBranchProtected({
-        branch: 'yoyoyo',
+        branch: 'yoyo*',
         gitProvider,
         repo: SETUP_REPO_NAME
       });

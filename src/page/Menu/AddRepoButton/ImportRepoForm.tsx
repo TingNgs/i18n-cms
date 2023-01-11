@@ -21,16 +21,37 @@ import { useAppDispatch } from '../../../redux/store';
 import { useUpdateExistingRepoMutation } from '../../../redux/services/firestoreApi';
 import useCheckRepoPermissions from './useCheckRepoPermissions';
 import { getSessionStorage } from '../../../utils/storage';
+import GitApiWrapper from '../../../utils/GitApiWrapper';
+
+const parseGitlabUrl = (gitlabUrl: string) => {
+  try {
+    const url = new URL(gitlabUrl);
+
+    const path = url.pathname;
+    const parts = path.split('/');
+    parts.shift();
+    if (url.host !== 'gitlab.com') return {};
+    const name = parts.pop();
+    const owner = parts.join('/');
+    return { name, owner };
+  } catch {
+    return {};
+  }
+};
 
 const parseGitUrl: (
   url: string,
-  gitProvider: 'github' | 'bitbucket'
+  gitProvider: keyof typeof GitApiWrapper
 ) => { name: string; owner: string } | null = (url: string, gitProvider) => {
   switch (gitProvider) {
     case 'bitbucket':
       return parseBitbucketUrl(url);
     case 'github': {
       const { name, owner } = gh(url) || {};
+      return name && owner ? { name, owner } : null;
+    }
+    case 'gitlab': {
+      const { name, owner } = parseGitlabUrl(url) || {};
       return name && owner ? { name, owner } : null;
     }
     default:
@@ -40,7 +61,8 @@ const parseGitUrl: (
 
 const URL_PLACEHOLDER = {
   github: 'https://github.com/owner/repo-name',
-  bitbucket: 'https://bitbucket.org/owner/repo-name'
+  bitbucket: 'https://bitbucket.org/owner/repo-name',
+  gitlab: 'https://gitlab.com/owner/repo-name'
 };
 
 const ImportRepoForm = () => {

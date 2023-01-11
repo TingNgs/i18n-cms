@@ -14,6 +14,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@gitbeaker/node": "^35.8.0",
     "axios": "^1.2.0",
     "bitbucket": "^2.9.0",
     "cors": "^2.8.5",

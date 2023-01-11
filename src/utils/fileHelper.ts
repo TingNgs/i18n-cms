@@ -3,6 +3,7 @@ import YAML from 'yaml';
 import { CONFIG_PATH, FILE_TYPE_MAP_DATA } from '../constants';
 import { RepoConfig } from '../redux/editingRepoSlice';
 import { unflatten } from 'flat';
+import { Files } from './GitApiWrapper/interface';
 
 const dataToJson = (data: Record<string, unknown>) => {
   return JSON.stringify(data, null, 2);
@@ -59,20 +60,35 @@ export const getLocalePath = async ({
 export const dataToFiles = async ({
   namespaces,
   data,
-  repoConfig
+  repoConfig,
+  configExist,
+  originalLanguages = [],
+  originalNamespaces = []
 }: {
   namespaces: string[];
+  repoConfig: RepoConfig;
+  configExist: boolean;
   data?: {
     [namespace: string]: { [language: string]: { [key: string]: string } };
   };
-  repoConfig: RepoConfig;
+  originalLanguages?: string[];
+  originalNamespaces?: string[];
 }) => {
-  const files: { [path: string]: string } = {
-    [CONFIG_PATH]: dataToJson(repoConfig as unknown as Record<string, unknown>)
+  const files: Files = {
+    [CONFIG_PATH]: {
+      content: dataToJson(repoConfig as unknown as Record<string, unknown>),
+      action: configExist ? 'update' : 'create'
+    }
   };
 
   for (const namespace of namespaces) {
     for (const language of repoConfig.languages) {
+      const path = await getLocalePath({ language, namespace, repoConfig });
+      const action =
+        originalLanguages.includes(language) &&
+        originalNamespaces.includes(namespace)
+          ? 'update'
+          : 'create';
       switch (repoConfig.fileType) {
         case 'md': {
           break;
@@ -80,8 +96,10 @@ export const dataToFiles = async ({
         default: {
           const translation = data ? data[namespace]?.[language] : { hi: 'hi' };
           if (!translation) continue;
-          const path = await getLocalePath({ language, namespace, repoConfig });
-          files[path] = dataStringifyByType[repoConfig.fileType](translation);
+          files[path] = {
+            action,
+            content: dataStringifyByType[repoConfig.fileType](translation)
+          };
         }
       }
     }

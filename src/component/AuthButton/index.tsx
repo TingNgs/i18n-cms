@@ -12,7 +12,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react';
 import { useHistory } from 'react-router-dom';
-import { SiGithub, SiBitbucket } from 'react-icons/si';
+import { SiGithub, SiBitbucket, SiGitlab } from 'react-icons/si';
 
 import OauthPopup from 'react-oauth-popup';
 import { noop } from 'lodash-es';
@@ -20,7 +20,7 @@ import { noop } from 'lodash-es';
 import { isAuthSelector } from '../../redux/selector';
 import {
   useLoginWithGithubMutation,
-  useLoginWithBitbucketMutation,
+  useLoginWithOauthMutation,
   useLogoutMutation
 } from '../../redux/services/authApi';
 import { useAppSelector } from '../../redux/store';
@@ -32,8 +32,8 @@ const AuthButton = () => {
 
   const { t } = useTranslation();
   const [loginWithGithub] = useLoginWithGithubMutation();
-  const [loginWithBitbucket, { isLoading: isBitbucketLoading }] =
-    useLoginWithBitbucketMutation();
+  const [loginWithOauth, { isLoading: isOathLoading }] =
+    useLoginWithOauthMutation();
   const [logout] = useLogoutMutation();
 
   const isAuth = useAppSelector(isAuthSelector);
@@ -52,13 +52,13 @@ const AuthButton = () => {
   const onCode = useCallback(
     async (code: string, p: URLSearchParams) => {
       const data = Object.fromEntries(p) as Parameters<
-        typeof loginWithBitbucket
+        typeof loginWithOauth
       >[0];
-      await loginWithBitbucket(data).unwrap();
+      await loginWithOauth(data).unwrap();
       onClose();
       history.push('/menu');
     },
-    [loginWithBitbucket]
+    [loginWithOauth]
   );
 
   return (
@@ -110,8 +110,33 @@ const AuthButton = () => {
                   }
                   data-e2e-id="bitbucket_login_button"
                   leftIcon={<SiBitbucket />}
-                  isLoading={isBitbucketLoading}>
+                  isLoading={isOathLoading}>
                   {t('Login with Bitbucket')}
+                </Button>
+              </OauthPopup>
+              {/* @ts-ignore */}
+              <OauthPopup
+                onCode={onCode}
+                onClose={noop}
+                url={`${process.env.REACT_APP_FUNCTIONS_URL}gitlab/auth?redirectUrl=${window.location}`}>
+                <Button
+                  w="100%"
+                  onClick={
+                    window.Cypress
+                      ? () => {
+                          onCode(
+                            '1234',
+                            new URLSearchParams(
+                              'access_token=asd&expires_in=7200&refresh_token=mock_refresh_token&token=token'
+                            )
+                          );
+                        }
+                      : undefined
+                  }
+                  data-e2e-id="gitlab_login_button"
+                  leftIcon={<SiGitlab />}
+                  isLoading={isOathLoading}>
+                  {t('Login with Gitlab')}
                 </Button>
               </OauthPopup>
             </Stack>

@@ -38,6 +38,7 @@ const refreshAccessToken = async () => {
 let bitbucket = new Bitbucket({ notice: false });
 let prevToken: string | undefined = undefined;
 const setupBitbucketClient = async () => {
+  if (getSessionStorage('git_provider') !== 'bitbucket') return;
   const expireIn = getSessionStorage('expire_in');
   if (expireIn && parseInt(expireIn) < Date.now()) {
     if (!isRefreshing) {
@@ -70,13 +71,16 @@ const BitbucketApi: GitApi = {
   getCurrentUser: async () => {
     await setupBitbucketClient();
     const result = await bitbucket.users.getAuthedUser({});
-    return { name: result.data.username || '' };
+    return { name: result.data.username || '', id: result.data.uuid || '' };
   },
   getOrganization: async () => {
     await setupBitbucketClient();
     const result = await bitbucket.workspaces.getWorkspaces({});
     return (
-      result.data?.values?.map((value) => ({ name: value.slug || '' })) || []
+      result.data?.values?.map((value) => ({
+        name: value.slug || '',
+        id: value.uuid || ''
+      })) || []
     );
   },
   getRepo: async ({ repo, owner }) => {
@@ -244,8 +248,8 @@ const BitbucketApi: GitApi = {
     const requestBody = new FormData();
     requestBody.append('branch', branch);
     requestBody.append('message', message);
-    Object.entries(files).forEach(([path, value]) => {
-      requestBody.append(path, value);
+    Object.entries(files).forEach(([path, file]) => {
+      requestBody.append(path, file.content);
     });
     filesToDelete?.forEach((path) => {
       requestBody.append('files', path);

@@ -17,11 +17,13 @@ const useGetNamespaces = () => {
   const getNamespaces = async ({
     repo,
     repoConfig,
+    branch,
     rootSha
   }: {
     repo: Repo;
     repoConfig: RepoConfig;
     rootSha: string;
+    branch: string;
   }) => {
     try {
       setLoading(true);
@@ -29,6 +31,7 @@ const useGetNamespaces = () => {
         repo: repo.repo,
         owner: repo.owner,
         hash: rootSha,
+        branch,
         repoConfig
       }).unwrap();
 

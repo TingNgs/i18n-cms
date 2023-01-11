@@ -7,6 +7,7 @@ import {
 
 export interface Owner {
   name: string;
+  id: string | number;
   type: 'user' | 'org';
 }
 interface IProps {
@@ -22,10 +23,10 @@ const OwnerSelect = ({ value, onChange }: IProps) => {
     if (!userData || !orgsData) return [];
 
     return [
-      { name: userData.name, type: 'user' as const },
+      { ...userData, type: 'user' as const },
       ...orgsData
         .filter((org) => org.name !== userData.name)
-        .map((org) => ({ name: org.name, type: 'org' as const }))
+        .map((org) => ({ ...org, type: 'org' as const }))
     ];
   }, [userData, orgsData]);
 

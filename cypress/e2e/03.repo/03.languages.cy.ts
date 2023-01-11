@@ -3,40 +3,41 @@ import {
   createTestRepo,
   deleteRepoFromMenu,
   ERROR_MSG_CLASS,
+  getOwner,
   gitProviders,
   login,
+  logout,
   visitRepo
 } from '../../support/utils';
 
-const LANGUAGES_REPO_NAME = 'mock-languages-repo';
-const LANGUAGES_REPO_FULL_NAME = `${Cypress.env(
-  'GITHUB_OWNER'
-)}/${LANGUAGES_REPO_NAME}`;
-
-const checkLanguages = (languages: string[]) => {
-  cy.get('[data-e2e-id="language"]').should('have.length', languages.length);
-  languages.forEach((language) => {
-    cy.contains('[data-e2e-id="language"]', language)
-      .should('exist')
-      .find('button[aria-label="toggle language"]')
-      .then((button) => {
-        const isLanguageVisible = button[0].dataset.visible === 'true';
-        cy.contains(
-          '[data-e2e-id="table_head"] [data-e2e-id="table_cell"]',
-          language
-        ).should(isLanguageVisible ? 'exist' : 'not.exist');
-      });
-  });
-};
-
-const checkLanguageOrder = (language: string, index: number) => {
-  cy.get('[data-e2e-id="language"]').eq(index).should('have.text', language);
-  cy.get('[data-e2e-id="table_head"] [data-e2e-id="table_cell"]')
-    .eq(index + 1)
-    .should('have.text', language);
-};
-
 gitProviders.map((gitProvider) => {
+  const LANGUAGES_REPO_NAME = 'mock-languages-repo';
+  const LANGUAGES_REPO_FULL_NAME = `${getOwner(
+    gitProvider
+  )}/${LANGUAGES_REPO_NAME}`;
+
+  const checkLanguages = (languages: string[]) => {
+    cy.get('[data-e2e-id="language"]').should('have.length', languages.length);
+    languages.forEach((language) => {
+      cy.contains('[data-e2e-id="language"]', language)
+        .should('exist')
+        .find('button[aria-label="toggle language"]')
+        .then((button) => {
+          const isLanguageVisible = button[0].dataset.visible === 'true';
+          cy.contains(
+            '[data-e2e-id="table_head"] [data-e2e-id="table_cell"]',
+            language
+          ).should(isLanguageVisible ? 'exist' : 'not.exist');
+        });
+    });
+  };
+
+  const checkLanguageOrder = (language: string, index: number) => {
+    cy.get('[data-e2e-id="language"]').eq(index).should('have.text', language);
+    cy.get('[data-e2e-id="table_head"] [data-e2e-id="table_cell"]')
+      .eq(index + 1)
+      .should('have.text', language);
+  };
   describe(`languages - ${gitProvider}`, () => {
     before(() => {
       login(gitProvider);
@@ -49,8 +50,12 @@ gitProviders.map((gitProvider) => {
 
     after(() => {
       deleteRepoFromMenu(LANGUAGES_REPO_FULL_NAME);
+      logout();
     });
     beforeEach(() => {
+      cy.window().then(() => {
+        localStorage.setItem('i18nextLng', 'en');
+      });
       cy.visit('/');
       cy.get('[data-e2e-id="cookies_accept_button"]').click();
     });
@@ -95,6 +100,7 @@ gitProviders.map((gitProvider) => {
     it('add repeated language', () => {
       const language = 'en';
       visitRepo(LANGUAGES_REPO_FULL_NAME, '02/add-repeated-language');
+      cy.wait(100);
       cy.get('[data-e2e-id="languages_accordion_button"]').click();
       cy.contains('[data-e2e-id="language"]', language).should('exist');
       cy.get('[data-e2e-id="new_language_button"]').click();

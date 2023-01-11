@@ -1,4 +1,9 @@
 describe('color mode', () => {
+  beforeEach(() => {
+    cy.window().then(() => {
+      localStorage.setItem('i18nextLng', 'en');
+    });
+  });
   it('change language', () => {
     cy.window().then(() => {
       localStorage.setItem('chakra-ui-color-mode', 'dark');

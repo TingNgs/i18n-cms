@@ -2,54 +2,54 @@ import RepoWording from '../../../public/locales/en/repo.json';
 import {
   createTestRepo,
   deleteRepoFromMenu,
+  getOwner,
   gitProviders,
   login,
+  logout,
   TOAST_CLASS,
   visitRepo
 } from '../../support/utils';
 
-const TABLE_REPO_NAME = 'mock-table-repo';
-const TABLE_REPO_FULL_NAME = `${Cypress.env(
-  'GITHUB_OWNER'
-)}/${TABLE_REPO_NAME}`;
-
-const checkDuplicated = (
-  rows: { row: string; value: string }[],
-  namespace: string,
-  isValid: boolean
-) => {
-  rows.forEach(({ row, value }) => {
-    cy.get(`[data-e2e-id="table_row"][data-index="${row}"]`).within(() => {
-      cy.tableKeyType(value);
-    });
-  });
-
-  rows.forEach(({ row }) => {
-    cy.get(
-      `[data-e2e-id="table_row"][data-index="${row}"] [data-e2e-id="key_error_icon"]`
-    ).should(isValid ? 'not.exist' : 'exist');
-  });
-
-  cy.contains('[data-e2e-id="namespace"]', namespace)
-    .find('[data-e2e-id="namespace_error_icon"]')
-    .should(isValid ? 'not.exist' : 'exist');
-
-  cy.get('button[data-e2e-id="save_button"]').click();
-  if (isValid) {
-    cy.get('[data-e2e-id="save_editing_modal"]').should('exist');
-    cy.get(
-      '[data-e2e-id="save_editing_modal"] button[aria-label="Close"]'
-    ).click();
-  } else {
-    cy.get('[data-e2e-id="save_editing_modal"]').should('not.exist');
-    cy.contains(
-      TOAST_CLASS,
-      RepoWording['Please remove all duplicated key']
-    ).should('exist');
-  }
-};
-
 gitProviders.map((gitProvider) => {
+  const TABLE_REPO_NAME = 'mock-table-repo';
+  const TABLE_REPO_FULL_NAME = `${getOwner(gitProvider)}/${TABLE_REPO_NAME}`;
+
+  const checkDuplicated = (
+    rows: { row: string; value: string }[],
+    namespace: string,
+    isValid: boolean
+  ) => {
+    rows.forEach(({ row, value }) => {
+      cy.get(`[data-e2e-id="table_row"][data-index="${row}"]`).within(() => {
+        cy.tableKeyType(value);
+      });
+    });
+
+    rows.forEach(({ row }) => {
+      cy.get(
+        `[data-e2e-id="table_row"][data-index="${row}"] [data-e2e-id="key_error_icon"]`
+      ).should(isValid ? 'not.exist' : 'exist');
+    });
+
+    cy.contains('[data-e2e-id="namespace"]', namespace)
+      .find('[data-e2e-id="namespace_error_icon"]')
+      .should(isValid ? 'not.exist' : 'exist');
+
+    cy.get('button[data-e2e-id="save_button"]').click();
+    if (isValid) {
+      cy.get('[data-e2e-id="save_editing_modal"]').should('exist');
+      cy.get(
+        '[data-e2e-id="save_editing_modal"] button[aria-label="Close"]'
+      ).click();
+    } else {
+      cy.get('[data-e2e-id="save_editing_modal"]').should('not.exist');
+      cy.contains(
+        TOAST_CLASS,
+        RepoWording['Please remove all duplicated key']
+      ).should('exist');
+    }
+  };
+
   describe(`table - ${gitProvider}`, () => {
     before(() => {
       login(gitProvider);
@@ -62,14 +62,19 @@ gitProviders.map((gitProvider) => {
 
     after(() => {
       deleteRepoFromMenu(TABLE_REPO_FULL_NAME);
+      logout();
     });
     beforeEach(() => {
+      cy.window().then(() => {
+        localStorage.setItem('i18nextLng', 'en');
+      });
       cy.visit('/');
       cy.get('[data-e2e-id="cookies_accept_button"]').click();
     });
 
     it('crud locales', () => {
       visitRepo(TABLE_REPO_FULL_NAME, '01/curd-locales');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
 
@@ -105,6 +110,7 @@ gitProviders.map((gitProvider) => {
 
       cy.save();
       visitRepo(TABLE_REPO_FULL_NAME, '01/curd-locales');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
 
@@ -130,6 +136,7 @@ gitProviders.map((gitProvider) => {
 
       // Check locale deleted
       visitRepo(TABLE_REPO_FULL_NAME, '01/curd-locales');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
       cy.get('[data-e2e-id="table_container"]').scrollTo('bottom');
@@ -143,6 +150,7 @@ gitProviders.map((gitProvider) => {
 
     it('duplicated key', () => {
       visitRepo(TABLE_REPO_FULL_NAME, '02/duplicated-key');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
 
@@ -199,6 +207,7 @@ gitProviders.map((gitProvider) => {
 
     it('duplicated key (flatten)', () => {
       visitRepo(TABLE_REPO_FULL_NAME, '03/duplicated-key-flatten');
+      cy.wait(10);
       cy.get('[data-e2e-id="namespace"]').contains('translationA').click();
       cy.tableLoading();
 

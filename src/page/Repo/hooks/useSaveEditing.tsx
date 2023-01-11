@@ -118,6 +118,7 @@ const useSaveEditing = () => {
           localeIds,
           editingRepo,
           editingRepoConfig,
+          configExist,
           originalLanguages,
           originalNamespaces,
           originalLocalesData,
@@ -211,6 +212,9 @@ const useSaveEditing = () => {
           }
         }
         const files = await dataToFiles({
+          configExist,
+          originalLanguages,
+          originalNamespaces,
           data,
           namespaces: Object.keys(data),
           repoConfig: {

@@ -8,6 +8,7 @@
     "@choc-ui/chakra-autocomplete": "^5.1.4",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@gitbeaker/browser": "^35.8.0",
     "@hookform/error-message": "^2.0.1",
     "@octokit/graphql": "^5.0.4",
     "@octokit/rest": "^19.0.5",
