@@ -5,7 +5,7 @@ import { getSessionStorage, setSessionStorage } from '../../storage';
 import { ERROR_MSG } from '../constants';
 import GitApi from '../interface';
 
-const TREE_PAGE_SIZE = 20;
+const TREE_PAGE_SIZE = 100;
 
 let isRefreshing = false;
 let refreshQueue: (() => void)[] = [];
