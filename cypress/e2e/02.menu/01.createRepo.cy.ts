@@ -106,8 +106,7 @@ gitProviders.map((gitProvider) => {
       cy.get('button[type="submit"]').click();
       cy.loadingWithModal();
       cy.location('pathname', { timeout: 50000 }).should('eq', '/repo');
-      deleteRepoFromMenu(`${org}/${repoName}`);
-      deleteRepo({ gitProvider, repo: repoName, owner: org });
+      deleteRepoFromMenu({ gitProvider, repo: repoName, owner: org });
     });
   });
 });

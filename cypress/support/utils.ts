@@ -322,7 +322,19 @@ export const createTestRepo = ({
   cy.location('pathname').should('eq', '/repo');
 };
 
-export const deleteRepoFromMenu = (name: string) => {
+export const deleteRepoFromMenu = ({
+  repo,
+  owner,
+  gitProvider,
+  shouldDeleteRepo = true
+}: {
+  repo: string;
+  owner?: string;
+  gitProvider: GitProvider;
+  shouldDeleteRepo?: boolean;
+}) => {
+  const name = `${owner || getOwner(gitProvider)}/${repo}`;
+  if (shouldDeleteRepo) deleteRepo({ repo, owner, gitProvider });
   cy.visit('/menu');
   cy.menuListLoading();
   cy.contains('[data-e2e-id="menu_repo_card"]', name)

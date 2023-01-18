@@ -58,7 +58,7 @@ gitProviders.map((gitProvider) => {
     });
 
     after(() => {
-      deleteRepoFromMenu(SETUP_REPO_FULL_NAME);
+      deleteRepoFromMenu({ gitProvider, repo: SETUP_REPO_NAME });
       logout();
     });
 
