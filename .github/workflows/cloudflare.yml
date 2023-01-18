@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Deploy to Cloudflare Pages
 
 on:
   push:
@@ -48,3 +48,9 @@ jobs:
           REACT_APP_COOKIES_POLICY: ${{ secrets.REACT_APP_COOKIES_POLICY }}
           REACT_APP_GOOGLE_SITE_VERIFICATION: ${{ secrets.REACT_APP_GOOGLE_SITE_VERIFICATION }}
           REACT_APP_FUNCTIONS_URL: ${{ secrets.REACT_APP_FUNCTIONS_URL }}
+
+      - name: Publish to Cloudflare Pages
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.CLOUDFLARE_DEPLOY_HOOKS }}
+          method: 'POST'
