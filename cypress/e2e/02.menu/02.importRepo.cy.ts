@@ -92,7 +92,11 @@ gitProviders.map((gitProvider) => {
       cy.get('button[type="submit"]').click();
       cy.loadingWithModal();
       cy.location('pathname').should('eq', '/repo');
-      deleteRepoFromMenu(IMPORT_REPO_FULL_NAME);
+      deleteRepoFromMenu({
+        gitProvider,
+        repo: IMPORT_REPO_NAME,
+        shouldDeleteRepo: false
+      });
     });
   });
 });

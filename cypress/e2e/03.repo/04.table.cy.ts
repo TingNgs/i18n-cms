@@ -61,7 +61,7 @@ gitProviders.map((gitProvider) => {
     });
 
     after(() => {
-      deleteRepoFromMenu(TABLE_REPO_FULL_NAME);
+      deleteRepoFromMenu({ gitProvider, repo: TABLE_REPO_NAME });
       logout();
     });
     beforeEach(() => {

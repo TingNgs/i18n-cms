@@ -49,7 +49,7 @@ gitProviders.map((gitProvider) => {
     });
 
     after(() => {
-      deleteRepoFromMenu(LANGUAGES_REPO_FULL_NAME);
+      deleteRepoFromMenu({ gitProvider, repo: LANGUAGES_REPO_NAME });
       logout();
     });
     beforeEach(() => {

@@ -88,7 +88,7 @@ gitProviders.map((gitProvider) => {
     });
 
     after(() => {
-      deleteRepoFromMenu(NAMESPACES_REPO_FULL_NAME);
+      deleteRepoFromMenu({ gitProvider, repo: NAMESPACES_REPO_NAME });
       logout();
     });
     beforeEach(() => {

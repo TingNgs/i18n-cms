@@ -9,10 +9,10 @@ import {
 } from '../../src/utils/storage';
 import { getRepoUrl } from '../../src/utils';
 
-const octokit = new Octokit({ auth: Cypress.env('GITHUB_PAT') });
+const octokit = new Octokit({ auth: Cypress.env('CY_GITHUB_PAT') });
 const graphqlWithAuth = graphql.defaults({
   headers: {
-    authorization: `token ${Cypress.env('GITHUB_PAT')}`
+    authorization: `token ${Cypress.env('CY_GITHUB_PAT')}`
   }
 });
 const bitbucket = new Bitbucket({
@@ -306,7 +306,9 @@ export const createTestRepo = ({
 }) => {
   cy.visit('/menu');
   deleteRepo({ repo, gitProvider });
-  cy.wait(5000);
+  if (gitProvider === 'gitlab') {
+    cy.wait(10000);
+  }
   createRepoFromTemplate({ repo, gitProvider, templateRepo });
 
   cy.get('[data-e2e-id="app"]').should('exist');
@@ -320,7 +322,19 @@ export const createTestRepo = ({
   cy.location('pathname').should('eq', '/repo');
 };
 
-export const deleteRepoFromMenu = (name: string) => {
+export const deleteRepoFromMenu = ({
+  repo,
+  owner,
+  gitProvider,
+  shouldDeleteRepo = true
+}: {
+  repo: string;
+  owner?: string;
+  gitProvider: GitProvider;
+  shouldDeleteRepo?: boolean;
+}) => {
+  const name = `${owner || getOwner(gitProvider)}/${repo}`;
+  if (shouldDeleteRepo) deleteRepo({ repo, owner, gitProvider });
   cy.visit('/menu');
   cy.menuListLoading();
   cy.contains('[data-e2e-id="menu_repo_card"]', name)
@@ -337,13 +351,13 @@ export const mockOAuth = (gitProvider: GitProvider) => {
         .its('firebaseAuth')
         .then((firebaseAuth) => {
           cy.stub(firebaseAuth, 'signInWithPopup').returns({
-            user: { uid: Cypress.env('GITHUB_TEST_UID') }
+            user: { uid: Cypress.env('CY_GITHUB_TEST_UID') }
           });
           cy.stub(
             firebaseAuth.GithubAuthProvider,
             'credentialFromResult'
           ).returns({
-            accessToken: Cypress.env('GITHUB_PAT')
+            accessToken: Cypress.env('CY_GITHUB_PAT')
           });
         });
       break;
@@ -382,9 +396,9 @@ export const logout = () => {
 export const login = (gitProvider: GitProvider) => {
   switch (gitProvider) {
     case 'github': {
-      cy.login(Cypress.env('GITHUB_TEST_UID'));
+      cy.login(Cypress.env('CY_GITHUB_TEST_UID'));
       cy.window().then(() => {
-        setSessionStorage('access_token', Cypress.env('GITHUB_PAT'));
+        setSessionStorage('access_token', Cypress.env('CY_GITHUB_PAT'));
         setSessionStorage('git_provider', 'github');
       });
       break;
@@ -406,13 +420,13 @@ export const login = (gitProvider: GitProvider) => {
       break;
     }
   }
-  cy.wait(1000);
+  cy.wait(100);
 };
 
 export const getOwner = (gitProvider: GitProvider) => {
   switch (gitProvider) {
     case 'github': {
-      return Cypress.env('GITHUB_OWNER');
+      return Cypress.env('CY_GITHUB_OWNER');
     }
     case 'bitbucket': {
       return Cypress.env('BITBUCKET_OWNER');
