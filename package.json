@@ -57,7 +57,7 @@
   "scripts": {
     "start": "react-app-rewired -r @cypress/instrument-cra start",
     "build": "react-app-rewired build",
-    "start-build": "http-server --proxy http://localhost:3000? ./build --port 3000",
+    "start:ci": "http-server --proxy http://localhost:3000? ./build --port 3000",
     "test": "cypress run",
     "eject": "react-scripts eject",
     "lint": "eslint .",
