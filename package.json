@@ -57,7 +57,8 @@
   "scripts": {
     "start": "react-app-rewired -r @cypress/instrument-cra start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
+    "start-build": "http-server --proxy http://localhost:3000? ./build --port 3000",
+    "test": "cypress run",
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
@@ -105,6 +106,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.10",
     "firebase-admin": "^11.2.1",
+    "http-server": "^14.1.1",
     "husky": "^8.0.2",
     "prettier": "^2.7.1",
     "react-app-rewired": "^2.2.1"
