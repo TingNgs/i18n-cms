@@ -210,10 +210,23 @@ const GitlabApi: GitApi = {
     files
   }) => {
     await setupGitlabClient();
+
+    const fileExistToDelete = (
+      await Promise.all(
+        filesToDelete.map((path) =>
+          gitlab.RepositoryFiles.showRaw(`${owner}/${repo}`, path, {
+            ref: branch
+          })
+            .then(() => path)
+            .catch(() => null)
+        )
+      )
+    ).filter((path) => !!path);
+
     const actions = [
-      ...filesToDelete.map((file) => ({
+      ...fileExistToDelete.map((path) => ({
         action: 'delete',
-        filePath: file
+        filePath: path
       })),
       ...Object.keys(files).map((path) => ({
         ...files[path],
@@ -225,8 +238,7 @@ const GitlabApi: GitApi = {
       `${owner}/${repo}`,
       branch,
       message,
-      actions as Parameters<typeof gitlab.Commits.create>[3],
-      { force: true }
+      actions as Parameters<typeof gitlab.Commits.create>[3]
     );
 
     return {
